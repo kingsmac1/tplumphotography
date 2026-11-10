@@ -1,0 +1,82 @@
+# Supabase CLI config for Tplum Photography. project_id is set by `supabase link` in Phase B.
+project_id = "tplum-photography"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+# Every function checks its caller itself (requireAdmin / client gallery key / Stripe signature / CRON_SECRET),
+# so the gateway JWT check is off: Stripe and pg_cron can't send a Supabase token, and new publishable keys aren't JWTs.
+[functions.booking-create]
+verify_jwt = false
+[functions.booking-status]
+verify_jwt = false
+[functions.stripe-webhook]
+verify_jwt = false
+[functions.form-submit]
+verify_jwt = false
+[functions.invoice-send]
+verify_jwt = false
+[functions.invoice-pay]
+verify_jwt = false
+[functions.contract-send]
+verify_jwt = false
+[functions.contract-sign]
+verify_jwt = false
+[functions.instagram-sync]
+verify_jwt = false
+[functions.process-emails]
+verify_jwt = false
+[functions.send-admin-email]
+verify_jwt = false
+[functions.account-delete]
+verify_jwt = false
+[functions.gallery-confirm-uploads]
+verify_jwt = false
+[functions.gallery-delete]
+verify_jwt = false
+[functions.gallery-download-url]
+verify_jwt = false
+[functions.gallery-feedback]
+verify_jwt = false
+[functions.gallery-inspiration]
+verify_jwt = false
+[functions.gallery-pick]
+verify_jwt = false
+[functions.gallery-purge-previews]
+verify_jwt = false
+[functions.gallery-send]
+verify_jwt = false
+[functions.gallery-submit-selection]
+verify_jwt = false
+[functions.gallery-unlock-selection]
+verify_jwt = false
+[functions.gallery-upload-urls]
+verify_jwt = false
+[functions.gallery-view-urls]
+verify_jwt = false
+[functions.team-invite]
+verify_jwt = false

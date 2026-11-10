@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "@tanstack/react-router";
 import type { CmsImage, SiteContent } from "@/cms/types";
+import { backendReady, callFunction } from "@/lib/functions";
 import { Img, Reveal } from "./ui";
 import { IconClose, IconFacebook, IconInstagram, IconStream, ScrollTopArrow, socialIcon } from "./icons";
 
@@ -97,6 +98,14 @@ function Tiles({ posts, rows, gap, className }: { posts: IgPost[]; rows: IgPost[
 }
 
 export function InstagramBand({ site, posts, variant, className = "" }: { site: SiteContent; posts: IgPost[]; variant?: "default" | "about"; className?: string }) {
+  // Nkopno pattern: after the page has loaded, quietly ask the sync function to check Instagram for new posts
+  // (it skips if checked in the last minute). New posts appear on the next page load.
+  useEffect(() => {
+    if (!backendReady()) return;
+    try { if (sessionStorage.getItem("ig-sync")) return; sessionStorage.setItem("ig-sync", "1"); } catch { /* private mode */ }
+    const t = setTimeout(() => void callFunction("instagram-sync", {}), 4000);
+    return () => clearTimeout(t);
+  }, []);
   const shown = posts.slice(0, 8);
   const handle = site.contact.instagramHandle;
   const [before, after] = site.instagramSection.followText.split(handle);

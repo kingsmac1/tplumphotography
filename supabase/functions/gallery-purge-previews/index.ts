@@ -10,7 +10,7 @@ import { remove } from '../_shared/r2.ts'
 const GALLERIES_PER_RUN = 5
 
 Deno.serve(handle(async (req) => {
-  const secret = Deno.env.get('GALLERY_CRON_SECRET')
+  const secret = Deno.env.get('CRON_SECRET') || Deno.env.get('GALLERY_CRON_SECRET')
   const cron = !!secret && req.headers.get('x-cron-secret') === secret
   if (!cron && !(await caller(req)).isAdmin) throw new HttpError('Not authorised.', 401)
 

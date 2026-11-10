@@ -200,12 +200,12 @@ export const INVOICE_HEADING: Record<'before' | 'part' | 'paid', { eyebrow: stri
   part: { eyebrow: 'Payment received', title: 'Thank you for your payment' },
   paid: { eyebrow: 'Paid in full', title: 'Your invoice is paid in full' },
 }
-export function invoiceEmail(o: { siteUrl: string; subject: string; message: string; stage: 'before' | 'part' | 'paid'; number: string; filename: string; total: number; paid: number; balance: number }): RenderedEmail {
+export function invoiceEmail(o: { siteUrl: string; subject: string; message: string; stage: 'before' | 'part' | 'paid'; number: string; filename: string; total: number; paid: number; balance: number; tax?: number; taxName?: string; payUrl?: string }): RenderedEmail {
   const h = INVOICE_HEADING[o.stage]
-  const figures: [string, string][] = [['Invoice', o.number], ['Total', money(o.total)], ...(o.paid > 0 ? [['Paid', money(o.paid)] as [string, string]] : []), ['Balance due', money(o.balance)]]
-  const body = p(nl2br(o.message)) + rows(figures) + small(`The invoice is attached as a PDF (${esc(o.filename)}). Questions? Reply to this email or message us on WhatsApp.`)
+  const figures: [string, string][] = [['Invoice', o.number], ...(o.tax ? [[o.taxName || 'Tax', money(o.tax)] as [string, string]] : []), ['Total (CAD)', money(o.total)], ...(o.paid > 0 ? [['Paid', money(o.paid)] as [string, string]] : []), ['Balance due', money(o.balance)]]
+  const body = p(nl2br(o.message)) + rows(figures) + (o.payUrl ? `<div style="margin-top:30px;">${button(o.payUrl, 'View & pay invoice')}</div>` : '') + small(`The invoice is attached as a PDF (${esc(o.filename)}). Questions? Reply to this email.`)
   const html = layout({ siteUrl: o.siteUrl, preheader: `${h.title}: invoice ${o.number}, balance due ${money(o.balance)}`, eyebrow: h.eyebrow, title: h.title, body, footnote: 'Please keep this invoice for your records.' })
-  const text = `${o.message}\n\n${figures.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nThe invoice is attached as a PDF (${o.filename}).\n\n${BRAND.name} · ${BRAND.phone} · ${BRAND.email}`
+  const text = `${o.message}\n\n${figures.map(([k, v]) => `${k}: ${v}`).join('\n')}${o.payUrl ? `\n\nView & pay: ${o.payUrl}` : ''}\n\nThe invoice is attached as a PDF (${o.filename}).\n\n${BRAND.name} · ${BRAND.phone} · ${BRAND.email}`
   return { subject: o.subject, html, text }
 }
 
