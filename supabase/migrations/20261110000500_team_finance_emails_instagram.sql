@@ -243,6 +243,8 @@ create table if not exists public.instagram_posts (
   caption text,
   posted_at timestamptz,
   image_url text not null,
+  width integer,
+  height integer,
   hidden boolean not null default false
 );
 create index if not exists instagram_posts_posted_idx on public.instagram_posts (posted_at desc);

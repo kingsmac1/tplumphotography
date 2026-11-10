@@ -1,0 +1,937 @@
+{
+ "1": {
+  "width": 904,
+  "height": 1115,
+  "widths": [
+   480,
+   904
+  ],
+  "source": "wp-api/media/2026/02/1.jpg"
+ },
+ "3": {
+  "width": 1755,
+  "height": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   1755
+  ],
+  "source": "wp-api/media/2026/02/3.jpg"
+ },
+ "tplum-logo-white-1": {
+  "width": 1000,
+  "height": 560,
+  "widths": [
+   480,
+   960,
+   1000
+  ],
+  "source": "wp-api/media/2026/01/TPlum-Logo-White-1.png"
+ },
+ "cropped-tplum-logo-dark": {
+  "width": 1000,
+  "height": 552,
+  "widths": [
+   480,
+   960,
+   1000
+  ],
+  "source": "wp-api/media/2026/01/cropped-TPlum-Logo-Dark.png"
+ },
+ "ig-879102219-18646460485013435-128859648833": {
+  "width": 3451,
+  "height": 4096,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/scontent-dfw6-1.cdninstagram.com/v/t51.82787-15/879102219_18646460485013435_1288596488333428053_n.jpg"
+ },
+ "ig-863141781-18642537502013435-274924821879": {
+  "width": 3242,
+  "height": 4096,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/scontent-dfw6-2.cdninstagram.com/v/t51.82787-15/863141781_18642537502013435_2749248218799640459_n.jpg"
+ },
+ "ig-841533153-18639158209013435-169397451904": {
+  "width": 1320,
+  "height": 2347,
+  "widths": [
+   480,
+   960,
+   1320
+  ],
+  "source": "images/scontent-dfw6-1.cdninstagram.com/v/t51.82787-15/841533153_18639158209013435_1693974519040992501_n.jpg"
+ },
+ "ig-836198165-18637258954013435-734248009890": {
+  "width": 720,
+  "height": 1280,
+  "widths": [
+   480,
+   720
+  ],
+  "source": "images/scontent-dfw5-1.cdninstagram.com/v/t51.82787-15/836198165_18637258954013435_7342480098900225690_n.jpg"
+ },
+ "ig-836468986-18636893593013435-753366864051": {
+  "width": 3568,
+  "height": 4095,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/scontent-dfw6-2.cdninstagram.com/v/t51.82787-15/836468986_18636893593013435_7533668640516639604_n.jpg"
+ },
+ "ig-830892879-18634766830013435-598359111843": {
+  "width": 3114,
+  "height": 4096,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/scontent-dfw5-2.cdninstagram.com/v/t51.82787-15/830892879_18634766830013435_5983591118430171536_n.jpg"
+ },
+ "ig-827548730-18633709285013435-330551551119": {
+  "width": 3283,
+  "height": 4096,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/scontent-dfw5-1.cdninstagram.com/v/t51.82787-15/827548730_18633709285013435_3305515511199327561_n.jpg"
+ },
+ "ig-792912229-18624544648013435-130625319092": {
+  "width": 3145,
+  "height": 4096,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/scontent-dfw6-2.cdninstagram.com/v/t51.82787-15/792912229_18624544648013435_130625319092816700_n.jpg"
+ },
+ "360x300-2": {
+  "width": 360,
+  "height": 300,
+  "widths": [
+   360
+  ],
+  "source": "wp-api/media/2017/05/360x300_2.jpg"
+ },
+ "imgi-45-263835414-436105704648469-9076622717571941283-n": {
+  "width": 1440,
+  "height": 1440,
+  "widths": [
+   480,
+   960,
+   1440
+  ],
+  "source": "wp-api/media/2026/01/imgi_45_263835414_436105704648469_9076622717571941283_n.jpg"
+ },
+ "145x145-1": {
+  "width": 145,
+  "height": 145,
+  "widths": [
+   145
+  ],
+  "source": "wp-api/media/2017/05/145x145_1.jpg"
+ },
+ "image-w1-jpg-scaled": {
+  "width": 1735,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1735
+  ],
+  "source": "wp-api/media/2026/02/Image-W1.JPG-scaled.jpeg"
+ },
+ "dsc-6430-scaled": {
+  "width": 2015,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2015
+  ],
+  "source": "wp-api/media/2026/01/DSC_6430-scaled.jpg"
+ },
+ "1-1-scaled": {
+  "width": 2194,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2194
+  ],
+  "source": "wp-api/media/2026/01/1-1-scaled.jpg"
+ },
+ "5ajpg-scaled": {
+  "width": 2560,
+  "height": 1856,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "wp-api/media/2026/01/5AJPG-scaled.jpg"
+ },
+ "dsc-3515-copy-scaled": {
+  "width": 2110,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2110
+  ],
+  "source": "wp-api/media/2026/01/DSC_3515-copy-scaled.jpg"
+ },
+ "dsc-5981-1": {
+  "width": 2048,
+  "height": 1380,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ],
+  "source": "wp-api/media/2026/02/DSC_5981-1.jpg"
+ },
+ "5a-1": {
+  "width": 1402,
+  "height": 2048,
+  "widths": [
+   480,
+   960,
+   1402
+  ],
+  "source": "wp-api/media/2026/02/5a-1.jpg"
+ },
+ "5-1": {
+  "width": 2048,
+  "height": 1488,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ],
+  "source": "wp-api/media/2026/02/5-1.jpg"
+ },
+ "image-w2-jpg-scaled": {
+  "width": 2085,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2085
+  ],
+  "source": "wp-api/media/2026/02/Image-W2.JPG-scaled.jpeg"
+ },
+ "dsc-4799-1": {
+  "width": 1533,
+  "height": 2048,
+  "widths": [
+   480,
+   960,
+   1533
+  ],
+  "source": "wp-api/media/2026/02/DSC_4799-1.jpg"
+ },
+ "dsc-7178-scaled": {
+  "width": 2112,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2112
+  ],
+  "source": "wp-api/media/2026/02/DSC_7178-scaled.jpg"
+ },
+ "nz8-5889-2-scaled": {
+  "width": 1818,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1818
+  ],
+  "source": "wp-api/media/2026/02/NZ8_5889_2-scaled.jpg"
+ },
+ "dsc-5335-copy-scaled-e1770416218456": {
+  "width": 2193,
+  "height": 1528,
+  "widths": [
+   480,
+   960,
+   1600,
+   2193
+  ],
+  "source": "wp-api/media/2026/02/DSC_5335-copy-scaled-e1770416218456.jpg"
+ },
+ "dsc-5335-copy-1-scaled": {
+  "width": 2193,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2193
+  ],
+  "source": "wp-api/media/2026/02/DSC_5335-copy-1-scaled.jpg"
+ },
+ "dsc-6307": {
+  "width": 7459,
+  "height": 5348,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/tplumphotography.com/wp-content/uploads/2026/02/DSC_6307.jpg"
+ },
+ "dsc-5321gt-jpg": {
+  "width": 7665,
+  "height": 5316,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/tplumphotography.com/wp-content/uploads/2026/02/DSC_5321gt.JPG.jpeg"
+ },
+ "dsc-7182": {
+  "width": 3863,
+  "height": 2568,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/tplumphotography.com/wp-content/uploads/2026/02/DSC_7182.jpg"
+ },
+ "small-write-up": {
+  "width": 4377,
+  "height": 2952,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "images/tplumphotography.com/wp-content/uploads/2026/02/SMALL-WRITE-UP.jpg"
+ },
+ "5-scaled": {
+  "width": 2560,
+  "height": 1859,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "wp-api/media/2026/01/5-scaled.jpg"
+ },
+ "5a-scaled": {
+  "width": 1752,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1752
+  ],
+  "source": "wp-api/media/2026/01/5a-scaled.jpg"
+ },
+ "dsc-3706-recovered-copy-scaled": {
+  "width": 2046,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2046
+  ],
+  "source": "wp-api/media/2026/01/DSC_3706-Recovered-copy-scaled.jpg"
+ },
+ "dsc-4799-scaled": {
+  "width": 1916,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1916
+  ],
+  "source": "wp-api/media/2026/01/DSC_4799-scaled.jpg"
+ },
+ "dsc-4773": {
+  "width": 502,
+  "height": 598,
+  "widths": [
+   480,
+   502
+  ],
+  "source": "wp-api/media/2026/02/DSC_4773.jpg"
+ },
+ "dsc-1071-copy": {
+  "width": 503,
+  "height": 586,
+  "widths": [
+   480,
+   503
+  ],
+  "source": "wp-api/media/2026/02/DSC_1071-copy.jpg"
+ },
+ "dsc-5143-copy": {
+  "width": 970,
+  "height": 1251,
+  "widths": [
+   480,
+   960,
+   970
+  ],
+  "source": "wp-api/media/2026/02/DSC_5143-copy.jpg"
+ },
+ "dsc-5000-copy": {
+  "width": 677,
+  "height": 767,
+  "widths": [
+   480,
+   677
+  ],
+  "source": "wp-api/media/2026/02/DSC_5000-copy.jpg"
+ },
+ "dsc-3650": {
+  "width": 890,
+  "height": 606,
+  "widths": [
+   480,
+   890
+  ],
+  "source": "wp-api/media/2026/02/DSC_3650.jpg"
+ },
+ "dsc-5608-copy-2": {
+  "width": 882,
+  "height": 1005,
+  "widths": [
+   480,
+   882
+  ],
+  "source": "wp-api/media/2026/02/DSC_5608-copy-2.jpg"
+ },
+ "dsc-7527": {
+  "width": 506,
+  "height": 556,
+  "widths": [
+   480,
+   506
+  ],
+  "source": "wp-api/media/2026/02/DSC_7527.jpg"
+ },
+ "dsc-7509-copy": {
+  "width": 535,
+  "height": 609,
+  "widths": [
+   480,
+   535
+  ],
+  "source": "wp-api/media/2026/02/DSC_7509-copy.jpg"
+ },
+ "dsc-8576-copy": {
+  "width": 700,
+  "height": 852,
+  "widths": [
+   480,
+   700
+  ],
+  "source": "wp-api/media/2026/02/DSC_8576-copy.jpg"
+ },
+ "dsc-7177": {
+  "width": 695,
+  "height": 462,
+  "widths": [
+   480,
+   695
+  ],
+  "source": "wp-api/media/2026/02/DSC_7177.jpg"
+ },
+ "10-2": {
+  "width": 528,
+  "height": 643,
+  "widths": [
+   480,
+   528
+  ],
+  "source": "wp-api/media/2026/02/10-2.jpg"
+ },
+ "dsc-6133": {
+  "width": 541,
+  "height": 717,
+  "widths": [
+   480,
+   541
+  ],
+  "source": "wp-api/media/2026/02/DSC_6133.jpg"
+ },
+ "dsc-3706-recovered-copy-1": {
+  "width": 1636,
+  "height": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   1636
+  ],
+  "source": "wp-api/media/2026/02/DSC_3706-Recovered-copy-1.jpg"
+ },
+ "dsc-5981-scaled": {
+  "width": 2560,
+  "height": 1725,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ],
+  "source": "wp-api/media/2026/01/DSC_5981-scaled.jpg"
+ },
+ "dsc-5aaa981-jpg-scaled": {
+  "width": 1964,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1964
+  ],
+  "source": "wp-api/media/2026/02/DSC_5aaa981.JPG-scaled.jpeg"
+ },
+ "dsc-8576-copy-jpg-scaled": {
+  "width": 2104,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2104
+  ],
+  "source": "wp-api/media/2026/02/DSC_8576-copy.JPG-scaled.jpeg"
+ },
+ "1d": {
+  "width": 1196,
+  "height": 866,
+  "widths": [
+   480,
+   960,
+   1196
+  ],
+  "source": "wp-api/media/2026/02/1D_.jpg"
+ },
+ "dsc-9197-copy": {
+  "width": 1132,
+  "height": 1326,
+  "widths": [
+   480,
+   960,
+   1132
+  ],
+  "source": "wp-api/media/2026/02/DSC_9197-copy.jpg"
+ },
+ "dsc-7355-copy": {
+  "width": 692,
+  "height": 767,
+  "widths": [
+   480,
+   692
+  ],
+  "source": "wp-api/media/2026/02/DSC_7355-copy.jpg"
+ },
+ "dsc-8271": {
+  "width": 723,
+  "height": 977,
+  "widths": [
+   480,
+   723
+  ],
+  "source": "wp-api/media/2026/02/DSC_8271.jpg"
+ },
+ "dsc-8224": {
+  "width": 723,
+  "height": 849,
+  "widths": [
+   480,
+   723
+  ],
+  "source": "wp-api/media/2026/02/DSC_8224.jpg"
+ },
+ "dsc-6430-1": {
+  "width": 521,
+  "height": 661,
+  "widths": [
+   480,
+   521
+  ],
+  "source": "wp-api/media/2026/02/DSC_6430-1.jpg"
+ },
+ "dsc-6059-copy": {
+  "width": 723,
+  "height": 885,
+  "widths": [
+   480,
+   723
+  ],
+  "source": "wp-api/media/2026/02/DSC_6059-copy.jpg"
+ },
+ "dsc-5981-2": {
+  "width": 729,
+  "height": 491,
+  "widths": [
+   480,
+   729
+  ],
+  "source": "wp-api/media/2026/02/DSC_5981-2.jpg"
+ },
+ "dsc-5909-copy-2": {
+  "width": 692,
+  "height": 818,
+  "widths": [
+   480,
+   692
+  ],
+  "source": "wp-api/media/2026/02/DSC_5909-copy-2.jpg"
+ },
+ "dsc-5845-copy": {
+  "width": 723,
+  "height": 946,
+  "widths": [
+   480,
+   723
+  ],
+  "source": "wp-api/media/2026/02/DSC_5845-copy.jpg"
+ },
+ "dsc-5335-copy-2": {
+  "width": 942,
+  "height": 1100,
+  "widths": [
+   480,
+   942
+  ],
+  "source": "wp-api/media/2026/02/DSC_5335-copy-2.jpg"
+ },
+ "dsc-4799-2": {
+  "width": 531,
+  "height": 709,
+  "widths": [
+   480,
+   531
+  ],
+  "source": "wp-api/media/2026/02/DSC_4799-2.jpg"
+ },
+ "dsc-3706-recovered-copy-2": {
+  "width": 424,
+  "height": 531,
+  "widths": [
+   424
+  ],
+  "source": "wp-api/media/2026/02/DSC_3706-Recovered-copy-2.jpg"
+ },
+ "dsc-3515-copy-1": {
+  "width": 449,
+  "height": 544,
+  "widths": [
+   449
+  ],
+  "source": "wp-api/media/2026/02/DSC_3515-copy-1.jpg"
+ },
+ "dsc-3497-3-1": {
+  "width": 723,
+  "height": 839,
+  "widths": [
+   480,
+   723
+  ],
+  "source": "wp-api/media/2026/02/DSC_3497-3-1.jpg"
+ },
+ "dsc-3060-copy": {
+  "width": 707,
+  "height": 500,
+  "widths": [
+   480,
+   707
+  ],
+  "source": "wp-api/media/2026/02/DSC_3060-copy.jpg"
+ },
+ "dsc-2174-copy": {
+  "width": 477,
+  "height": 611,
+  "widths": [
+   477
+  ],
+  "source": "wp-api/media/2026/02/DSC_2174-copy.jpg"
+ },
+ "dsc-1931": {
+  "width": 541,
+  "height": 708,
+  "widths": [
+   480,
+   541
+  ],
+  "source": "wp-api/media/2026/02/DSC_1931.jpg"
+ },
+ "dsc-1180": {
+  "width": 513,
+  "height": 642,
+  "widths": [
+   480,
+   513
+  ],
+  "source": "wp-api/media/2026/02/DSC_1180.jpg"
+ },
+ "dsc-1123-jjpg-2": {
+  "width": 671,
+  "height": 463,
+  "widths": [
+   480,
+   671
+  ],
+  "source": "wp-api/media/2026/02/DSC_1123.jJPG-2.jpg"
+ },
+ "dsc-1011": {
+  "width": 405,
+  "height": 516,
+  "widths": [
+   405
+  ],
+  "source": "wp-api/media/2026/02/DSC_1011.jpg"
+ },
+ "dsc-0906-2": {
+  "width": 950,
+  "height": 1085,
+  "widths": [
+   480,
+   950
+  ],
+  "source": "wp-api/media/2026/02/DSC_0906-2.jpg"
+ },
+ "dsc-0235-copy-2": {
+  "width": 924,
+  "height": 1150,
+  "widths": [
+   480,
+   924
+  ],
+  "source": "wp-api/media/2026/02/DSC_0235-copy-2.jpg"
+ },
+ "dsc-0150-copy": {
+  "width": 821,
+  "height": 892,
+  "widths": [
+   480,
+   821
+  ],
+  "source": "wp-api/media/2026/02/DSC_0150-copy.jpg"
+ },
+ "dsc-0068-edit-2": {
+  "width": 898,
+  "height": 1037,
+  "widths": [
+   480,
+   898
+  ],
+  "source": "wp-api/media/2026/02/DSC_0068-Edit-2.jpg"
+ },
+ "untitled-1-copy-1": {
+  "width": 1500,
+  "height": 1500,
+  "widths": [
+   480,
+   960,
+   1500
+  ],
+  "source": "wp-api/media/2026/02/Untitled-1-copy-1.jpg"
+ },
+ "5ajpg-1": {
+  "width": 747,
+  "height": 541,
+  "widths": [
+   480,
+   747
+  ],
+  "source": "wp-api/media/2026/02/5AJPG-1.jpg"
+ },
+ "5a-2": {
+  "width": 433,
+  "height": 633,
+  "widths": [
+   433
+  ],
+  "source": "wp-api/media/2026/02/5a-2.jpg"
+ },
+ "4-copy": {
+  "width": 703,
+  "height": 894,
+  "widths": [
+   480,
+   703
+  ],
+  "source": "wp-api/media/2026/02/4-copy.jpg"
+ },
+ "3-1": {
+  "width": 509,
+  "height": 593,
+  "widths": [
+   480,
+   509
+  ],
+  "source": "wp-api/media/2026/02/3-1.jpg"
+ },
+ "3-2": {
+  "width": 650,
+  "height": 843,
+  "widths": [
+   480,
+   650
+  ],
+  "source": "wp-api/media/2026/02/3-2.jpg"
+ },
+ "2-2": {
+  "width": 1011,
+  "height": 633,
+  "widths": [
+   480,
+   960,
+   1011
+  ],
+  "source": "wp-api/media/2026/02/2-2.jpg"
+ },
+ "dsc-2174-copy-2-scaled": {
+  "width": 1999,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1999
+  ],
+  "source": "wp-api/media/2026/02/DSC_2174-copy-2-scaled.jpg"
+ },
+ "1a-2": {
+  "width": 566,
+  "height": 695,
+  "widths": [
+   480,
+   566
+  ],
+  "source": "wp-api/media/2026/02/1a-2.jpg"
+ },
+ "1-1-2": {
+  "width": 512,
+  "height": 575,
+  "widths": [
+   480,
+   512
+  ],
+  "source": "wp-api/media/2026/02/1-1-2.jpg"
+ },
+ "1-1-1": {
+  "width": 517,
+  "height": 603,
+  "widths": [
+   480,
+   517
+  ],
+  "source": "wp-api/media/2026/02/1-1-1.jpg"
+ },
+ "20-copy-jpg-1-scaled": {
+  "width": 2075,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2075
+  ],
+  "source": "wp-api/media/2026/02/20-copy.JPG-1-scaled.jpeg"
+ },
+ "dsc-5143-copy-1-scaled": {
+  "width": 1986,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1986
+  ],
+  "source": "wp-api/media/2026/02/DSC_5143-copy-1-scaled.jpg"
+ },
+ "w-jpg-scaled": {
+  "width": 1954,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   1954
+  ],
+  "source": "wp-api/media/2026/02/w.JPG-scaled.jpeg"
+ },
+ "18-jpg-scaled": {
+  "width": 2285,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2285
+  ],
+  "source": "wp-api/media/2026/02/18.JPG-scaled.jpeg"
+ },
+ "1-jpg-1-scaled": {
+  "width": 2053,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2053
+  ],
+  "source": "wp-api/media/2026/02/1.JPG-1-scaled.jpeg"
+ },
+ "1-jpg-scaled": {
+  "width": 2280,
+  "height": 2560,
+  "widths": [
+   480,
+   960,
+   1600,
+   2280
+  ],
+  "source": "wp-api/media/2026/02/1.JPG-scaled.jpeg"
+ }
+}

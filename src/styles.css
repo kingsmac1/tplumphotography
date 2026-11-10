@@ -1,0 +1,93 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "./site/site.css";
+
+/*
+ * Dashboard + booking-flow design system (ported from DMI, rebranded to Tplum:
+ * black / white / warm greys, Fulgate for display, Lato for body text).
+ * The public marketing pages use site.css (scoped under .tp) instead.
+ */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --font-display: "Fulgate", Georgia, serif;
+  --font-body: "Lato", -apple-system, "Segoe UI", sans-serif;
+}
+
+:root {
+  --radius: 0rem;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 0 0% 0%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 95%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 95%;
+  --muted-foreground: 0 0% 33%;
+  --accent: 0 0% 33%;            /* Tplum grey #545454 */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 86%;
+  --dash-page: 0 0% 95%;
+  --dash-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 14px 32px -18px rgba(0, 0, 0, 0.28);
+  --input: 0 0% 86%;
+  --ring: 0 0% 0%;
+  --select-panel-bg: hsl(0 0% 100%);
+  --select-panel-fg: hsl(0 0% 0%);
+  --select-panel-hover: hsl(0 0% 95%);
+}
+
+html, body { margin: 0; }
+body { background: #fff; }
+
+/* Base styles only for the dashboard, booking flow, client areas (.app), never the public pages (.tp) */
+@layer base {
+  .app *, .app ::before, .app ::after { border-color: hsl(var(--border)); }
+  .app { background-color: hsl(var(--background)); color: hsl(var(--foreground)); font-family: var(--font-body); min-height: 100vh; }
+  .app h1, .app h2, .app h3, .app h4 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; line-height: 1.05; }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .font-body { font-family: var(--font-body); }
+}
+
+.app ::-webkit-scrollbar { width: 6px; height: 6px; }
+.app ::-webkit-scrollbar-thumb { background: hsl(var(--foreground) / 0.3); }
+
+/* Admin dashboard: a light grey page behind white cards, sections and tables with a soft shadow */
+.dash { background: hsl(var(--dash-page)); }
+.dash-main :is(div, section, form, ul, article, table).border.border-border { background: hsl(var(--card)); box-shadow: var(--dash-shadow); }
+.dash-main div:has(> table) { padding: 1rem; }
+@media (max-width: 767px) { .dash-main div:has(> table) { padding: 0.625rem; } }
+
+/* "Sample: edit me" badge for placeholder prices (dashboard only) */
+.sample-badge { display: inline-block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; background: #fff3c4; color: #6b5200; border: 1px solid #f0d77a; padding: 1px 6px; vertical-align: middle; }
