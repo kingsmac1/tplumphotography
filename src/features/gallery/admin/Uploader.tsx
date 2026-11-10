@@ -8,7 +8,6 @@ import { watermarkPreview } from '../imaging'
 import { byFilename } from '../filenames'
 import { fmtBytes } from '../status'
 import { UploadQueue } from './uploadQueue'
-import { useBilling } from '@/features/billing/BillingProvider'
 
 /** queues outlive the component: switching tabs or sections never stops an upload */
 const queues = new Map<string, UploadQueue>()
@@ -24,8 +23,9 @@ export function Uploader({ mode, set = 'edited', galleryId, ensureGallery, onSet
   onSettled: () => void
   onRejected: (names: string[]) => void
 }) {
-  const { billing, active } = useBilling()
-  const blocked = active && !!billing && (!billing.gallery_enabled || !billing.uploads_allowed)
+  // DMI paused uploads when Emkay platform billing lapsed; Tplum galleries are not billed that way.
+  const blocked = false as boolean
+  const billing = null as null | { gallery_enabled: boolean }
   const key = galleryId ? `${galleryId}:${mode}:${set}` : ''
   const [queue, setQueue] = useState<UploadQueue | null>(() => (key ? queues.get(key) ?? null : null))
   useEffect(() => setQueue(key ? queues.get(key) ?? null : null), [key])

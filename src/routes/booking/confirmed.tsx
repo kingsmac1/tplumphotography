@@ -11,29 +11,29 @@ type Status = { reference: string; kind: string; name: string; when: string; tot
 export const Route = createFileRoute("/booking/confirmed")({
   loader: () => getSiteContent(),
   head: () => privateHead("Booking confirmed | Tplum Photography"),
-  validateSearch: (s: Record<string, unknown>) => ({ ref: String(s.ref ?? ""), session_id: String(s.session_id ?? ""), cancelled: s.cancelled === "1" || s.cancelled === 1 }),
+  validateSearch: (s: Record<string, unknown>) => ({ b: String(s.b ?? ""), session_id: String(s.session_id ?? ""), cancelled: s.cancelled === "1" || s.cancelled === 1 || s.cancelled === true }),
   component: Confirmed,
 });
 
 function Confirmed() {
   const { site } = Route.useLoaderData();
-  const { ref, session_id, cancelled } = Route.useSearch();
+  const { b, session_id, cancelled } = Route.useSearch();
   const [st, setSt] = useState<Status | null>(null);
   const [err, setErr] = useState("");
   useEffect(() => {
     let tries = 0;
     let stop = false;
     const poll = async () => {
-      const res = await callFunction<Status>("booking-status", { ref, session_id });
+      const res = await callFunction<Status>("booking-status", { b, session_id });
       if (stop) return;
       if (!res.ok) { setErr(res.error); return; }
       setSt(res.data);
       // the Stripe webhook may land a moment after the redirect: check again for up to ~20 s
       if (!cancelled && session_id && res.data.paid <= 0 && tries++ < 10) setTimeout(poll, 2000);
     };
-    if (ref || session_id) void poll();
+    if (b) void poll();
     return () => { stop = true; };
-  }, [ref, session_id, cancelled]);
+  }, [b, session_id, cancelled]);
   return (
     <AppShell site={site}>
       <section className="pt-24 pb-24 px-6 text-center max-w-xl mx-auto">

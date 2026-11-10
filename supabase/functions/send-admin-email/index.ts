@@ -20,15 +20,16 @@ const escapeHtml = (v: unknown) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 // ---- Email look: structure follows the Uforo Abia emails (dark header band, small label above a serif
-// title, hairline detail rows, a dark total block, pill buttons, a quiet footer), in DMI's black and white. ----
+// title, hairline detail rows, a dark total block, pill buttons, a quiet footer), in Tplum's black and white. ----
 const INK = "#0a0a0a";
 const PAPER = "#f7f6f2";
 const LINE = "#d8d6ce";
 const MUTED = "#8c8b86";
 const SERIF = "Georgia, 'Times New Roman', serif";
 const SANS = "-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
-const DMI_WHATSAPP = "https://wa.me/2349013962323";
-const DMI_SITE = "https://dmi.com.ng";
+const SITE = (Deno.env.get("SITE_URL") ?? "https://tplumphotography.com").replace(/\/$/, "");
+const STUDIO_EMAIL = "info@tplumphotography.com";
+const STUDIO_PHONE = "+14034935511";
 
 export type EmailButton = { label: string; href: string; dark?: boolean };
 /** Optional extras a template can add around its editable body. */
@@ -73,7 +74,7 @@ function buttonHtml(b: EmailButton): string {
   return `<a href="${esc2(b.href)}" style="display:inline-block;margin:0 10px 10px 0;padding:14px 28px;background:${dark ? INK : "transparent"};color:${dark ? PAPER : INK};border:1px solid ${INK};font-family:${SANS};font-size:12px;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border-radius:999px;">${esc2(b.label)}</a>`;
 }
 
-/** Wraps an email body in the DMI frame: header band, optional label + title, body, details, buttons, footer. */
+/** Wraps an email body in the Tplum frame: header band, optional label + title, body, details, buttons, footer. */
 export function wrapper(bodyHtml: string, d: EmailDesign = {}): string {
   const head = d.title
     ? `<tr><td style="padding:44px 36px 8px;">
@@ -92,7 +93,7 @@ export function wrapper(bodyHtml: string, d: EmailDesign = {}): string {
     : "";
   const buttons = d.buttons?.length ? `<div style="margin-top:36px;">${d.buttons.map(buttonHtml).join("")}</div>` : "";
   // Put the summary where the template says {{summary}}; otherwise it follows the body.
-  const marker = "<!--dmi-summary-->";
+  const marker = "<!--tplum-summary-->";
   const hasMarker = bodyHtml.includes(marker);
   const styledBody = styleBody(bodyHtml).replace(marker, `${rows}${total}`);
   return `<!doctype html>
@@ -103,7 +104,7 @@ ${d.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0
   <tr><td align="center" style="padding:32px 12px;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border:1px solid ${LINE};">
       <tr><td style="background:${INK};padding:26px 36px;">
-        <img src="${DMI_SITE}/email-logo.png" alt="DMI Studios" width="150" style="display:block;border:0;width:150px;max-width:100%;height:auto;" />
+        <img src="${SITE}/brand/tplum-logo-white.png" alt="Tplum Photography" width="120" style="display:block;border:0;width:120px;max-width:100%;height:auto;" />
       </td></tr>
       ${head}
       <tr><td style="padding:${d.title ? "8px" : "36px"} 36px 44px;">
@@ -112,11 +113,10 @@ ${d.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0
       </td></tr>
       <tr><td style="border-top:1px solid ${LINE};padding:26px 36px;background:${PAPER};">
         <div style="font-family:${SANS};font-size:12px;line-height:1.7;color:${MUTED};">
-          DarlMac Impression<br>
-          +234 901 396 2323 &middot; <a href="mailto:info@dmi.com.ng" style="color:${MUTED};">info@dmi.com.ng</a><br>
-          <a href="https://www.instagram.com/darlmac_impression/" style="color:${MUTED};">Instagram</a> &middot;
-          <a href="https://www.facebook.com/DMIstudios/" style="color:${MUTED};">Facebook</a> &middot;
-          <a href="https://www.tiktok.com/@darlmac_impression" style="color:${MUTED};">TikTok</a>
+          Tplum Photography &middot; Calgary | Edmonton | Toronto<br>
+          <a href="tel:${STUDIO_PHONE}" style="color:${MUTED};">${STUDIO_PHONE}</a> &middot; <a href="mailto:${STUDIO_EMAIL}" style="color:${MUTED};">${STUDIO_EMAIL}</a><br>
+          <a href="https://www.instagram.com/tplumphotography" style="color:${MUTED};">Instagram</a> &middot;
+          <a href="https://facebook.com/tplumphotograph" style="color:${MUTED};">Facebook</a>
         </div>
       </td></tr>
     </table>
@@ -140,19 +140,18 @@ export function htmlToText(html: string): string {
 /** The label, title, summary rows and buttons each template gets, built from its placeholder values. */
 export function design(templateKey: string, v: Record<string, string>): EmailDesign {
   const first = (v.client_name || "").trim().split(/\s+/)[0] || "";
-  const wa: EmailButton = { label: "Message us on WhatsApp", href: DMI_WHATSAPP };
+  const wa: EmailButton = { label: "Email us", href: `mailto:${STUDIO_EMAIL}` };
   const ownerButtons = (): EmailButton[] => {
-    const digits = (v.client_whatsapp || "").replace(/\D/g, "");
-    const intl = digits.startsWith("234") ? digits : digits.startsWith("0") ? `234${digits.slice(1)}` : digits.length === 10 ? `234${digits}` : digits;
+    const digits = (v.client_whatsapp || "").replace(/[^\d+]/g, "");
     return [
-      ...(intl ? [{ label: "Reply on WhatsApp", href: `https://wa.me/${intl}` }] : []),
+      ...(digits ? [{ label: "Call client", href: `tel:${digits}` }] : []),
       ...(v.client_email ? [{ label: "Reply by email", href: `mailto:${v.client_email}`, dark: false }] : []),
     ];
   };
   switch (templateKey) {
     case "booking_confirmation":
-      return { eyebrow: "Photography booking", title: "Booking confirmed", preheader: "Your DMI session is booked.",
-        rows: [["Package", v.service_summary], ["Date", v.shoot_date], ["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]],
+      return { eyebrow: "Photography booking", title: "Booking confirmed", preheader: "Your Tplum Photography session is booked.",
+        rows: [["Package", v.service_summary], ["Date", v.shoot_date], ["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")], ["Paid", v.amount_paid], ["Balance", v.balance]],
         total: { label: "Total", value: v.grand_total }, buttons: [wa] };
     case "studio_confirmation":
       return { eyebrow: "Studio space", title: "Request received", preheader: "We have your studio space request.",
@@ -163,19 +162,19 @@ export function design(templateKey: string, v: Record<string, string>): EmailDes
         rows: [["Event", v.event_type], ["Dates", v.event_dates], ["Start time", v.event_time], ["Venue", v.venue]],
         total: { label: "Agreed amount", value: v.agreed_amount }, buttons: [wa] };
     case "reminder_24h":
-      return { eyebrow: "Shoot reminder", title: "Your shoot is tomorrow", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]], buttons: [wa] };
+      return { eyebrow: "Session reminder", title: "Your session is tomorrow", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")]], buttons: [wa] };
     case "reminder_12h":
-      return { eyebrow: "Shoot reminder", title: "12 hours to go", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]], buttons: [wa] };
+      return { eyebrow: "Session reminder", title: "12 hours to go", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")]], buttons: [wa] };
     case "reminder_2h":
-      return { eyebrow: "Shoot reminder", title: "Almost time", rows: [["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]], buttons: [wa] };
+      return { eyebrow: "Session reminder", title: "Almost time", rows: [["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")]], buttons: [wa] };
     case "thank_you":
       return { eyebrow: "Thank you", title: "Thank you for booking", buttons: [wa] };
     case "review_request":
-      return { eyebrow: "Your feedback", title: "How was your experience?", buttons: [{ label: "Leave a review", href: "https://g.page/r/CeltVtvHMcl5EBM/review" }] };
+      return { eyebrow: "Your feedback", title: "How was your experience?", buttons: [{ label: "Leave a review", href: v.review_url || `${SITE}/contact/` }] };
     case "re_engagement":
-      return { eyebrow: "Next session", title: "Ready for your next session?", buttons: [{ label: "Book a session", href: `${DMI_SITE}/booking` }] };
+      return { eyebrow: "Next session", title: "Ready for your next session?", buttons: [{ label: "Book a session", href: `${SITE}/booking/` }] };
     case "birthday":
-      return { eyebrow: "Happy birthday", title: first ? `Happy birthday, ${first}` : "Happy birthday", buttons: [{ label: "Book a birthday shoot", href: `${DMI_SITE}/booking` }] };
+      return { eyebrow: "Happy birthday", title: first ? `Happy birthday, ${first}` : "Happy birthday", buttons: [{ label: "Book a birthday session", href: `${SITE}/booking/` }] };
     case "payment_paid":
       return { eyebrow: "Payment", title: "Payment received", preheader: `We received your payment for ${v.item}.`,
         rows: [["For", v.item], ["Amount paid", v.amount_paid]],
@@ -184,6 +183,14 @@ export function design(templateKey: string, v: Record<string, string>): EmailDes
       return { eyebrow: "Payment", title: "Part payment received", preheader: `We received ${v.amount_paid} for ${v.item}.`,
         rows: [["For", v.item], ["Total", v.total !== "$0" ? v.total : ""], ["Amount paid", v.amount_paid]],
         total: v.balance && v.balance !== "$0" ? { label: "Balance remaining", value: v.balance } : undefined, buttons: [wa] };
+    case "balance_reminder":
+      return { eyebrow: "Payment reminder", title: "Your balance is due soon", preheader: `${v.balance} due for ${v.item}.`,
+        rows: [["For", v.item], ["Date", v.shoot_date], ["Total", v.total], ["Paid so far", v.amount_paid]],
+        total: { label: "Balance due", value: v.balance }, buttons: v.pay_url ? [{ label: "Pay balance online", href: v.pay_url }, wa] : [wa] };
+    case "invoice_overdue":
+      return { eyebrow: "Invoice reminder", title: `Invoice ${v.invoice_number} is overdue`, preheader: `${v.balance} is now overdue.`,
+        rows: [["Invoice", v.invoice_number], ["Due date", v.due_date]], total: { label: "Balance due", value: v.balance },
+        buttons: v.pay_url ? [{ label: "View & pay invoice", href: v.pay_url }] : [wa] };
     case "owner_booking":
       return { eyebrow: "New submission", title: "New booking", preheader: `${v.client_name} · ${v.shoot_date}`, buttons: ownerButtons() };
     case "owner_studio":
@@ -201,7 +208,7 @@ export function design(templateKey: string, v: Record<string, string>): EmailDes
 export function render(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_m, key: string) => {
     // {{summary}} marks where the template's detail rows and total block go; wrapper() swaps this marker for them.
-    if (key === "summary") return "<!--dmi-summary-->";
+    if (key === "summary") return "<!--tplum-summary-->";
     const value = vars[key] ?? "";
     return key === "details" ? value : escapeHtml(value);
   });
@@ -217,10 +224,11 @@ export async function loadTemplate(db: SupabaseClient, key: string): Promise<Tem
 
 export async function ownerEmails(db: SupabaseClient): Promise<string[]> {
   const { data } = await db.from("email_settings").select("value").eq("key", "owner_emails").maybeSingle();
-  return String(data?.value ?? "")
-    .split(/[\n,]+/)
-    .map((e) => e.trim())
+  const list = [Deno.env.get("OWNER_EMAIL") ?? "", String(data?.value ?? "")].join(",")
+    .split(/[\n,;]+/)
+    .map((e) => e.trim().toLowerCase())
     .filter((e) => EMAIL_RE.test(e));
+  return [...new Set(list)];
 }
 
 /** Claims a dedupe key. Returns false if it was already claimed, so the email is never sent twice. */
@@ -261,8 +269,8 @@ export async function sendResend(params: {
   design?: EmailDesign;
 }): Promise<string | null> {
   const apiKey = Deno.env.get("RESEND_API_KEY");
-  const from = Deno.env.get("RESEND_FROM_EMAIL");
-  if (!apiKey || !from) throw new Error("RESEND_API_KEY or RESEND_FROM_EMAIL is not set in Supabase secrets.");
+  const from = Deno.env.get("FROM_EMAIL") || Deno.env.get("RESEND_FROM_EMAIL");
+  if (!apiKey || !from) throw new Error("RESEND_API_KEY or FROM_EMAIL is not set in Supabase secrets.");
 
   const html = wrapper(params.html, params.design);
   const res = await fetch("https://api.resend.com/emails", {
@@ -321,7 +329,7 @@ export async function sendTemplateOnce(params: {
   }
 }
 
-const GROUPS = ["individual", "all_clients", "photography", "wedding", "studio", "events", "academy"] as const;
+const GROUPS = ["individual", "all_clients", "photography", "wedding", "studio", "events", "academy"] as const; // "academy" kept for DMI compatibility (Tplum has no academy: empty list)
 const NO_BATCH = "__none__";
 type Group = (typeof GROUPS)[number];
 
@@ -331,32 +339,32 @@ const RUN_BUDGET_MS = 110_000;
 
 const SAMPLE_VARS: Record<string, string> = {
   client_name: "Sample Client",
-  service_summary: "Individual - $50,000",
+  service_summary: "Engagement Session",
   shoot_date: "2026-10-20",
   shoot_time: "10:00",
-  location: "Uyo",
-  shoot_setting: "Indoor",
-  shoot_type: "Portrait",
-  grand_total: "$50,000",
-  space_name: "Studio Backdrop (with AC)",
+  location: "Calgary",
+  shoot_setting: "On location",
+  shoot_type: "Engagement",
+  grand_total: "$450.00",
+  space_name: "Studio + Lighting Kit",
   rental_date: "2026-10-20",
   rental_time: "14:00",
-  duration: "30",
+  duration: "60",
   extras: "Props x2",
   event_type: "Birthday Party",
   event_dates: "2026-11-02",
   event_time: "16:00",
-  venue: "DMI Studio, Uyo",
-  agreed_amount: "$150,000",
-  item: "Couple - $150,000",
-  amount_paid: "$50,000",
-  total: "$150,000",
-  balance: "$100,000",
+  venue: "Tplum Photography Studio, Calgary",
+  agreed_amount: "$1,500.00",
+  item: "Classic wedding collection",
+  amount_paid: "$960.00",
+  total: "$3,200.00",
+  balance: "$2,240.00",
   client_count: "2",
   date: "2026-10-20",
-  client_whatsapp: "08012345678",
+  client_whatsapp: "(403) 555-0123",
   client_email: "client@example.com",
-  details: detailsTable([["Name", "Sample Client"], ["Total", "$50,000"]]),
+  details: detailsTable([["Name", "Sample Client"], ["Total", "$450.00"]]),
 };
 
 /** Academy batches are free text (e.g. "2026, Batch A"), so the filter matches the stored value exactly. */
@@ -390,7 +398,7 @@ async function recipientsFor(db: SupabaseClient, group: Group, customEmails: str
   } else if (group === "events") {
     list = await emailsFrom(db, "event_bookings");
   } else if (group === "academy") {
-    list = await emailsFrom(db, "academy_applications", academyBatchFilter(batch));
+    list = []; void academyBatchFilter(batch); // no academy in Tplum
   } else {
     list = [
       ...(await emailsFrom(db, "bookings")),
@@ -425,7 +433,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "academy_batches") {
-      const { data, error } = await db.from("academy_applications").select("academic_year_batch, email").not("email", "is", null);
+      const { data, error } = { data: [] as { academic_year_batch: string; email: string }[], error: null as null | { message: string } }; // no academy in Tplum
       if (error) throw new Error(error.message);
       const byBatch = new Map<string, Set<string>>();
       for (const row of data ?? []) {

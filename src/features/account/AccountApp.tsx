@@ -107,7 +107,7 @@ export default function AccountApp() {
         <div className="ca-wrap ca-signin">
           <div>
             <h1 className="ca-h1">Client accounts are coming soon</h1>
-            <p className="ca-lead">Soon you’ll be able to see your bookings, photo galleries and downloads here. Until then, message us on <a href={`https://wa.me/${galleryConfig.ownerWhatsapp}`} target="_blank" rel="noreferrer">WhatsApp</a> for anything about your shoot.</p>
+            <p className="ca-lead">Soon you’ll be able to see your bookings, photo galleries and downloads here. Until then, email <a href={`mailto:${galleryConfig.ownerEmail}`}>{galleryConfig.ownerEmail}</a> for anything about your session.</p>
           </div>
         </div>
       </div>
@@ -371,7 +371,7 @@ function Profile({ profile, email, onSaved }: { profile: ProfileRow | null; emai
         <h2>Your details</h2>
         <label>Email<input value={email} readOnly /></label>
         <label>Name<input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" /></label>
-        <label>Phone / WhatsApp<input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" autoComplete="tel" /></label>
+        <label>Phone<input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" autoComplete="tel" /></label>
         <button className="cg-btn solid" onClick={save} disabled={!profile}>Save details</button>
       </section>
       <section className="ca-card ca-form">
@@ -388,7 +388,7 @@ function Profile({ profile, email, onSaved }: { profile: ProfileRow | null; emai
         <button className="cg-btn line" onClick={() => supabase!.auth.signOut()}>Sign out</button>
       </section>
       {msg && <p className={'ca-msg' + (msg.ok ? '' : ' err')} role="status">{msg.t}</p>}
-      <p className="ca-muted ca-help">Need to change your email or a booking? Message us on <a href={`https://wa.me/${galleryConfig.ownerWhatsapp}`} target="_blank" rel="noreferrer">WhatsApp</a> or <a href={`mailto:${galleryConfig.ownerEmail}`}>email</a>.</p>
+      <p className="ca-muted ca-help">Need to change your email or a booking? Call <a href={`tel:${galleryConfig.ownerPhone}`}>{galleryConfig.ownerPhone}</a> or <a href={`mailto:${galleryConfig.ownerEmail}`}>email us</a>.</p>
     </div>
   )
 }

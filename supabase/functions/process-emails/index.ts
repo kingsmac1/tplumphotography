@@ -22,15 +22,16 @@ const escapeHtml = (v: unknown) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 // ---- Email look: structure follows the Uforo Abia emails (dark header band, small label above a serif
-// title, hairline detail rows, a dark total block, pill buttons, a quiet footer), in DMI's black and white. ----
+// title, hairline detail rows, a dark total block, pill buttons, a quiet footer), in Tplum's black and white. ----
 const INK = "#0a0a0a";
 const PAPER = "#f7f6f2";
 const LINE = "#d8d6ce";
 const MUTED = "#8c8b86";
 const SERIF = "Georgia, 'Times New Roman', serif";
 const SANS = "-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
-const DMI_WHATSAPP = "https://wa.me/2349013962323";
-const DMI_SITE = "https://dmi.com.ng";
+const SITE = (Deno.env.get("SITE_URL") ?? "https://tplumphotography.com").replace(/\/$/, "");
+const STUDIO_EMAIL = "info@tplumphotography.com";
+const STUDIO_PHONE = "+14034935511";
 
 export type EmailButton = { label: string; href: string; dark?: boolean };
 /** Optional extras a template can add around its editable body. */
@@ -75,7 +76,7 @@ function buttonHtml(b: EmailButton): string {
   return `<a href="${esc2(b.href)}" style="display:inline-block;margin:0 10px 10px 0;padding:14px 28px;background:${dark ? INK : "transparent"};color:${dark ? PAPER : INK};border:1px solid ${INK};font-family:${SANS};font-size:12px;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border-radius:999px;">${esc2(b.label)}</a>`;
 }
 
-/** Wraps an email body in the DMI frame: header band, optional label + title, body, details, buttons, footer. */
+/** Wraps an email body in the Tplum frame: header band, optional label + title, body, details, buttons, footer. */
 export function wrapper(bodyHtml: string, d: EmailDesign = {}): string {
   const head = d.title
     ? `<tr><td style="padding:44px 36px 8px;">
@@ -94,7 +95,7 @@ export function wrapper(bodyHtml: string, d: EmailDesign = {}): string {
     : "";
   const buttons = d.buttons?.length ? `<div style="margin-top:36px;">${d.buttons.map(buttonHtml).join("")}</div>` : "";
   // Put the summary where the template says {{summary}}; otherwise it follows the body.
-  const marker = "<!--dmi-summary-->";
+  const marker = "<!--tplum-summary-->";
   const hasMarker = bodyHtml.includes(marker);
   const styledBody = styleBody(bodyHtml).replace(marker, `${rows}${total}`);
   return `<!doctype html>
@@ -105,7 +106,7 @@ ${d.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0
   <tr><td align="center" style="padding:32px 12px;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border:1px solid ${LINE};">
       <tr><td style="background:${INK};padding:26px 36px;">
-        <img src="${DMI_SITE}/email-logo.png" alt="DMI Studios" width="150" style="display:block;border:0;width:150px;max-width:100%;height:auto;" />
+        <img src="${SITE}/brand/tplum-logo-white.png" alt="Tplum Photography" width="120" style="display:block;border:0;width:120px;max-width:100%;height:auto;" />
       </td></tr>
       ${head}
       <tr><td style="padding:${d.title ? "8px" : "36px"} 36px 44px;">
@@ -114,11 +115,10 @@ ${d.preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0
       </td></tr>
       <tr><td style="border-top:1px solid ${LINE};padding:26px 36px;background:${PAPER};">
         <div style="font-family:${SANS};font-size:12px;line-height:1.7;color:${MUTED};">
-          DarlMac Impression<br>
-          +234 901 396 2323 &middot; <a href="mailto:info@dmi.com.ng" style="color:${MUTED};">info@dmi.com.ng</a><br>
-          <a href="https://www.instagram.com/darlmac_impression/" style="color:${MUTED};">Instagram</a> &middot;
-          <a href="https://www.facebook.com/DMIstudios/" style="color:${MUTED};">Facebook</a> &middot;
-          <a href="https://www.tiktok.com/@darlmac_impression" style="color:${MUTED};">TikTok</a>
+          Tplum Photography &middot; Calgary | Edmonton | Toronto<br>
+          <a href="tel:${STUDIO_PHONE}" style="color:${MUTED};">${STUDIO_PHONE}</a> &middot; <a href="mailto:${STUDIO_EMAIL}" style="color:${MUTED};">${STUDIO_EMAIL}</a><br>
+          <a href="https://www.instagram.com/tplumphotography" style="color:${MUTED};">Instagram</a> &middot;
+          <a href="https://facebook.com/tplumphotograph" style="color:${MUTED};">Facebook</a>
         </div>
       </td></tr>
     </table>
@@ -142,19 +142,18 @@ export function htmlToText(html: string): string {
 /** The label, title, summary rows and buttons each template gets, built from its placeholder values. */
 export function design(templateKey: string, v: Record<string, string>): EmailDesign {
   const first = (v.client_name || "").trim().split(/\s+/)[0] || "";
-  const wa: EmailButton = { label: "Message us on WhatsApp", href: DMI_WHATSAPP };
+  const wa: EmailButton = { label: "Email us", href: `mailto:${STUDIO_EMAIL}` };
   const ownerButtons = (): EmailButton[] => {
-    const digits = (v.client_whatsapp || "").replace(/\D/g, "");
-    const intl = digits.startsWith("234") ? digits : digits.startsWith("0") ? `234${digits.slice(1)}` : digits.length === 10 ? `234${digits}` : digits;
+    const digits = (v.client_whatsapp || "").replace(/[^\d+]/g, "");
     return [
-      ...(intl ? [{ label: "Reply on WhatsApp", href: `https://wa.me/${intl}` }] : []),
+      ...(digits ? [{ label: "Call client", href: `tel:${digits}` }] : []),
       ...(v.client_email ? [{ label: "Reply by email", href: `mailto:${v.client_email}`, dark: false }] : []),
     ];
   };
   switch (templateKey) {
     case "booking_confirmation":
-      return { eyebrow: "Photography booking", title: "Booking confirmed", preheader: "Your DMI session is booked.",
-        rows: [["Package", v.service_summary], ["Date", v.shoot_date], ["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]],
+      return { eyebrow: "Photography booking", title: "Booking confirmed", preheader: "Your Tplum Photography session is booked.",
+        rows: [["Package", v.service_summary], ["Date", v.shoot_date], ["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")], ["Paid", v.amount_paid], ["Balance", v.balance]],
         total: { label: "Total", value: v.grand_total }, buttons: [wa] };
     case "studio_confirmation":
       return { eyebrow: "Studio space", title: "Request received", preheader: "We have your studio space request.",
@@ -165,19 +164,19 @@ export function design(templateKey: string, v: Record<string, string>): EmailDes
         rows: [["Event", v.event_type], ["Dates", v.event_dates], ["Start time", v.event_time], ["Venue", v.venue]],
         total: { label: "Agreed amount", value: v.agreed_amount }, buttons: [wa] };
     case "reminder_24h":
-      return { eyebrow: "Shoot reminder", title: "Your shoot is tomorrow", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]], buttons: [wa] };
+      return { eyebrow: "Session reminder", title: "Your session is tomorrow", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")]], buttons: [wa] };
     case "reminder_12h":
-      return { eyebrow: "Shoot reminder", title: "12 hours to go", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]], buttons: [wa] };
+      return { eyebrow: "Session reminder", title: "12 hours to go", rows: [["Date", v.shoot_date], ["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")]], buttons: [wa] };
     case "reminder_2h":
-      return { eyebrow: "Shoot reminder", title: "Almost time", rows: [["Time", v.shoot_time], ["Location", `${v.location} (${v.shoot_setting})`]], buttons: [wa] };
+      return { eyebrow: "Session reminder", title: "Almost time", rows: [["Time", v.shoot_time], ["Setting", [v.shoot_setting, v.location].filter(Boolean).join(" · ")]], buttons: [wa] };
     case "thank_you":
       return { eyebrow: "Thank you", title: "Thank you for booking", buttons: [wa] };
     case "review_request":
-      return { eyebrow: "Your feedback", title: "How was your experience?", buttons: [{ label: "Leave a review", href: "https://g.page/r/CeltVtvHMcl5EBM/review" }] };
+      return { eyebrow: "Your feedback", title: "How was your experience?", buttons: [{ label: "Leave a review", href: v.review_url || `${SITE}/contact/` }] };
     case "re_engagement":
-      return { eyebrow: "Next session", title: "Ready for your next session?", buttons: [{ label: "Book a session", href: `${DMI_SITE}/booking` }] };
+      return { eyebrow: "Next session", title: "Ready for your next session?", buttons: [{ label: "Book a session", href: `${SITE}/booking/` }] };
     case "birthday":
-      return { eyebrow: "Happy birthday", title: first ? `Happy birthday, ${first}` : "Happy birthday", buttons: [{ label: "Book a birthday shoot", href: `${DMI_SITE}/booking` }] };
+      return { eyebrow: "Happy birthday", title: first ? `Happy birthday, ${first}` : "Happy birthday", buttons: [{ label: "Book a birthday session", href: `${SITE}/booking/` }] };
     case "payment_paid":
       return { eyebrow: "Payment", title: "Payment received", preheader: `We received your payment for ${v.item}.`,
         rows: [["For", v.item], ["Amount paid", v.amount_paid]],
@@ -186,6 +185,14 @@ export function design(templateKey: string, v: Record<string, string>): EmailDes
       return { eyebrow: "Payment", title: "Part payment received", preheader: `We received ${v.amount_paid} for ${v.item}.`,
         rows: [["For", v.item], ["Total", v.total !== "$0" ? v.total : ""], ["Amount paid", v.amount_paid]],
         total: v.balance && v.balance !== "$0" ? { label: "Balance remaining", value: v.balance } : undefined, buttons: [wa] };
+    case "balance_reminder":
+      return { eyebrow: "Payment reminder", title: "Your balance is due soon", preheader: `${v.balance} due for ${v.item}.`,
+        rows: [["For", v.item], ["Date", v.shoot_date], ["Total", v.total], ["Paid so far", v.amount_paid]],
+        total: { label: "Balance due", value: v.balance }, buttons: v.pay_url ? [{ label: "Pay balance online", href: v.pay_url }, wa] : [wa] };
+    case "invoice_overdue":
+      return { eyebrow: "Invoice reminder", title: `Invoice ${v.invoice_number} is overdue`, preheader: `${v.balance} is now overdue.`,
+        rows: [["Invoice", v.invoice_number], ["Due date", v.due_date]], total: { label: "Balance due", value: v.balance },
+        buttons: v.pay_url ? [{ label: "View & pay invoice", href: v.pay_url }] : [wa] };
     case "owner_booking":
       return { eyebrow: "New submission", title: "New booking", preheader: `${v.client_name} · ${v.shoot_date}`, buttons: ownerButtons() };
     case "owner_studio":
@@ -203,7 +210,7 @@ export function design(templateKey: string, v: Record<string, string>): EmailDes
 export function render(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_m, key: string) => {
     // {{summary}} marks where the template's detail rows and total block go; wrapper() swaps this marker for them.
-    if (key === "summary") return "<!--dmi-summary-->";
+    if (key === "summary") return "<!--tplum-summary-->";
     const value = vars[key] ?? "";
     return key === "details" ? value : escapeHtml(value);
   });
@@ -227,12 +234,14 @@ async function loadTemplateFromDb(db: SupabaseClient, key: string): Promise<Temp
   return (data as TemplateRow) ?? null;
 }
 
+/** Where the business receives its copies: the OWNER_EMAIL secret plus any extra addresses in Dashboard -> Emails -> Settings. */
 export async function ownerEmails(db: SupabaseClient): Promise<string[]> {
   const { data } = await db.from("email_settings").select("value").eq("key", "owner_emails").maybeSingle();
-  return String(data?.value ?? "")
-    .split(/[\n,]+/)
-    .map((e) => e.trim())
+  const list = [Deno.env.get("OWNER_EMAIL") ?? "", String(data?.value ?? "")].join(",")
+    .split(/[\n,;]+/)
+    .map((e) => e.trim().toLowerCase())
     .filter((e) => EMAIL_RE.test(e));
+  return [...new Set(list)];
 }
 
 /** Claims a dedupe key. Returns false if it was already claimed, so the email is never sent twice. */
@@ -273,8 +282,8 @@ export async function sendResend(params: {
   design?: EmailDesign;
 }): Promise<string | null> {
   const apiKey = Deno.env.get("RESEND_API_KEY");
-  const from = Deno.env.get("RESEND_FROM_EMAIL");
-  if (!apiKey || !from) throw new Error("RESEND_API_KEY or RESEND_FROM_EMAIL is not set in Supabase secrets.");
+  const from = Deno.env.get("FROM_EMAIL") || Deno.env.get("RESEND_FROM_EMAIL");
+  if (!apiKey || !from) throw new Error("RESEND_API_KEY or FROM_EMAIL is not set in Supabase secrets.");
 
   const html = wrapper(params.html, params.design);
   const res = await fetch("https://api.resend.com/emails", {
@@ -306,10 +315,11 @@ export async function sendTemplateOnce(params: {
   sourceTable?: string;
   sourceId?: string;
   replyTo?: string;
+  subjectPrefix?: string;
 }): Promise<"sent" | "skipped" | "failed" | "already"> {
   const { db, templateKey, dedupeKey, to, vars } = params;
   const template = await loadTemplate(db, templateKey);
-  const subject = template ? render(template.subject, vars) : "";
+  const subject = template ? (params.subjectPrefix ?? "") + render(template.subject, vars) : "";
 
   const recipient = Array.isArray(to) ? to.join(", ") : to;
   const claimed = await claim(db, {
@@ -338,28 +348,33 @@ const DAY = 24 * HOUR;
 const RUN_BUDGET_MS = 110_000;
 const SEND_GAP_MS = 550; // stays under Resend's 2 requests/second limit
 
-const money = (n: unknown) => `$${Number(n || 0).toLocaleString("en-CA")}`;
+const money = (n: unknown) => `$${Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const esc = (v: unknown) => String(v ?? "-").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const line = (label: string, value: unknown): [string, string] => [label, String(value || "")];
 
-/** Lagos is UTC+1 all year, so shoot times are read with a fixed offset. */
+/** A session date + time in Calgary/Edmonton (Mountain Time, with daylight saving) as an exact moment. */
 function shootAt(date: string | null, time: string | null): Date | null {
   if (!date) return null;
-  const d = new Date(`${date}T${time || "10:00"}:00+01:00`);
-  return isNaN(d.getTime()) ? null : d;
+  const hhmm = (time || "10:00").slice(0, 5);
+  const guess = new Date(`${date}T${hhmm}:00Z`);
+  if (isNaN(guess.getTime())) return null;
+  // offset of America/Edmonton at that moment (-6 h in summer, -7 h in winter)
+  const local = new Date(guess.toLocaleString("en-US", { timeZone: "America/Edmonton" }));
+  const offsetMs = local.getTime() - new Date(guess.toLocaleString("en-US", { timeZone: "UTC" })).getTime();
+  return new Date(guess.getTime() - offsetMs);
 }
 
 function localToday(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Edmonton" }).format(new Date());
 }
 
-/** Hour of day (0-23) in Lagos. */
-function lagosHour(): number {
+/** Hour of day (0-23) in Calgary/Edmonton. */
+function localHour(): number {
   return Number(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Edmonton", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
 }
 
 /**
- * True when a stored birthday (YYYY-MM-DD, year ignored) falls on today's Lagos date.
+ * True when a stored birthday (YYYY-MM-DD, year ignored) falls on today's local date.
  * A 29 February birthday is celebrated on 28 February in years that have no 29th.
  */
 function isBirthdayToday(dob: unknown, today: string): boolean {
@@ -379,8 +394,14 @@ type SendParams = Parameters<typeof sendTemplateOnce>[0];
 // Emails that are due this run. Collected first, then checked against email_log in one lookup,
 // so a run reads only the log rows it needs instead of the whole log.
 let queue: SendParams[] = [];
+let ownersForCopies: string[] = [];
+/** Queues an email. Client emails also get a "[Copy]" to the business, so the studio sees everything that went out. */
 function send(_budget: Budget, params: SendParams) {
   queue.push(params);
+  const toOwner = Array.isArray(params.to) ? params.to.some((t) => ownersForCopies.includes(t.toLowerCase())) : ownersForCopies.includes(String(params.to).toLowerCase());
+  if (!toOwner && ownersForCopies.length && !params.templateKey.startsWith("owner_")) {
+    queue.push({ ...params, to: ownersForCopies, dedupeKey: `${params.dedupeKey}:copy`, subjectPrefix: "[Copy] ", replyTo: Array.isArray(params.to) ? undefined : String(params.to) });
+  }
   return Promise.resolve();
 }
 
@@ -413,13 +434,17 @@ async function flush(db: SupabaseClient, budget: Budget) {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  // Scheduled every 5 minutes by pg_cron, which sends the CRON_SECRET header. Nothing else may trigger a run.
+  const secret = Deno.env.get("CRON_SECRET");
+  if (secret && req.headers.get("x-cron-secret") !== secret) return json({ ok: false, error: "Not allowed" }, 401);
 
   const db = serviceDb();
   const budget: Budget = { start: Date.now(), sent: 0, failed: 0, skipped: 0, already: 0, errors: [] };
   const now = new Date();
-  const today = localToday(); // YYYY-MM-DD in Lagos
+  const today = localToday(); // YYYY-MM-DD in Calgary/Edmonton
   const thisYear = Number(today.slice(0, 4));
   const owners = await ownerEmails(db);
+  ownersForCopies = owners;
 
   templateCache = new Map();
   queue = [];
@@ -480,7 +505,9 @@ Deno.serve(async (req) => {
       .from("bookings")
       .select("*")
       .not("email", "is", null)
-      .or(`created_at.gte.${recentSince},and(shoot_date.gte.${addDays(-47)},shoot_date.lte.${addDays(2)})`)
+      .neq("status", "cancelled")
+      .neq("status", "pending_payment") // unpaid online bookings are announced once their deposit is paid
+      .or(`created_at.gte.${recentSince},payment_updated_at.gte.${recentSince},and(shoot_date.gte.${addDays(-47)},shoot_date.lte.${addDays(2)})`)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     // Birthdays: a small date-only scan, then full rows for just today's matches.
@@ -515,7 +542,9 @@ Deno.serve(async (req) => {
           shoot_setting: b.shoot_setting ?? "",
           shoot_type: b.shoot_type ?? "",
           grand_total: money(b.grand_total),
-          details: detailsTable([line("Name", b.full_name), line("WhatsApp", b.phone), line("Email", email), line("Gender", b.gender), line("Birthday", b.date_of_birth), line("Shoot type", b.shoot_type), line("Date", b.shoot_date), line("Time", b.shoot_time), line("Location", `${b.location ?? ""} (${b.shoot_setting ?? ""})`), line("Package", b.service_summary), line("Extras", b.selected_extras), line("Outfits", b.outfits), line("Total", money(b.grand_total)), line("Socials", b.social_handles), line("Inspiration / notes", b.inspiration_links)]),
+          amount_paid: money(b.amount_paid),
+          balance: money(Math.max(0, (Number(b.grand_total) || 0) - (Number(b.amount_paid) || 0))),
+          details: detailsTable([line("Name", b.full_name), line("Phone", b.phone), line("Email", email), line("Gender", b.gender), line("Birthday", b.date_of_birth), line("Shoot type", b.shoot_type), line("Date", b.shoot_date), line("Time", b.shoot_time), line("Setting / venue", [b.shoot_setting, b.location].filter(Boolean).join(" · ")), line("Package", b.service_summary), line("Extras", b.selected_extras), line("Outfits", b.outfits), line("Total", money(b.grand_total)), line("Socials", b.social_handles), line("Inspiration / notes", b.inspiration_links)]),
         };
         const src = { sourceTable: "bookings", sourceId: id };
 
@@ -552,10 +581,10 @@ Deno.serve(async (req) => {
     }
   });
 
-  // ---------- Owner birthday digest: one email at 7am (Lagos) listing today's client birthdays ----------
+  // ---------- Owner birthday digest: one email at 7am (Mountain Time) listing today's client birthdays ----------
   // Built from its own query (not the loop above) so the list is complete, and keyed by date so it is sent once a day.
   await safe("owner-birthdays", async () => {
-    if (!owners.length || lagosHour() < 7) return;
+    if (!owners.length || localHour() < 7) return;
     // Already sent today: skip the scan.
     if ((await loggedKeys(db, [`owner_birthday:${today}`])).size) return;
     const { data, error } = await db.from("bookings").select("full_name, phone, email, date_of_birth, shoot_type").not("date_of_birth", "is", null);
@@ -573,12 +602,10 @@ Deno.serve(async (req) => {
     if (people.size === 0) return;
 
     const rows = [...people.values()].map((p) => {
-      const digits = p.whatsapp.replace(/\D/g, "");
-      // Nigerian numbers saved as 0801... or 801... are turned into international format for the WhatsApp link.
-      const intl = digits.startsWith("234") ? digits : digits.startsWith("0") ? `234${digits.slice(1)}` : digits.length === 10 ? `234${digits}` : digits;
-      const wa = intl ? ` &middot; <a href="https://wa.me/${intl}" style="color:${INK};">Message on WhatsApp</a>` : "";
+      const digits = p.whatsapp.replace(/[^\d+]/g, "");
+      const wa = digits ? ` &middot; <a href="tel:${digits}" style="color:${INK};">Call</a>` : "";
       return `<tr><td style="padding:14px 0;border-bottom:1px solid ${LINE};font-family:${SANS};font-size:14px;line-height:1.6;color:${INK};">` +
-        `<strong>${esc(p.name)}</strong><br/>${esc(p.whatsapp || "no WhatsApp number")}${wa}<br/>${esc(p.email || "no email")}` +
+        `<strong>${esc(p.name)}</strong><br/>${esc(p.whatsapp || "no phone number")}${wa}<br/>${esc(p.email || "no email")}` +
         `${p.shoot ? `<br/><span style="color:${MUTED};">Last shoot type: ${esc(p.shoot)}</span>` : ""}</td></tr>`;
     });
     const vars: Record<string, string> = {
@@ -591,12 +618,12 @@ Deno.serve(async (req) => {
 
   // ---------- Studio space rentals: confirmation + owner alert ----------
   await safe("studio", async () => {
-    const { data, error } = await db.from("studio_bookings").select("*").not("email", "is", null).gte("created_at", recentSince);
+    const { data, error } = await db.from("studio_bookings").select("*").not("email", "is", null).or(`created_at.gte.${recentSince},payment_updated_at.gte.${recentSince}`);
     if (error) throw new Error(error.message);
     for (const s of data ?? []) {
       if (Date.now() - budget.start > RUN_BUDGET_MS) break;
       const email = String(s.email ?? "").trim();
-      if (!EMAIL_RE.test(email) || s.source === "manual") continue;
+      if (!EMAIL_RE.test(email) || s.source === "manual" || s.status === "pending_payment" || s.status === "cancelled") continue;
       const id = String(s.id);
       const vars: Record<string, string> = {
         client_name: s.full_name ?? "",
@@ -605,10 +632,10 @@ Deno.serve(async (req) => {
         space_name: s.space_name ?? "",
         rental_date: s.rental_date ?? "",
         rental_time: s.rental_time ?? "",
-        duration: String(s.duration_minutes ?? 30),
+        duration: String(s.duration_minutes ?? 60),
         extras: s.selected_extras || "-",
         grand_total: money(s.grand_total),
-        details: detailsTable([line("Name", s.full_name), line("WhatsApp", s.phone), line("Email", email), line("Space", s.space_name), line("Date", s.rental_date), line("Time", s.rental_time), line("Duration", `${s.duration_minutes ?? 30} minutes`), line("Extras", s.selected_extras), line("Total", money(s.grand_total)), line("Notes", s.notes)]),
+        details: detailsTable([line("Name", s.full_name), line("Phone", s.phone), line("Email", email), line("Space", s.space_name), line("Date", s.rental_date), line("Time", s.rental_time), line("Duration", `${s.duration_minutes ?? 60} minutes`), line("Extras", s.selected_extras), line("Total", money(s.grand_total)), line("Notes", s.notes)]),
       };
       const src = { sourceTable: "studio_bookings", sourceId: id };
       await send(budget, { db, templateKey: "studio_confirmation", dedupeKey: `studio_confirmation:studio_bookings:${id}`, to: email, vars, ...src });
@@ -635,11 +662,44 @@ Deno.serve(async (req) => {
         event_time: ev.event_time ?? "-",
         venue: ev.venue ?? "-",
         agreed_amount: money(ev.agreed_amount),
-        details: detailsTable([line("Name", ev.full_name), line("WhatsApp", ev.phone), line("Email", email), line("Event", ev.event_type), line("Dates", dates), line("Start time", ev.event_time), line("Venue", ev.venue), line("Expected guests", ev.expected_guests), line("Agreed amount", money(ev.agreed_amount)), line("Notes", ev.notes)]),
+        details: detailsTable([line("Name", ev.full_name), line("Phone", ev.phone), line("Email", email), line("Event", ev.event_type), line("Dates", dates), line("Start time", ev.event_time), line("Venue", ev.venue), line("Expected guests", ev.expected_guests), line("Agreed amount", money(ev.agreed_amount)), line("Notes", ev.notes)]),
       };
       const src = { sourceTable: "event_bookings", sourceId: id };
       await send(budget, { db, templateKey: "event_confirmation", dedupeKey: `event_confirmation:event_bookings:${id}`, to: email, vars, ...src });
       if (owners.length) await send(budget, { db, templateKey: "owner_event", dedupeKey: `owner_event:event_bookings:${id}`, to: owners, vars, replyTo: email, ...src });
+    }
+  });
+
+  // ---------- Balance reminders: X days before the session/wedding when money is still owed ----------
+  await safe("balance-reminders", async () => {
+    const { data: bs } = await db.from("business_settings").select("balance_due_days_before").eq("id", 1).maybeSingle();
+    const daysBefore = Number(bs?.balance_due_days_before ?? 14);
+    const target = addDays(daysBefore);
+    const { data, error } = await db.from("bookings").select("*").eq("shoot_date", target).in("payment_status", ["Not Paid", "Part Payment"]).neq("status", "cancelled").neq("status", "pending_payment");
+    if (error) throw new Error(error.message);
+    for (const b of data ?? []) {
+      const email = String(b.email ?? "").trim();
+      if (!EMAIL_RE.test(email)) continue;
+      const total = Number(b.grand_total) || 0, paid = Number(b.amount_paid) || 0;
+      if (total - paid <= 0) continue;
+      const { data: inv } = await db.from("invoices").select("public_token").eq("booking_table", "bookings").eq("booking_id", b.id).neq("status", "void").order("created_at", { ascending: false }).limit(1).maybeSingle();
+      await send(budget, { db, templateKey: "balance_reminder", dedupeKey: `balance_reminder:bookings:${b.id}:${target}`, to: email, sourceTable: "bookings", sourceId: String(b.id), vars: {
+        client_name: b.full_name ?? "", item: b.service_summary || b.selected_service || "your booking", shoot_date: b.shoot_date ?? "",
+        total: money(total), amount_paid: money(paid), balance: money(total - paid), pay_url: inv?.public_token ? `${SITE}/invoice/${inv.public_token}/` : "",
+      } });
+    }
+  });
+
+  // ---------- Overdue invoices: mark them, and remind the client once (copy to the business) ----------
+  await safe("invoices-overdue", async () => {
+    await db.rpc("mark_overdue_invoices");
+    const { data, error } = await db.from("invoices").select("id, number, client_name, client_email, balance, due_date, public_token").eq("status", "overdue");
+    if (error) throw new Error(error.message);
+    for (const inv of data ?? []) {
+      if (!EMAIL_RE.test(String(inv.client_email ?? ""))) continue;
+      await send(budget, { db, templateKey: "invoice_overdue", dedupeKey: `invoice_overdue:${inv.id}:${inv.due_date}`, to: inv.client_email, sourceTable: "invoices", sourceId: String(inv.id), vars: {
+        client_name: inv.client_name ?? "", invoice_number: inv.number, balance: money(inv.balance), due_date: inv.due_date ?? "", pay_url: `${SITE}/invoice/${inv.public_token}/`,
+      } });
     }
   });
 

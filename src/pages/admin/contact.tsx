@@ -1,17 +1,25 @@
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 
-const PREFILL_KEY = "dmi_email_prefill";
-export const COMPOSE_EVENT = "dmi:compose-email";
+const PREFILL_KEY = "tplum_email_prefill";
+export const COMPOSE_EVENT = "tplum:compose-email";
 
-/** Turns a stored phone number (0801…, 801…, +234…, 234…) into the international digits wa.me needs. */
-export const whatsAppDigits = (raw: string | null | undefined): string => {
-  const digits = String(raw ?? "").replace(/\D/g, "");
+/** A stored phone number as dialable digits with country code (North American numbers get +1). */
+export const phoneDigits = (raw: string | null | undefined): string => {
+  const t = String(raw ?? "").trim();
+  const digits = t.replace(/\D/g, "");
   if (!digits) return "";
-  if (digits.startsWith("234")) return digits;
-  if (digits.startsWith("0")) return `234${digits.slice(1)}`;
-  if (digits.length === 10) return `234${digits}`;
-  return digits;
+  if (t.startsWith("+")) return `+${digits}`;
+  if (digits.length === 10) return `+1${digits}`;
+  return `+${digits}`;
 };
+/** (403) 555-0123 for North American numbers; other numbers are shown as stored. */
+export const formatPhone = (raw: string | null | undefined): string => {
+  const d = phoneDigits(raw);
+  const m = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(d);
+  return m ? `(${m[1]}) ${m[2]}-${m[3]}` : String(raw ?? "");
+};
+/** kept for DMI code that still imports the old name */
+export const whatsAppDigits = phoneDigits;
 
 /** Opens the dashboard's email messenger with this address already in the audience field. */
 export const openEmailTo = (email: string) => {
@@ -33,21 +41,19 @@ type Props = { name?: string | null; phone?: string | null; email?: string | nul
 
 const btn = "p-1.5 rounded transition-colors";
 
-/** WhatsApp and Email buttons for a table row: one click to contact the person. */
+/** Call, text and email buttons for a table row: one click to contact the person. */
 export const ContactActions = ({ name, phone, email }: Props) => {
-  const wa = whatsAppDigits(phone);
+  const tel = phoneDigits(phone);
   const mail = (email ?? "").trim();
-  const first = (name ?? "").trim().split(/\s+/)[0];
-  const waHref = wa ? `https://wa.me/${wa}${first ? `?text=${encodeURIComponent(`Hi ${first}, `)}` : ""}` : "";
   return (
     <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-      {wa ? (
-        <a href={waHref} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${name || "client"}`} title="Message on WhatsApp"
-          className={`${btn} text-green-700 hover:bg-green-600/10`}>
-          <MessageCircle size={15} />
-        </a>
+      {tel ? (
+        <>
+          <a href={`tel:${tel}`} aria-label={`Call ${name || "client"}`} title={`Call ${formatPhone(phone)}`} className={`${btn} text-foreground/70 hover:text-foreground hover:bg-muted/50`}><Phone size={15} /></a>
+          <a href={`sms:${tel}`} aria-label={`Text ${name || "client"}`} title="Send a text message" className={`${btn} text-foreground/70 hover:text-foreground hover:bg-muted/50`}><MessageSquare size={15} /></a>
+        </>
       ) : (
-        <span aria-hidden title="No WhatsApp number" className={`${btn} text-muted-foreground/30 cursor-not-allowed`}><MessageCircle size={15} /></span>
+        <span aria-hidden title="No phone number" className={`${btn} text-muted-foreground/30 cursor-not-allowed`}><Phone size={15} /></span>
       )}
       {mail ? (
         <button type="button" onClick={() => openEmailTo(mail)} aria-label={`Email ${name || "client"}`} title="Write an email"

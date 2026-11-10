@@ -2,7 +2,7 @@
  * /client-gallery/<id>/?k=<key> — the client's private gallery. The emailed link carries the key, so it opens straight away
  * with no sign-in; the key is remembered on this device. Without it, the gallery's owner can sign in instead.
  * A few seconds in, visitors who aren't signed in are invited to save it to an account (optional).
- * Proofs: hearts, notes, "23 / 40" counter, optional "all unedited images", submit (review sheet → success → WhatsApp).
+ * Proofs: hearts, notes, "23 / 40" counter, optional "all unedited images", submit (review sheet → success).
  * Finals: edited / all-unedited switch, per-photo download + "Download all" (zips in parts, after a notice about zipped folders), 👍 / 👎 / comments on the
  * edited photos and "Send feedback" to the photographer.
  */
@@ -200,8 +200,7 @@ function GalleryView({ data, linkKey, reload }: { data: ViewResponse; linkKey: s
     setReview(false)
     setStatus('submitted')
     setSubmittedAt(r.submitted_at)
-    const url = `https://wa.me/${galleryConfig.ownerWhatsapp}?text=${encodeURIComponent(r.whatsapp_text)}`
-    setSuccess({ count: r.count, url })
+    setSuccess({ count: r.count, url: '' })
     return true
   }
 
@@ -344,7 +343,7 @@ function GalleryView({ data, linkKey, reload }: { data: ViewResponse; linkKey: s
 
       <footer className="cg-foot">
         <img src={galleryConfig.logoDark} alt={galleryConfig.brandName} />
-        <p>Questions? <a href={`https://wa.me/${galleryConfig.ownerWhatsapp}`} target="_blank" rel="noreferrer">WhatsApp us</a> or email <a href={`mailto:${galleryConfig.ownerEmail}`}>{galleryConfig.ownerEmail}</a>.</p>
+        <p>Questions? Call <a href={`tel:${galleryConfig.ownerPhone}`}>{galleryConfig.ownerPhone}</a> or email <a href={`mailto:${galleryConfig.ownerEmail}`}>{galleryConfig.ownerEmail}</a>.</p>
         {canSave
           ? <p className="cg-foot-save"><button className="cg-btn solid" onClick={() => setSaveOpen(true)}>Save this gallery to my account</button><span>Keep all your shoots in one place.</span></p>
           : <p><a href="/account">Your account</a>: all your shoots in one place.</p>}

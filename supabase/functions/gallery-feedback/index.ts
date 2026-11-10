@@ -59,6 +59,5 @@ Deno.serve(handle(async (req, body) => {
   const now = new Date().toISOString()
   await db.from('galleries').update({ feedback_sent_at: now }).eq('id', g.id)
   await logActivity({ client_email: g.client_email, booking_id: g.booking_id, gallery_id: g.id, actor: 'client', event: 'feedback_sent', meta: { title: g.title, liked: liked.length, disliked: disliked.length, comments: comments.length, emailed: mail.sent } })
-  const whatsapp_text = `Hi DMI 👋 I've sent my feedback on "${g.title}": ${liked.length} 👍, ${disliked.length} 👎${comments.length ? `, ${comments.length} comment${comments.length === 1 ? '' : 's'}` : ''}. Name: ${g.client_name || '—'}. Link: ${adminLink(g)}`
-  return json({ ok: true, sent_at: now, emailed: mail.sent, liked: liked.length, disliked: disliked.length, comments: comments.length, whatsapp_text })
+  return json({ ok: true, sent_at: now, emailed: mail.sent, liked: liked.length, disliked: disliked.length, comments: comments.length })
 }))

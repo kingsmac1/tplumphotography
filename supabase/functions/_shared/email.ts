@@ -1,6 +1,7 @@
 /**
- * Resend delivery for the gallery emails — the same provider, sender and inline-logo approach as the booking emails
- * (src/server/mail.ts, which runs in Cloudflare Pages). Needs the Edge Function secrets RESEND_API_KEY and EMAIL_FROM.
+ * Resend delivery for every Tplum email (bookings, payments, invoices, contracts, galleries, forms).
+ * Needs the Supabase secrets RESEND_API_KEY, FROM_EMAIL and OWNER_EMAIL (never hard-coded).
+ * Every email to a client is also copied to the business (see sendToClientAndOwner).
  */
 import { LOGO_BASE64, LOGO_CID } from './logo.ts'
 
@@ -16,10 +17,9 @@ export function mailConfig() {
   const owners = extractEmails(env('OWNER_EMAIL'))
   return {
     apiKey: env('RESEND_API_KEY'),
-    from: env('EMAIL_FROM') || env('RESEND_FROM_EMAIL') || env('RESEND_FROM'),
-    owners: owners.length ? owners : ['darlmacimpression@gmail.com'],
-    siteUrl: (env('SITE_URL') || 'https://dmi.com.ng').replace(/\/$/, ''),
-    whatsapp: env('OWNER_WHATSAPP').replace(/[^\d]/g, '') || '2349013962323',
+    from: env('FROM_EMAIL') || env('EMAIL_FROM'),
+    owners,
+    siteUrl: (env('SITE_URL') || 'https://tplumphotography.com').replace(/\/$/, ''),
   }
 }
 
@@ -28,7 +28,7 @@ export type Attachment = { filename: string; content: string; content_type?: str
 /** Sends one email. Never throws: a missing key or a Resend error comes back as { sent: false, error }. `attachments` are base64 files (an invoice PDF). */
 export async function sendEmail(o: { to: string | string[]; replyTo?: string; message: RenderedEmail; attachments?: Attachment[] }): Promise<SendResult> {
   const cfg = mailConfig()
-  if (!cfg.apiKey || !cfg.from) return { sent: false, error: 'Email is not set up yet (RESEND_API_KEY / EMAIL_FROM missing in Supabase secrets).' }
+  if (!cfg.apiKey || !cfg.from) return { sent: false, error: 'Email is not set up yet (RESEND_API_KEY / FROM_EMAIL missing in Supabase secrets).' }
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -40,7 +40,7 @@ export async function sendEmail(o: { to: string | string[]; replyTo?: string; me
         subject: o.message.subject,
         html: o.message.html,
         text: o.message.text,
-        attachments: [{ filename: 'tplum-logo-dark.png', content: LOGO_BASE64, content_id: LOGO_CID, content_type: 'image/png' }, ...(o.attachments ?? [])],
+        attachments: [{ filename: 'tplum-logo.png', content: LOGO_BASE64, content_id: LOGO_CID, content_type: 'image/png' }, ...(o.attachments ?? [])],
       }),
     })
     if (!res.ok) {
@@ -53,4 +53,20 @@ export async function sendEmail(o: { to: string | string[]; replyTo?: string; me
   } catch (err) {
     return { sent: false, error: err instanceof Error ? err.message : 'Email failed' }
   }
+}
+
+/** Sends the client their copy and the business its own copy (every form, booking, payment, invoice, contract and gallery email goes to both). */
+export async function sendToClientAndOwner(o: { client?: string | null; clientMessage: RenderedEmail; ownerMessage?: RenderedEmail; attachments?: Attachment[]; replyTo?: string }) {
+  const cfg = mailConfig()
+  const results: { to: string; sent: boolean; error?: string }[] = []
+  if (o.client) {
+    const r = await sendEmail({ to: o.client, replyTo: cfg.owners[0], message: o.clientMessage, attachments: o.attachments })
+    results.push({ to: o.client, ...r })
+  }
+  if (cfg.owners.length) {
+    const msg = o.ownerMessage ?? { ...o.clientMessage, subject: `[Copy] ${o.clientMessage.subject}` }
+    const r = await sendEmail({ to: cfg.owners, replyTo: o.replyTo ?? o.client ?? undefined, message: msg, attachments: o.attachments })
+    results.push({ to: cfg.owners.join(', '), ...r })
+  }
+  return results
 }

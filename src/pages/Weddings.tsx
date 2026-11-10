@@ -106,7 +106,7 @@ const Weddings = ({ site }: { site?: SiteContent }) => {
     const res = await createBooking({ kind: "wedding", packageId: selectedPkg.id, days: form.events, extras: form.extras, client: payload, returnUrl: window.location.origin });
     if (!res.ok) { setSubmitting(false); setSubmitError(res.error); return; }
     if (res.checkoutUrl) { window.location.href = res.checkoutUrl; return; }
-    window.location.href = `/booking/confirmed/?ref=${encodeURIComponent(res.reference)}`;
+    window.location.href = `/booking/confirmed/?b=${res.bookingId}`;
   };
   const depositNow = selectedPkg && business.online_payments_enabled ? depositFor(packageTotal(), business) : 0;
 

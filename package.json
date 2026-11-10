@@ -4,11 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "node scripts/sync-shared.mjs && vite build",
     "preview": "vite preview --port 4173",
     "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "node scripts/sync-shared.mjs && vitest run",
     "capture": "node scripts/capture/capture-site.mjs && node scripts/capture/capture-api.mjs"
   },
   "dependencies": {

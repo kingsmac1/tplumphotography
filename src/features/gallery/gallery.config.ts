@@ -1,13 +1,13 @@
 /**
- * Everything brand-specific about the DMI client gallery lives here (same gallery as Illuszionz Media, DMI's brand).
+ * Everything brand-specific about the Tplum client gallery lives here (the gallery itself is DMI's, rebranded).
  * The server side has its own copy of the brand in supabase/functions/_shared/email-templates.ts (BRAND) and the
  * preview lifetime in supabase/functions/_shared/gallery.ts (PURGE_DAYS).
  */
 const site = {
-  name: 'DMI · DarlMac Impression',
-  url: 'https://dmi.com.ng',
-  email: 'darlmacimpression@gmail.com',
-  whatsapp: '2349013962323',
+  name: 'Tplum Photography',
+  url: 'https://tplumphotography.com',
+  email: 'info@tplumphotography.com',
+  phone: '+14034935511',
 }
 
 const env = import.meta.env as Record<string, string | undefined>
@@ -15,23 +15,23 @@ const env = import.meta.env as Record<string, string | undefined>
 export const galleryConfig = {
   brandName: site.name,
   /** shown in the gallery's top bar and cover (dark backgrounds) */
-  logoLight: '/images/gallery/tplum-logo-white.png',
+  logoLight: '/brand/tplum-logo-white.png',
   /** shown on light backgrounds */
-  logoDark: '/images/gallery/tplum-logo-dark.png',
+  logoDark: '/brand/tplum-logo-dark.png',
 
   /** prices in the gallery (the "all unedited images" option) */
   currency: '$',
-  /** where client galleries live (/gallery is DMI's public portfolio) */
+  /** where client galleries live */
   galleryPath: '/client-gallery',
 
   siteUrl: (env.VITE_SITE_URL || site.url).replace(/\/$/, ''),
   ownerEmail: env.VITE_OWNER_EMAIL || site.email,
-  /** digits only, for wa.me links */
-  ownerWhatsapp: (env.VITE_OWNER_WHATSAPP || site.whatsapp).replace(/[^\d]/g, ''),
+  /** studio phone for "call us" links */
+  ownerPhone: site.phone,
 
   watermark: {
     /** the logo drawn on every proof image — a white logo on a transparent background works best */
-    logo: '/images/gallery/tplum-logo-white.png',
+    logo: '/brand/tplum-logo-white.png',
     /** big centred logo: share of the image width (0 = none, only the faint tile below), and its opacity */
     size: 0,
     opacity: 0.35,

@@ -1,17 +1,17 @@
 /**
- * Gallery emails. Same look as the booking emails (src/server/mail.ts): table-based, inline styles, black header with the
- * logo, Oswald headline, one big pill button, plain-text twin. Brand values live at the top of this file.
+ * Tplum emails: table-based, inline styles, header with the
+ * logo, serif headline, one big pill button, plain-text twin. Brand values live at the top of this file.
  */
 import { LOGO_CID } from './logo.ts'
 import type { RenderedEmail } from './email.ts'
 
 export const BRAND = {
-  name: 'DMI · DarlMac Impression',
-  tagline: 'Turning fleeting moments into printed imagination.',
-  email: 'darlmacimpression@gmail.com',
-  phone: '+2349013962323',
-  instagram: 'https://www.instagram.com/darlmac_impression/',
-  facebook: 'https://www.facebook.com/DMIstudios/',
+  name: 'Tplum Photography',
+  tagline: 'Telling Pure Lasting Unscripted Memories',
+  email: 'info@tplumphotography.com',
+  phone: '+14034935511',
+  instagram: 'https://www.instagram.com/tplumphotography',
+  facebook: 'https://facebook.com/tplumphotograph',
   currency: '$',
 }
 
@@ -19,7 +19,7 @@ const INK = '#0a0a0a'
 const PAPER = '#f4f3ef'
 const LINE = '#dcdad2'
 const MUTED = '#85847e'
-const SERIF = "'Oswald', 'Arial Narrow', Arial, sans-serif"
+const SERIF = "Georgia, 'Times New Roman', serif"
 const SANS = "-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
 
 export const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -136,7 +136,7 @@ export function selectionConfirmation(o: Base & { count: number; unedited?: numb
     ${p(`Thank you — we've received your <b>${o.count}</b> picks from <b>${esc(o.title)}</b>. We're editing them now and will email you as soon as your final photos are ready to download.`, 16)}
     ${o.unedited != null ? p(`You also asked for <b>all the unedited images</b> (${money(o.unedited)}). They'll be in the same gallery as your edited photos.`, 14) : ''}
     <div style="margin-top:34px;">${button(o.link, 'View your selection')}</div>
-    ${small('Changed your mind about a photo? Reply to this email or message us on WhatsApp and we can reopen your selection.')}`
+    ${small('Changed your mind about a photo? Reply to this email and we can reopen your selection.')}`
   return {
     subject: `We've got your selection · ${o.title}`,
     html: layout({ siteUrl: o.siteUrl, preheader: `${o.count} photos received — editing has started.`, eyebrow: 'Selection received', title: "We're editing your photos", body }),
@@ -206,5 +206,14 @@ export function invoiceEmail(o: { siteUrl: string; subject: string; message: str
   const body = p(nl2br(o.message)) + rows(figures) + small(`The invoice is attached as a PDF (${esc(o.filename)}). Questions? Reply to this email or message us on WhatsApp.`)
   const html = layout({ siteUrl: o.siteUrl, preheader: `${h.title}: invoice ${o.number}, balance due ${money(o.balance)}`, eyebrow: h.eyebrow, title: h.title, body, footnote: 'Please keep this invoice for your records.' })
   const text = `${o.message}\n\n${figures.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nThe invoice is attached as a PDF (${o.filename}).\n\n${BRAND.name} · ${BRAND.phone} · ${BRAND.email}`
+  return { subject: o.subject, html, text }
+}
+
+/** A simple branded email: label, title, intro paragraph, detail rows, optional button. Used by forms, contracts and invoices. */
+export function simpleEmail(o: { subject: string; eyebrow: string; title: string; intro: string; rows?: [string, string][]; button?: { href: string; label: string }; footnote?: string; siteUrl?: string }): RenderedEmail {
+  const siteUrl = (o.siteUrl ?? Deno.env.get('SITE_URL') ?? 'https://tplumphotography.com').replace(/\/$/, '')
+  const body = p(esc(o.intro)) + (o.rows?.length ? rows(o.rows.filter(([, v]) => String(v ?? '').trim())) : '') + (o.button ? `<div style="margin-top:30px;">${button(o.button.href, o.button.label)}</div>` : '')
+  const html = layout({ siteUrl, preheader: o.intro.slice(0, 120), eyebrow: o.eyebrow, title: o.title, body, footnote: o.footnote ?? 'Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding' })
+  const text = [o.title, '', o.intro, '', ...(o.rows ?? []).filter(([, v]) => String(v ?? '').trim()).map(([k, v]) => `${k}: ${v}`), o.button ? `\n${o.button.label}: ${o.button.href}` : ''].join('\n')
   return { subject: o.subject, html, text }
 }

@@ -1,4 +1,4 @@
-/** Bottom sheets / dialogs of the client gallery: note editor, submit review, success + WhatsApp hand-off, save-to-account. */
+/** Bottom sheets / dialogs of the client gallery: note editor, submit review, success, save-to-account. */
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { ViewImage } from '../types'
@@ -132,24 +132,15 @@ export function SubmitSheet({ images, picks, limit, extrasNote, uneditedPrice, o
   )
 }
 
-/** After a successful submit: confirmation, then WhatsApp opens with a pre-filled message (the client still taps Send). */
-export function SuccessScreen({ count, whatsappUrl, onClose }: { count: number; whatsappUrl: string; onClose: () => void }) {
-  const [left, setLeft] = useState(3)
-  useEffect(() => {
-    // window.location (not window.open): popup blockers stop window.open after an async call
-    const t = setTimeout(() => { window.location.href = whatsappUrl }, 1200)
-    const i = setInterval(() => setLeft((s) => Math.max(0, s - 1)), 400)
-    return () => { clearTimeout(t); clearInterval(i) }
-  }, [whatsappUrl])
+/** After a successful submit: confirmation (the studio is emailed the selection). */
+export function SuccessScreen({ count, onClose }: { count: number; whatsappUrl?: string; onClose: () => void }) {
   return (
     <div className="cg-success" role="alertdialog" aria-labelledby="cg-success-h">
       <div>
         <h2 id="cg-success-h">Selection sent! 🎉</h2>
         <p>We’ve received your {count} photo{count === 1 ? '' : 's'} and emailed you a confirmation. We’ll let you know when your edited photos are ready.</p>
-        <p className="cg-success-wa">{left ? 'Opening WhatsApp so you can let us know…' : 'Tap Send in WhatsApp to message us.'}</p>
         <div className="cg-sheet-f center">
-          <a className="cg-btn solid" href={whatsappUrl}>Open WhatsApp</a>
-          <button className="cg-btn line light" onClick={onClose}>Back to the gallery</button>
+          <button className="cg-btn solid" onClick={onClose}>Back to the gallery</button>
         </div>
       </div>
     </div>

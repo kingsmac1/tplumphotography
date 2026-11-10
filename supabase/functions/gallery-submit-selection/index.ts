@@ -1,6 +1,6 @@
 /**
  * Client: submit (and lock) the selection. Emails the photographer the picks with a copy-ready filename list and a
- * Lightroom filter, emails the client a confirmation, logs it, and returns the WhatsApp message for the hand-off.
+ * Lightroom filter, emails the client a confirmation, logs it, and (no WhatsApp hand-off in Tplum).
  */
 import { handle, HttpError, isUuid, json } from '../_shared/http.ts'
 import { caller, canAct, loadGallery, logActivity, service } from '../_shared/auth.ts'
@@ -45,6 +45,5 @@ Deno.serve(handle(async (req, body) => {
   ])
   await logActivity({ client_email: g.client_email, booking_id: g.booking_id, gallery_id: g.id, actor: 'client', event: 'selection_submitted', meta: { title: g.title, count: list.length, notes: notes.length, wants_unedited: wantsUnedited, emailed: owner.sent } })
 
-  const whatsapp_text = `Hi DMI 👋 I've submitted my photo selection — ${list.length} photos from "${g.title}"${wantsUnedited ? `, plus all the unedited images (${money(unedited!)})` : ''}. Name: ${g.client_name || '—'}. Email: ${g.client_email}. Link: ${adminLink(g)}`
-  return json({ ok: true, count: list.length, submitted_at: now, emailed: owner.sent && client.sent, whatsapp_text, whatsapp_url: `https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(whatsapp_text)}` })
+  return json({ ok: true, count: list.length, submitted_at: now, emailed: owner.sent && client.sent })
 }))
