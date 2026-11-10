@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 
 const SHEET_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxQjqTviqytGOdSefqOcClugv2WHnlL94gxm2HctyNEtG3jlzBZhulfYfmPUICATXUWkA/exec";
+  "" /* DMI Google Sheet removed: Tplum logs bookings in Supabase only */;
 
 /** Flat, string-valued booking record shared by the booking and wedding forms. */
 export type BookingPayload = {

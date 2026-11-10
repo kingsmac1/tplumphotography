@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 // Same Apps Script deployment the main booking form uses — it branches on `source`
 // to email the right people without touching the "Bookings" sheet.
 const SHEET_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxQjqTviqytGOdSefqOcClugv2WHnlL94gxm2HctyNEtG3jlzBZhulfYfmPUICATXUWkA/exec";
+  "" /* DMI Google Sheet removed: Tplum logs bookings in Supabase only */;
 
 export type StudioSpacePayload = {
   full_name: string;
