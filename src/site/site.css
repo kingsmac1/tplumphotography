@@ -197,6 +197,8 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .about-card .text { flex: 1; padding: 10px; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
 .tp .about-card h2 { color: #fff; margin-top: 30px; }
 .tp .about-card .body-lato { color: #fff; }
+/* Elementor keeps the last paragraph's bottom margin in these text blocks (measured on the original). */
+.tp .intro .body-lato p:last-child, .tp .about-card .body-lato p:last-child { margin-bottom: 1.6em; }
 .tp .about-card .cta { margin-top: 40px; }
 @media (max-width: 1024px) {
   .tp .about-card { flex-direction: column; }
@@ -238,7 +240,7 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 @media (max-width: 767px) {
   .tp .candid { padding-bottom: 80px; }
   .tp .candid h2 { margin: 0; line-height: 1.1em; }
-  .tp .candid .row { flex-direction: column; padding: 0 20px; }
+  .tp .candid .row { flex-direction: column; padding: 0 10px; }
   .tp .candid .row + .row { margin-top: 20px; }
 }
 
@@ -417,10 +419,11 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 }
 
 /* Contact */
-.tp .contact-main { margin-top: 120px; padding: 0 10px; }
+.tp .contact-main { margin-top: 120px; padding: 10px 10px 0; }
 .tp .contact-main .sec-head { padding: 10px; display: flex; flex-direction: column; gap: 20px; }
 .tp .contact-main .bullets { font-family: var(--lato); font-weight: 400; font-size: 16px; line-height: 1.65; color: #000; }
-.tp .contact-main .bullets ul { margin: 0 0 1.5em 3em; }
+.tp .contact-main .bullets { padding: 16px 0; }
+.tp .contact-main .bullets ul { margin: 0 0 0 20px; }
 @media (max-width: 767px) { .tp .contact-main { margin-top: 80px; } .tp .contact-main .sec-head { gap: 0; } }
 
 .tp .tp-form { margin-top: 20px; font-family: "Montserrat", sans-serif; color: #111; }
@@ -465,23 +468,30 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .icon-box { display: flex; align-items: flex-start; gap: 15px; font-family: "Roboto", sans-serif; font-size: 16px; color: #000; }
 .tp .icon-box svg { width: 23px; height: 23px; fill: #000; flex: none; }
 .tp .icon-box .email { text-transform: lowercase; }
-.tp .faq-foot .note { width: 48%; font-family: var(--lato); font-weight: 500; font-size: 16px; color: #000; margin: 0; }
+.tp .faq-foot .box { padding: 0 10px; gap: 60px; }
+.tp .faq-foot .items { padding: 0; }
+.tp .faq-foot .note { width: 47.2%; font-family: var(--lato); font-weight: 500; font-size: 16px; color: #000; margin: 0; }
 .tp .faq-foot .note a { color: #7f7f7f; } .tp .faq-foot .note a:hover { color: #000; }
+@media (min-width: 768px) { .tp .faq-foot { padding-top: 55px; align-items: flex-start; } .tp .faq-foot .box { align-items: flex-start; } .tp .faq-foot .note { margin-top: 39px; } }
 @media (max-width: 767px) {
   .tp .contact-info { margin-top: 0; padding: 0 0 80px; }
+  .tp .icon-box { font-size: 14.592px; line-height: 24px; flex-direction: column; align-items: center; text-align: center; }
+  .tp .contact-info .items { align-items: center; }
+  .tp .faq-foot .box { gap: 30px; }
+  .tp .faq-foot .note { max-width: 178px; margin-left: auto; margin-right: auto; }
   .tp .contact-info .box, .tp .contact-info .items { flex-direction: column; gap: 30px; }
-  .tp .faq-foot .note { width: auto; margin-top: 50px; text-align: center; font-size: 14px; }
+  .tp .faq-foot .note { width: auto; margin-top: 50px; text-align: center; font-size: 14px; line-height: 1.65; }
 }
 
 /* The Tplum Signature */
 .tp .sig-intro { margin-top: 120px; display: flex; flex-direction: column; align-items: center; padding: 0 10px; }
-.tp .sig-intro .inner { width: 69%; padding: 10px; text-align: center; font-family: var(--lato); font-weight: 400; font-size: 16px; line-height: 1.65; color: #000; }
+.tp .sig-intro .inner { width: 55.4%; padding: 10px; text-align: center; font-family: var(--lato); font-weight: 400; font-size: 16px; line-height: 1.65; color: #000; }
 .tp .sig-banner { margin-top: 120px; min-height: 70vh; background-size: cover; background-position: 0 -380px; }
 .tp .process { margin-top: 120px; padding: 0 10px; }
 .tp .process h2 { text-align: center; color: #000; margin-top: 30px; text-transform: capitalize; }
 .tp .process .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px 50px; margin-top: 40px; padding: 10px; }
-.tp .process h3 { font-family: var(--fulgate); font-size: 25px; font-weight: 800; line-height: 1.2; color: #000; margin: 0 0 15px; }
-.tp .process p { font-family: "Inter", sans-serif; font-size: 16px; font-weight: 400; line-height: 1.65; color: #2f2f2f; margin: 0; }
+.tp .process h3 { font-family: var(--fulgate); font-size: 25px; font-weight: 800; line-height: 1.3; color: #000; margin: 0 0 15px; }
+.tp .process p { font-family: "Inter", sans-serif; font-size: 16px; font-weight: 400; line-height: 1.65; color: #282828; margin: 0; }
 .tp .sig-book { margin-top: 120px; }
 @media (max-width: 1024px) {
   .tp .sig-banner { background-position: 0 -140px; }
@@ -497,19 +507,19 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 }
 
 /* FAQ accordion */
-.tp .faq-main { margin-top: 120px; padding: 0 10px; }
+.tp .faq-main { margin-top: 120px; padding: 10px 10px 0; }
 .tp .faq-main .sec-head { padding: 10px; display: flex; flex-direction: column; gap: 20px; }
 .tp .faq-list { margin-top: 20px; }
 .tp .faq-item { border-bottom: 1px solid #d4d4d4; }
 .tp .faq-item + .faq-item { margin-top: 10px; }
 .tp .faq-item h4 { margin: 0; }
-.tp .faq-item button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px; text-align: left; background: none; border: 0; padding: 15px 15px 15px 20px; cursor: pointer; font-family: "Lato Regular", sans-serif; font-size: 15px; font-weight: 400; line-height: 1.65; color: #000; text-transform: uppercase; }
+.tp .faq-item button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px; text-align: left; background: none; border: 0; padding: 20px 15px 20px 20px; cursor: pointer; font-family: "Lato Regular", sans-serif; font-size: 15px; font-weight: 400; line-height: 1.2; color: #000; text-transform: uppercase; }
 .tp .faq-item button svg { width: 17px; height: 17px; flex: none; fill: currentColor; transition: transform .3s; }
 .tp .faq-item.open button svg { transform: rotate(90deg); }
 .tp .faq-item .answer { overflow: hidden; height: 0; transition: height .35s ease; }
 .tp .faq-item .answer > div { padding: 20px; border-top: 1px solid #d4d4d4; font-family: "Roboto", sans-serif; font-weight: 400; font-size: 16px; line-height: 1.65; color: #2f2f2f; }
 .tp .faq-item .answer a { text-decoration: underline; }
-@media (max-width: 767px) { .tp .faq-item button { font-size: 14px; } }
+@media (max-width: 767px) { .tp .faq-main { margin-top: 80px; } .tp .faq-main .sec-head { gap: 0; } .tp .faq-item button { font-size: 14px; padding: 18px 15px 18px 20px; } }
 
 /* Coming soon (standalone page, no header/footer) */
 .tp-coming { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; background: #000; color: #fff; }
@@ -534,3 +544,35 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp.tp-solid .site-header { margin-bottom: 0; height: auto; padding: 24px 50px; align-items: center; }
 @media (max-width: 1024px) { .tp.tp-solid .site-header { padding: 20px 30px; } }
 @media (max-width: 767px) { .tp.tp-solid .site-header { padding: 16px 20px; height: auto; margin-bottom: 0; } }
+
+/* Measured against the original at 1440px (kept last so it wins over the base rules above). */
+@media (min-width: 768px) { .tp .process { padding-top: 10px; } }
+.tp .sig-intro { padding: 10px; }
+.tp .sig-intro .inner p:last-child { margin-bottom: 1.6em; }
+.tp .process h3 { margin-bottom: 20px; }
+@media (max-width: 767px) { .tp .process .grid { margin-top: 60px; padding: 0; } }
+@media (min-width: 768px) {
+  .tp .recent { padding-bottom: 110px; }
+  .tp .recent .gallery { margin-bottom: 0; }
+  .tp .recent .more { margin-top: 110px; }
+  .tp .testimonials { padding-bottom: 131px; }
+}
+@media (max-width: 767px) {
+  .tp .recent { padding-bottom: 120px; }
+  .tp .recent .gallery { margin-bottom: 0; }
+  .tp .recent .more { margin-top: 60px; }
+  .tp .testimonials { padding-bottom: 131px; }
+}
+/* Instagram strip + footer, measured against the original (tiles 231px tall on desktop; footer 78px; one-line credit on phones). */
+.tp .ig-tiles .row:last-child { margin-bottom: 0; }
+.tp .site-footer .inner { padding: 6px 10px; }
+@media (max-width: 767px) { .tp .ig-band .top { margin-bottom: 20px; } }
+@media (max-width: 767px) {
+  .tp .profile-wrap { display: flow-root; padding-top: 10px; }
+  .tp .profile .body p:last-child { margin-bottom: 1.6em; }
+}
+/* Contact form: space above the first field as on the original (WPForms container spacing). */
+.tp form.tp-form { padding-top: 40px; }
+@media (max-width: 767px) { .tp form.tp-form { padding-top: 55px; } .tp .contact-main + .contact-info { margin-top: 10px; } }
+/* Phones: the original menu icon sits in a 12px box but draws at full 25px, spilling past the box edge. */
+@media (max-width: 767px) { .tp .menu-toggle { justify-content: flex-start; overflow: visible; } .tp .menu-toggle svg { flex: none; } }
