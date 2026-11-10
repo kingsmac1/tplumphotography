@@ -22,7 +22,7 @@ import {
   Blocks,
 } from "lucide-react";
 import { RichTextEditor } from "./RichTextEditor";
-import { uploadImage as uploadToMedia } from "@/lib/githubMedia";
+import { uploadImage as uploadToMedia } from "@/lib/siteMedia";
 import { listEmailSections, createEmailSection, removeEmailSection, type EmailSection } from "./emailSections";
 import {
   type EmailBlock,

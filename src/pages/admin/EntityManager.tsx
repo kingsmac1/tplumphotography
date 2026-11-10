@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, Loader2, Pencil, Plus, Search, Trash2, Upload, X } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { markManaged, resetContentCache } from "@/lib/content";
-import { deleteImagePaths, uploadImage } from "@/lib/githubMedia";
+import { deleteImagePaths, uploadImage } from "@/lib/siteMedia";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import ConfirmDialog from "./ConfirmDialog";
@@ -254,7 +254,8 @@ const EntityManager = ({ cfg }: { cfg: EntityConfig }) => {
   const saveInline = async (r: Row, key: string, raw: string) => {
     const n = Number(raw);
     if (!Number.isFinite(n) || n === Number(r[key])) return;
-    const { error: err } = await supabase.from(cfg.table).update({ [key]: n }).eq(cfg.idKey, r[cfg.idKey]);
+    // editing a sample price makes it the studio's own (the "Sample: edit me" badge disappears)
+    const { error: err } = await supabase.from(cfg.table).update({ [key]: n, ...("sample" in r ? { sample: false } : {}) }).eq(cfg.idKey, r[cfg.idKey]);
     if (err) return setMsg(err.message);
     setMsg("Saved.");
     await afterChange();

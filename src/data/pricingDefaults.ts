@@ -1,19 +1,25 @@
+/**
+ * SAMPLE prices (CAD) used only until Supabase is connected; the same rows are seeded into the database
+ * (supabase/migrations/..._seed_sample_prices.sql) with sample = true, which shows a "Sample: edit me"
+ * badge in Dashboard -> Prices. Nothing here is ever labelled "sample" on the public site.
+ * No location/branch dimension (DMI had Lagos/Abuja/Uyo; Tplum has none).
+ */
 export type PriceRow = {
   id: string;
-  location: string;
   setting: string;
   service_id: string;
   name: string;
   description: string;
   price: number;
   pricing_mode: string;
+  duration_minutes: number;
   sort_order: number;
   active: boolean;
+  sample?: boolean;
 };
 
 export type ExtraRow = {
   id: string;
-  location: string;
   name: string;
   description: string;
   price: number;
@@ -21,53 +27,32 @@ export type ExtraRow = {
   follows_package: boolean;
   sort_order: number;
   active: boolean;
+  sample?: boolean;
 };
 
-export const BOOKING_LOCATIONS = [
-  { id: "uyo", name: "UYO" },
-  { id: "lagos", name: "LAGOS" },
-  { id: "abuja", name: "ABUJA" },
+const row = (setting: "indoor" | "outdoor", i: number, service_id: string, name: string, price: number, description: string): PriceRow => ({
+  id: `${setting}-${service_id}`, setting, service_id, name, description, price, pricing_mode: "bundle", duration_minutes: 60, sort_order: i, active: true, sample: true,
+});
+
+export const DEFAULT_BOOKING_PRICES: PriceRow[] = [
+  row("indoor", 1, "portrait-individual", "Studio Portrait · Individual", 250, "1 hour · 1 outfit · 15 edited images"),
+  row("indoor", 2, "portrait-couple", "Studio Portrait · Couple", 325, "1 hour · 2 outfits · 20 edited images"),
+  row("indoor", 3, "maternity-studio", "Maternity · Studio", 350, "1 hour · 2 outfits · 20 edited images"),
+  row("indoor", 4, "family", "Family & Group", 400, "1 hour · up to 6 people · 25 edited images"),
+  row("outdoor", 1, "engagement", "Engagement Session", 450, "1 hour on location · 30 edited images"),
+  row("outdoor", 2, "portrait-location", "Portrait · On Location", 350, "1 hour · 2 outfits · 20 edited images"),
+  row("outdoor", 3, "maternity-location", "Maternity · On Location", 400, "1 hour · 2 outfits · 25 edited images"),
+  row("outdoor", 4, "proposal", "Proposal Coverage", 500, "Up to 1 hour · hidden coverage · 40 edited images"),
 ];
 
-const services = [
-  { id: "individual", name: "Individual" },
-  { id: "couple", name: "Couple" },
-  { id: "group", name: "Group/Family" },
+const extra = (i: number, name: string, description: string, price: number, max_qty: number | null = null, follows_package = false): ExtraRow => ({
+  id: `extra-${i}`, name, description, price, max_qty, follows_package, sort_order: i, active: true, sample: true,
+});
+
+export const DEFAULT_BOOKING_EXTRAS: ExtraRow[] = [
+  extra(1, "Extra Edited Picture", "Per additional retouched photo", 25, 20),
+  extra(2, "Extra Outfit", "Per additional outfit change", 75, 3),
+  extra(3, "30-second Reel", "Short-form video edit for social media", 150),
+  extra(4, "All Unedited Photos", "Every unedited image from your session", 200),
+  extra(5, "Rush Delivery", "Edited gallery within 72 hours", 100),
 ];
-
-const uyoPrices = { indoor: [50000, 60000, 70000], outdoor: [70000, 80000, 90000] };
-const metroPrices = { indoor: [100000, 120000, 150000], outdoor: [150000, 170000, 200000] };
-
-export const DEFAULT_BOOKING_PRICES: PriceRow[] = BOOKING_LOCATIONS.flatMap((loc) =>
-  (["indoor", "outdoor"] as const).flatMap((setting) =>
-    services.map((svc, i) => ({
-      id: `${loc.id}-${setting}-${svc.id}`,
-      location: loc.id,
-      setting,
-      service_id: svc.id,
-      name: svc.name,
-      description: loc.id === "uyo" ? "1 outfit · 3 edited images" : "Session rate",
-      price: (loc.id === "uyo" ? uyoPrices : metroPrices)[setting][i],
-      pricing_mode: "bundle",
-      sort_order: i + 1,
-      active: true,
-    })),
-  ),
-);
-
-const extrasFor = (loc: string, unedited: number) => [
-  { name: "30-second Reel", description: "Short-form video edit", price: 40000, max_qty: null, follows_package: false },
-  { name: "Extra Edited Picture", description: "Per additional retouched photo", price: 10000, max_qty: 20, follows_package: false },
-  { name: "Extra Outfit", description: "Per additional outfit · same price as your package", price: 0, max_qty: 5, follows_package: true },
-  { name: "All Unedited Photos", description: loc === "uyo" ? "Full set of raw images" : "Full set of unedited photos", price: unedited, max_qty: null, follows_package: false },
-];
-
-export const DEFAULT_BOOKING_EXTRAS: ExtraRow[] = BOOKING_LOCATIONS.flatMap((loc) =>
-  extrasFor(loc.id, loc.id === "uyo" ? 15000 : 20000).map((e, i) => ({
-    ...e,
-    id: `${loc.id}-extra-${i}`,
-    location: loc.id,
-    sort_order: i + 1,
-    active: true,
-  })),
-);

@@ -1,12 +1,13 @@
 export const EVENT_TYPES = [
+  "Wedding Reception",
+  "Traditional Wedding",
+  "Engagement Party",
+  "Vow Renewal",
   "Birthday Party",
   "Corporate Event",
-  "Product Launch",
-  "Fashion Show",
+  "Baby Shower",
+  "Graduation",
   "Church or Religious Event",
-  "Engagement Party",
-  "Graduation Party",
-  "Exhibition",
 ];
 
 export const OTHER_EVENT_TYPE = "Other";

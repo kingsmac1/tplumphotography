@@ -3,21 +3,22 @@
 // the admin enters matches what the public forms would write.
 
 export const shootTypes = [
-  "Portrait",
   "Wedding",
-  "Pre-Wedding",
-  "Birthday",
-  "Graduation",
-  "Fashion/Editorial",
-  "Product",
-  "Event",
-  "Corporate",
+  "Engagement",
+  "Portrait",
+  "Maternity",
+  "Proposal",
   "Family",
+  "Vow Renewal",
+  "Studio Portrait",
+  "Corporate Event",
+  "Event",
 ];
 
 export const genderOptions = ["Male", "Female", "Prefer not to say"];
 
-export const locationOptions = ["Lagos", "Abuja", "Uyo", "Other"];
+// No branch/location list in Tplum (DMI had Lagos/Abuja/Uyo). The booking keeps a free-text venue/city instead.
+export const locationOptions: string[] = [];
 
 export const settingOptions = ["Indoor", "Outdoor"];
 
@@ -30,35 +31,33 @@ export const platformOptions = [
   "LinkedIn",
 ];
 
-// Service bundles differ by location; these are the service names used in the
-// rate card. Other is included so the admin can type a custom one.
+// Service names used in the rate card (Dashboard -> Prices). Other lets the admin type a custom one.
 export const serviceOptions = [
-  "Individual",
-  "Couple",
-  "Group/Family",
+  "Studio Portrait · Individual",
+  "Studio Portrait · Couple",
+  "Maternity · Studio",
+  "Family & Group",
+  "Engagement Session",
+  "Portrait · On Location",
+  "Maternity · On Location",
+  "Proposal Coverage",
+  "Wedding",
   "Other",
 ];
 
-// Per-location extras. Matches what the public form surfaces.
+// Session extras (match the public booking form).
 export const extrasOptions = [
-  "30-second Reel",
   "Extra Edited Picture",
+  "Extra Outfit",
+  "30-second Reel",
   "All Unedited Photos",
+  "Rush Delivery",
 ];
 
 export const paymentStatusOptions = ["Not Paid", "Part Payment", "Paid"];
 
-// Academy payment is tracked more finely than a plain paid/not-paid, since students often
-// pay in two installments — "Part Payment" and "Full Payment" both count as revenue received.
-export const academyPaymentStatusOptions = ["Not Paid", "Part Payment", "Full Payment"];
 
-// Academy form options
-export const trainedBeforeOptions = ["yes", "no"];
-export const ownsGearOptions = ["yes", "no"];
-export const hasInterestAreaOptions = ["yes", "no"];
-export const acceptOptions = ["yes", "no", "pending"];
-
-// Helper: format Naira
+// Helper: format Canadian dollars
 export const formatMoney = (n: number | null | undefined) =>
   new Intl.NumberFormat("en-CA", {
     style: "currency",

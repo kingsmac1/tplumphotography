@@ -1,32 +1,16 @@
-export type StudioSpaceOption = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-};
+export type StudioSpaceOption = { id: string; name: string; description: string; price: number; duration_minutes: number; sample?: boolean };
+export type StudioSpaceExtra = { id: string; name: string; description: string; price: number; max_qty: number; followsSpace?: boolean; sample?: boolean };
 
-export type StudioSpaceExtra = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  max_qty: number;
-  /** Costs the same as whichever space the client picked (used for "Extra 30 Minutes"). */
-  followsSpace?: boolean;
-};
-
-// The studio's current rate card. Editable later from the dashboard (Prices -> Studio Space);
-// these are only the starting values used until an admin loads them there.
+/** SAMPLE studio rental rates (CAD), editable in Dashboard -> Prices -> Studio space. */
 export const DEFAULT_STUDIO_SPACE_PRICES: StudioSpaceOption[] = [
-  { id: "backdrop-no-ac", name: "Studio Backdrop (without AC)", description: "30 minutes", price: 8000, duration_minutes: 30 },
-  { id: "backdrop-ac", name: "Studio Backdrop (with AC)", description: "30 minutes", price: 10000, duration_minutes: 30 },
-  { id: "content-space", name: "Content Space", description: "30 minutes", price: 20000, duration_minutes: 30 },
+  { id: "studio-basic", name: "Studio Space", description: "1 hour · backdrop and natural light", price: 60, duration_minutes: 60, sample: true },
+  { id: "studio-lighting", name: "Studio + Lighting Kit", description: "1 hour · strobes, modifiers and backdrops", price: 90, duration_minutes: 60, sample: true },
+  { id: "content-space", name: "Content Creator Space", description: "1 hour · styled set for video and reels", price: 75, duration_minutes: 60, sample: true },
 ];
 
 export const DEFAULT_STUDIO_SPACE_EXTRAS: StudioSpaceExtra[] = [
-  { id: "extra-time", name: "Extra 30 Minutes", description: "Same rate as your chosen space, per additional 30 minutes", price: 0, max_qty: 6, followsSpace: true },
-  { id: "props", name: "Props", description: "Per item", price: 5000, max_qty: 10 },
-  { id: "flower-pots", name: "Flower Pots", description: "Per item", price: 5000, max_qty: 10 },
-  { id: "chairs", name: "Chairs", description: "Per item", price: 5000, max_qty: 10 },
+  { id: "extra-time", name: "Extra Hour", description: "Same rate as your chosen space, per additional hour", price: 0, max_qty: 4, followsSpace: true, sample: true },
+  { id: "backdrop", name: "Extra Backdrop Colour", description: "Per backdrop", price: 15, max_qty: 4, sample: true },
+  { id: "props", name: "Props & Furniture", description: "Per item", price: 10, max_qty: 10, sample: true },
+  { id: "assistant", name: "Studio Assistant", description: "Per hour", price: 40, max_qty: 4, sample: true },
 ];
