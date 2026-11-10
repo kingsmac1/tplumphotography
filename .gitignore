@@ -1,0 +1,29 @@
+# secrets — never commit
+.env
+.env.*
+!.env.example
+.secrets.local
+.secrets*
+*.secret
+.dev.vars
+.dev.vars.*
+supabase/.temp/
+supabase/.branches/
+
+# deps / build
+node_modules/
+dist/
+.output/
+.wrangler/
+.tanstack/
+.vinxi/
+.nitro/
+*.log
+.DS_Store
+coverage/
+test-results/
+playwright-report/
+
+# large local-only folders
+reference-copies/
+my-site-reference/raw/
