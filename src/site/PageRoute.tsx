@@ -5,7 +5,7 @@ import { SiteLayout } from "./Layout";
 import { businessJsonLd, pageHead } from "./seo";
 
 /** Shared loader/head/component wiring for every CMS-driven public page. */
-export function cmsPage<K extends PageKey>(key: K, path: string, Body: (p: { c: PageContentMap[K]; site: SiteContent }) => ReactNode, opts: { igVariant?: "default" | "about" } = {}) {
+export function cmsPage<K extends PageKey>(key: K, path: string, Body: (p: { c: PageContentMap[K]; site: SiteContent }) => ReactNode, opts: { igVariant?: "default" | "about"; igClass?: string } = {}) {
   return {
     loader: () => getPageContent({ data: key }),
     head: ({ loaderData }: { loaderData?: Awaited<ReturnType<typeof getPageContent>> }) => {
@@ -20,7 +20,7 @@ export function cmsPage<K extends PageKey>(key: K, path: string, Body: (p: { c: 
     },
     component: function Page({ data }: { data: Awaited<ReturnType<typeof getPageContent>> }) {
       return (
-        <SiteLayout site={data.site} posts={data.posts as FeedPost[]} igVariant={opts.igVariant}>
+        <SiteLayout site={data.site} posts={data.posts as FeedPost[]} igVariant={opts.igVariant} igClass={opts.igClass ?? (key === "home" ? "" : "inner")}>
           <Body c={data.page as PageContentMap[K]} site={data.site} />
         </SiteLayout>
       );

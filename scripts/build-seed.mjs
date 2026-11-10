@@ -156,7 +156,23 @@ const content = {
     seo: seo('contact'),
     hero: { heading: text('contact', 'd4b3a1d'), image: img(bg('contact', '9935a6d'), '') },
     intro: { heading: text('contact', '80847f9'), body: rich('contact', '37eb55d') },
-    form: JSON.parse(fs.readFileSync(`${REF}/interactive/_states/contact-form.json`, 'utf8')),
+    form: (() => {
+      const f = JSON.parse(fs.readFileSync(`${REF}/interactive/_states/contact-form.json`, 'utf8'));
+      const by = (t, label) => f.fields.find((x) => x.type === t && (!label || x.label.startsWith(label)));
+      const lbl = (x) => x.label.replace(/\s*\*$/, '').trim();
+      const name = by('wpforms-field-name'), sel = f.fields.filter((x) => x.type === 'wpforms-field-select'), txt = f.fields.filter((x) => x.type === 'wpforms-field-text');
+      return {
+        labels: {
+          name: lbl(name), first: name.sublabels[0], last: name.sublabels[1], email: lbl(by('wpforms-field-email')), phone: lbl(by('wpforms-field-phone')),
+          service: lbl(sel[0]), others: lbl(txt[0]), othersHelp: txt[0].desc, date: lbl(by('wpforms-field-date-time')), location: lbl(txt[1]),
+          instagram: lbl(txt[2]), instagramPlaceholder: txt[2].placeholder[0], heardFrom: lbl(sel[1]), message: lbl(by('wpforms-field-textarea')),
+        },
+        serviceOptions: sel[0].options,
+        heardOptions: sel[1].options,
+        submit: f.submit,
+        success: 'Thanks for contacting us! We will be in touch with you shortly.',
+      };
+    })(),
   },
   'the-tplum-signature': {
     seo: seo('the-tplum-signature'),

@@ -96,12 +96,12 @@ function Tiles({ posts, rows, gap, className }: { posts: IgPost[]; rows: IgPost[
   );
 }
 
-export function InstagramBand({ site, posts, variant }: { site: SiteContent; posts: IgPost[]; variant?: "default" | "about" }) {
+export function InstagramBand({ site, posts, variant, className = "" }: { site: SiteContent; posts: IgPost[]; variant?: "default" | "about"; className?: string }) {
   const shown = posts.slice(0, 8);
   const handle = site.contact.instagramHandle;
   const [before, after] = site.instagramSection.followText.split(handle);
   return (
-    <section className="ig-band" aria-label="Instagram">
+    <section className={`ig-band ${className}`.trim()} aria-label="Instagram">
       <div className="box">
         <div className="top">
           <Reveal className="follow" fade>
@@ -150,7 +150,7 @@ function ToTop() {
 }
 
 /** Every public page: header + pop-out menu, page content, Instagram band, footer, back to top. */
-export function SiteLayout({ site, posts, children, igVariant }: { site: SiteContent; posts: IgPost[]; children: ReactNode; igVariant?: "default" | "about" }) {
+export function SiteLayout({ site, posts, children, igVariant, igClass }: { site: SiteContent; posts: IgPost[]; children: ReactNode; igVariant?: "default" | "about"; igClass?: string }) {
   const [menu, setMenu] = useState(false);
   return (
     <div className="tp">
@@ -158,7 +158,7 @@ export function SiteLayout({ site, posts, children, igVariant }: { site: SiteCon
       <Header site={site} onMenu={() => setMenu(true)} />
       <MenuOverlay site={site} open={menu} onClose={() => setMenu(false)} />
       <main id="content">{children}</main>
-      <InstagramBand site={site} posts={posts} variant={igVariant} />
+      <InstagramBand site={site} posts={posts} variant={igVariant} className={igClass} />
       <Footer site={site} />
       <ToTop />
     </div>

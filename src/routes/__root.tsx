@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import appCss from "../styles.css?url";
 
 const FONTS =
-  "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&family=Lato:wght@300;400;700&family=Montserrat:wght@400&family=Roboto:wght@400;600&family=Inter:wght@400;500&display=swap";
+  "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&family=Lato:wght@300;400;700&family=Montserrat:wght@400;600&family=Raleway:wght@500&family=Roboto:wght@400;600&family=Inter:wght@400;500&display=swap";
 
 function NotFound() {
   return (

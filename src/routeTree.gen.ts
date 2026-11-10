@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ComingSoonRouteImport } from './routes/coming-soon'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as TheTplumSignatureRouteImport } from './routes/the-tplum-signature'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComingSoonRoute = ComingSoonRouteImport.update({
+  id: '/coming-soon',
+  path: '/coming-soon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TheTplumSignatureRoute = TheTplumSignatureRouteImport.update({
+  id: '/the-tplum-signature',
+  path: '/the-tplum-signature',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/coming-soon': typeof ComingSoonRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/portfolio': typeof PortfolioRoute
+  '/the-tplum-signature': typeof TheTplumSignatureRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/coming-soon': typeof ComingSoonRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/portfolio': typeof PortfolioRoute
+  '/the-tplum-signature': typeof TheTplumSignatureRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/coming-soon': typeof ComingSoonRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/portfolio': typeof PortfolioRoute
+  '/the-tplum-signature': typeof TheTplumSignatureRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/coming-soon'
+    | '/contact'
+    | '/faq'
+    | '/portfolio'
+    | '/the-tplum-signature'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/coming-soon'
+    | '/contact'
+    | '/faq'
+    | '/portfolio'
+    | '/the-tplum-signature'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/coming-soon'
+    | '/contact'
+    | '/faq'
+    | '/portfolio'
+    | '/the-tplum-signature'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ComingSoonRoute: typeof ComingSoonRoute
+  ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
+  PortfolioRoute: typeof PortfolioRoute
+  TheTplumSignatureRoute: typeof TheTplumSignatureRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coming-soon': {
+      id: '/coming-soon'
+      path: '/coming-soon'
+      fullPath: '/coming-soon'
+      preLoaderRoute: typeof ComingSoonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/the-tplum-signature': {
+      id: '/the-tplum-signature'
+      path: '/the-tplum-signature'
+      fullPath: '/the-tplum-signature'
+      preLoaderRoute: typeof TheTplumSignatureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ComingSoonRoute: ComingSoonRoute,
+  ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
+  PortfolioRoute: PortfolioRoute,
+  TheTplumSignatureRoute: TheTplumSignatureRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
