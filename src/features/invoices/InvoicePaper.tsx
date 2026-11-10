@@ -65,19 +65,23 @@ export function InvoicePaper({ doc }: { doc: InvoiceDoc }) {
         <div className="iv-totals">
           <div><span>Sub Total</span><span>{bare(t.subtotal)}</span></div>
           {t.discount !== 0 && <div><span>{doc.discountLabel}</span><span>-{bare(t.discount)}</span></div>}
-          <div className="strong"><span>Total</span><span>{money(t.total)}</span></div>
+          {t.tax > 0 && <div><span>{doc.taxName || 'Tax'} ({doc.taxRate}%)</span><span>{bare(t.tax)}</span></div>}
+          <div className="strong"><span>Total (CAD)</span><span>{money(t.total)}</span></div>
           {payments.map((p, n) => (
             <div key={n} className="paid"><span>Payment made{p.date ? ` on ${shortDate(p.date)}` : ''}{p.method ? ` (${p.method})` : ''}</span><span>-{money(Number(p.amount) || 0)}</span></div>
           ))}
           <div className="balance"><span>Balance Due</span><span>{money(t.balance)}</span></div>
         </div>
-        {(doc.notes || bank.length > 0) && (
+        {(doc.notes || bank.length > 0 || (doc.taxEnabled && doc.taxNumber)) && (
           <div className="iv-notes">
             <h5>Notes</h5>
             {doc.notes && <div className="iv-pre">{doc.notes}</div>}
+            {t.balance > 0 && doc.paymentInstructions && <div className="iv-pre">{doc.paymentInstructions}</div>}
             {bank.map((l) => <div key={l}>{l}</div>)}
+            {doc.taxEnabled && doc.taxNumber && <div>{doc.taxName || 'Tax'} number: {doc.taxNumber}</div>}
           </div>
         )}
+        {doc.footerText && !/^\[/.test(doc.footerText) && <div className="iv-notes" style={{ textAlign: 'center', marginTop: 18 }}>{doc.footerText}</div>}
       </div>
       {terms.some((l) => l.text) && (
         <div className="iv-paper iv-paper-terms" style={{ zoom: scale }}>

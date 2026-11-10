@@ -21,10 +21,10 @@ const inputCls =
 // so a staff member can't check in a colleague from their own phone.
 const getDeviceId = () => {
   try {
-    let id = localStorage.getItem("dmi_device_id");
+    let id = localStorage.getItem("tplum_device_id");
     if (!id || id.length < 16) {
       id = crypto.randomUUID();
-      localStorage.setItem("dmi_device_id", id);
+      localStorage.setItem("tplum_device_id", id);
     }
     return id;
   } catch {
@@ -156,9 +156,9 @@ const Checkin = () => {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
           <div className="text-center mb-8">
-            <img src={brandLogo} alt="DMI" className="h-16 w-auto mx-auto mb-4" />
+            <img src={brandLogo} alt="Tplum Photography" className="h-16 w-auto mx-auto mb-4" />
             <h1 className="font-display text-3xl font-bold">Staff Dashboard</h1>
-            <p className="text-sm text-muted-foreground mt-2">Sign in with your DMI account to check in and see your attendance</p>
+            <p className="text-sm text-muted-foreground mt-2">Sign in with your Tplum Photography account to check in and see your attendance</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             {loginError && (
@@ -200,7 +200,7 @@ const Checkin = () => {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
         <div className="w-full max-w-md text-center">
-          <img src={brandLogo} alt="DMI" className="h-16 w-auto mx-auto mb-6" />
+          <img src={brandLogo} alt="Tplum Photography" className="h-16 w-auto mx-auto mb-6" />
           <h1 className="font-display text-3xl font-bold">Not a staff account yet</h1>
           <p className="text-sm font-body text-muted-foreground mt-3">
             You're signed in as {name}. Ask the admin to set your account to Staff in Dashboard → Team &amp; Accounts, then reload this page.
@@ -218,7 +218,7 @@ const Checkin = () => {
     <div className="min-h-screen bg-background text-foreground px-6 py-8">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-10">
-          <img src={brandLogo} alt="DMI" className="h-10 w-auto" />
+          <img src={brandLogo} alt="Tplum Photography" className="h-10 w-auto" />
           <div className="flex items-center gap-2">
           {staff.role === "admin" && (
             <a href="/admin" className="inline-flex items-center px-4 py-2 text-sm font-body border border-border hover:bg-muted/50 rounded-md">ADMIN DASHBOARD</a>

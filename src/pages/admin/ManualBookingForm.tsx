@@ -7,15 +7,10 @@ import CustomSelect from "./CustomSelect";
 import { PaymentFields, paymentForSave, friendlyPaymentError } from "./payment";
 import { announcePayment } from "@/features/invoices/events";
 import { useBookingPricing } from "@/lib/content";
-import { BOOKING_LOCATIONS } from "@/data/pricingDefaults";
 
 interface Props { onClose: () => void; onSuccess: () => void; initial?: { shoot_date?: string; shoot_time?: string } }
 
 const OTHER = "Other";
-const locationOptsList = [
-  ...BOOKING_LOCATIONS.map((l) => ({ value: l.id, label: l.id.charAt(0).toUpperCase() + l.id.slice(1) })),
-  { value: OTHER, label: OTHER },
-];
 const settingOptsList = [{ value: "indoor", label: "Indoor" }, { value: "outdoor", label: "Outdoor" }];
 const shootTypeOptions = [...shootTypes.map((t) => ({ value: t, label: t })), { value: OTHER, label: OTHER }];
 const genderOptsList = genderOptions.map((g) => ({ value: g, label: g }));
@@ -72,12 +67,12 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
 
   // Same price list the public booking form reads, so the admin picks from the same services and extras.
   const pricing = useBookingPricing();
-  const isCatalogLocation = BOOKING_LOCATIONS.some((l) => l.id === form.location);
+  const isCatalogLocation = true; // Tplum has one price list (no locations)
   const services = useMemo(
     () => pricing.services
-      .filter((r) => r.location === form.location && r.setting === form.shoot_setting)
+      .filter((r) => r.setting === (form.shoot_setting === "Outdoor" || form.shoot_setting === "outdoor" ? "outdoor" : "indoor"))
       .sort((a, b) => a.sort_order - b.sort_order),
-    [pricing.services, form.location, form.shoot_setting],
+    [pricing.services, form.shoot_setting],
   );
   const chosenService = services.find((s) => s.name === form.selected_service);
   const isCustomService = form.selected_service === OTHER || (!!form.selected_service && !chosenService);
@@ -90,7 +85,6 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
 
   const availableExtras = useMemo(
     () => pricing.extras
-      .filter((r) => r.location === form.location)
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((r) => ({
         name: r.name,
@@ -99,7 +93,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
         maxQty: r.max_qty ?? undefined,
         followsPackage: r.follows_package,
       })),
-    [pricing.extras, form.location, servicePrice],
+    [pricing.extras, servicePrice],
   );
   const qtyOf = (name: string) => extraQty[name] ?? 1;
   const lineTotal = (e: (typeof availableExtras)[number]) => e.price * (e.maxQty ? qtyOf(e.name) : 1);
@@ -113,11 +107,6 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
   const changeQty = (name: string, max: number, delta: number) =>
     setExtraQty((p) => ({ ...p, [name]: Math.min(max, Math.max(1, (p[name] ?? 1) + delta)) }));
 
-  const pickLocation = (v: string) => {
-    setForm((p) => ({ ...p, location: v, selected_service: "", selected_service_other: "", service_price: "" }));
-    setSelectedExtras([]);
-    setExtraQty({});
-  };
   const pickSetting = (v: string) => {
     setForm((p) => ({ ...p, shoot_setting: v, selected_service: "", selected_service_other: "", service_price: "" }));
   };
@@ -130,12 +119,11 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
   const validate = (): Record<string, string> => {
     const e: Record<string, string> = {};
     if (!form.full_name.trim()) e.full_name = "Full name is required";
-    if (!form.phone.trim()) e.phone = "WhatsApp number is required";
+    if (!form.phone.trim()) e.phone = "Phone number is required";
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email address";
     if (!form.shoot_type) e.shoot_type = "Select a shoot type";
     if (form.shoot_type === OTHER && !form.shoot_type_other.trim()) e.shoot_type_other = "Specify the shoot type";
     if (!form.shoot_date) e.shoot_date = "Shoot date is required";
-    if (!form.location) e.location = "Select a location";
     if (!form.shoot_setting) e.shoot_setting = "Select a setting";
     if (!form.selected_service) e.selected_service = "Select a service";
     if (form.selected_service === OTHER && !form.selected_service_other.trim()) e.selected_service_other = "Specify the service";
@@ -159,7 +147,6 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
 
     const finalShootType = form.shoot_type === OTHER ? form.shoot_type_other : form.shoot_type;
     const finalService = form.selected_service === OTHER ? form.selected_service_other : form.selected_service;
-    const locationLabel = form.location.charAt(0).toUpperCase() + form.location.slice(1);
     const settingLabel = form.shoot_setting.charAt(0).toUpperCase() + form.shoot_setting.slice(1);
     const extraLabel = (x: (typeof availableExtras)[number]) => (x.maxQty ? `${x.name} x${qtyOf(x.name)}` : x.name);
     // Same conventions as the public form: extra outfits add to the outfit count, extra edited pictures set the count.
@@ -184,7 +171,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
       date_of_birth: form.date_of_birth || null,
       social_handles: socials.filter((s) => s.handle.trim()).map((s) => `${s.platform}: ${s.handle.trim()}`).join(" | ") || null,
       inspiration_links: form.inspiration_links.split("\n").map((l) => l.trim()).filter(Boolean).join(" | ") || null,
-      location: locationLabel,
+      location: form.location.trim(),
       shoot_setting: settingLabel,
       selected_service: finalService || null,
       service_price: form.service_price ? servicePrice : null,
@@ -238,7 +225,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
             <input className={inputCls + errBorder("full_name")} value={form.full_name} onChange={(e) => set("full_name", e.target.value)} />
           </Field>
           <div className="grid grid-cols-2 gap-4">
-            <Field fieldErrors={fieldErrors} name="phone" label="WhatsApp Number" required>
+            <Field fieldErrors={fieldErrors} name="phone" label="Phone Number" required>
               <input className={inputCls + errBorder("phone")} value={form.phone} onChange={(e) => set("phone", e.target.value)} />
             </Field>
             <Field fieldErrors={fieldErrors} name="email" label="Email">
@@ -270,8 +257,8 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
             <input className={inputCls} type="time" value={form.shoot_time} onChange={(e) => set("shoot_time", e.target.value)} />
           </Field>
           <div className="grid grid-cols-2 gap-4">
-            <Field fieldErrors={fieldErrors} name="location" label="Location" required>
-              <CustomSelect value={form.location} onChange={pickLocation} options={locationOptsList} placeholder="Select..." hasError={!!fieldErrors.location} />
+            <Field fieldErrors={fieldErrors} name="location" label="Venue / city (optional)">
+              <input value={form.location} onChange={(e) => set("location", e.target.value)} placeholder="e.g. Calgary, Fairmont Palliser" className="w-full border border-border bg-background px-3 py-2.5 text-sm font-body outline-none focus:border-foreground" />
             </Field>
             <Field fieldErrors={fieldErrors} name="shoot_setting" label="Setting" required>
               <CustomSelect value={form.shoot_setting} onChange={pickSetting} options={settingOptsList} placeholder="Select..." hasError={!!fieldErrors.shoot_setting} />
@@ -301,7 +288,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
           <div>
             <label className={labelCls}>Extras</label>
             {!isCatalogLocation ? (
-              <p className="text-xs font-body text-muted-foreground">Pick Lagos, Abuja or Uyo to choose from the extras price list.</p>
+              <p className="text-xs font-body text-muted-foreground">Choose a package to see the extras.</p>
             ) : availableExtras.length === 0 ? (
               <p className="text-xs font-body text-muted-foreground">No extras are set up for this location.</p>
             ) : (

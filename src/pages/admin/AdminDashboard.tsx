@@ -3,27 +3,24 @@ import { useNavigate } from "@/lib/router-compat";
 import AdminLogin from "./AdminLogin";
 import BookingsSection from "./BookingsSection";
 import CalendarSection from "./CalendarSection";
-import AcademyTable from "./AcademyTable";
 import AttendanceSection from "./AttendanceSection";
 import TeamSection from "./TeamSection";
 import Finance from "./Finance";
 import PromoManager from "./PromoManager";
 import StudioSpacePromoManager from "./StudioSpacePromoManager";
 import EmailsSection from "./EmailsSection";
-import ContentManager from "./ContentManager";
-import BlogManager from "./BlogManager";
-import StoreManager from "./StoreManager";
 import PricingManager from "./PricingManager";
-import ReviewsManager from "./ReviewsManager";
-import ManualAcademyForm from "./ManualAcademyForm";
+import ClientsSection from "./ClientsSection";
+import SettingsSection from "./SettingsSection";
+import InstagramPanel from "./InstagramPanel";
+import InquiriesSection from "./InquiriesSection";
 import { COMPOSE_EVENT } from "./contact";
 import { supabase } from "@/lib/supabaseClient";
 import Overview from "./Overview";
 import { GalleryAdminProvider } from "@/features/gallery/admin/kit/data";
-import { BillingProvider, useBilling } from "@/features/billing/BillingProvider";
-import { BillingBanner } from "@/features/billing/BillingBanner";
-import { BillingSection } from "@/features/billing/BillingSection";
-import { GalleryPaywall } from "@/features/billing/GalleryPaywall";
+// Website CMS (page-by-page editor) and contracts — loaded only when opened
+const WebsiteSection = lazy(() => import("@/features/cms/WebsiteSection"));
+const ContractsSection = lazy(() => import("@/features/contracts/ContractsSection"));
 // Client galleries (proofs, selections, finals) — loaded only when the section is opened
 const GalleriesSection = lazy(() => import("@/features/gallery/admin/GalleriesSection").then((m) => ({ default: m.GalleriesSection })));
 const GalleryManager = lazy(() => import("@/features/gallery/admin/GalleryManager").then((m) => ({ default: m.GalleryManager })));
@@ -37,31 +34,31 @@ const DeliveriesSection = lazy(() => import("@/features/delivery/DeliveriesSecti
 import { DeliveryMenuCount } from "@/features/delivery/MenuCount";
 import brandLogo from "@/assets/tplum-logo-dark.png";
 import brandLogoWhite from "@/assets/tplum-logo-white.png";
-import { LogOut, LayoutDashboard, CalendarDays, GraduationCap, UserCheck, Tag, Images, Star, Newspaper, ShoppingBag, BadgeDollarSign, Wallet, Ellipsis, X, Mail, CalendarRange, GalleryHorizontalEnd, Users, CreditCard, FileText, Timer } from "lucide-react";
+import { LogOut, LayoutDashboard, CalendarDays, UserCheck, Tag, BadgeDollarSign, Wallet, Ellipsis, X, Mail, CalendarRange, GalleryHorizontalEnd, Users, FileText, Timer, Contact, FileSignature, Globe, Camera, Settings, Inbox } from "lucide-react";
 
-type SectionId = "overview" | "bookings" | "deliveries" | "galleries" | "calendar" | "finance" | "invoices" | "academy" | "reviews" | "attendance" | "team" | "content" | "blog" | "store" | "pricing" | "promos" | "emails" | "billing";
+type SectionId = "overview" | "bookings" | "inquiries" | "deliveries" | "galleries" | "calendar" | "clients" | "finance" | "invoices" | "contracts" | "attendance" | "team" | "website" | "instagram" | "pricing" | "promos" | "emails" | "settings";
 const sections: { id: SectionId; label: string; short: string; icon: typeof LayoutDashboard; group?: string }[] = [
   { id: "overview", label: "Overview", short: "Home", icon: LayoutDashboard },
   { id: "bookings", label: "Bookings", short: "Bookings", icon: CalendarDays, group: "BUSINESS" },
+  { id: "inquiries", label: "Enquiries", short: "Enquiries", icon: Inbox },
+  { id: "calendar", label: "Calendar", short: "Calendar", icon: CalendarRange },
+  { id: "clients", label: "Clients", short: "Clients", icon: Contact },
   { id: "deliveries", label: "Deliveries", short: "Deliveries", icon: Timer },
   { id: "galleries", label: "Client Galleries", short: "Galleries", icon: GalleryHorizontalEnd },
-  { id: "calendar", label: "Calendar", short: "Calendar", icon: CalendarRange },
-  { id: "finance", label: "Finance", short: "Finance", icon: Wallet },
   { id: "invoices", label: "Invoices", short: "Invoices", icon: FileText },
-  { id: "academy", label: "Academy Applications", short: "Academy", icon: GraduationCap },
-  { id: "reviews", label: "Reviews", short: "Reviews", icon: Star },
-  { id: "attendance", label: "Staff Attendance", short: "Attendance", icon: UserCheck, group: "TEAM" },
+  { id: "contracts", label: "Contracts", short: "Contracts", icon: FileSignature },
+  { id: "finance", label: "Finance", short: "Finance", icon: Wallet },
+  { id: "attendance", label: "Staff Check-in", short: "Check-in", icon: UserCheck, group: "TEAM" },
   { id: "team", label: "Team & Accounts", short: "Team", icon: Users },
-  { id: "content", label: "Images & Galleries", short: "Images", icon: Images, group: "WEBSITE" },
-  { id: "blog", label: "Blog", short: "Blog", icon: Newspaper },
-  { id: "store", label: "Store", short: "Store", icon: ShoppingBag },
-  { id: "pricing", label: "Prices", short: "Prices", icon: BadgeDollarSign },
+  { id: "website", label: "Website", short: "Website", icon: Globe, group: "WEBSITE" },
+  { id: "instagram", label: "Instagram Feed", short: "Instagram", icon: Camera },
+  { id: "pricing", label: "Prices & Packages", short: "Prices", icon: BadgeDollarSign },
   { id: "promos", label: "Promo Codes", short: "Promos", icon: Tag },
-  { id: "emails", label: "Emails & Messaging", short: "Emails", icon: Mail, group: "WEBSITE" },
-  { id: "billing", label: "Billing", short: "Billing", icon: CreditCard, group: "ACCOUNT" },
+  { id: "emails", label: "Emails & Messaging", short: "Emails", icon: Mail },
+  { id: "settings", label: "Settings", short: "Settings", icon: Settings, group: "ACCOUNT" },
 ];
 // The mobile bottom bar shows these; everything else is under "More".
-const mobilePrimary: SectionId[] = ["overview", "bookings", "attendance", "reviews"];
+const mobilePrimary: SectionId[] = ["overview", "bookings", "calendar", "invoices"];
 
 const sectionFromHash = (): SectionId => {
   if (typeof window === "undefined") return "overview";
@@ -77,14 +74,9 @@ const invoicePathFromHash = () => (typeof window === "undefined" ? [] : /^#invoi
 
 const AdminDashboardInner = () => {
   const navigate = useNavigate();
-  const { billing, active: billingActive } = useBilling();
-  // the Billing page only exists once Emkay Digitals has switched billing on for this studio
-  const visibleSections = sections.filter((sec) => sec.id !== "billing" || billingActive);
-  const galleriesPaused = billingActive && !!billing && !billing.gallery_enabled;
+  const visibleSections = sections;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [pendingReviews, setPendingReviews] = useState(0);
-  const [showAcademyForm, setShowAcademyForm] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [pendingReviews] = useState(0);
   const [active, setActive] = useState<SectionId>("overview");
   const [moreOpen, setMoreOpen] = useState(false);
   const [galleryBooking, setGalleryBooking] = useState<string | null>(null);
@@ -130,16 +122,10 @@ const AdminDashboardInner = () => {
       if (staff.role === "staff") navigate("/checkin");
     };
     checkAuth();
-    void loadPendingReviews();
     // Once per visit. Re-running this on every render looped endlessly and used up the Supabase quota.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Shown on the Overview as a shortcut to the reviews waiting for approval.
-  const loadPendingReviews = async () => {
-    const { count } = await supabase.from("reviews").select("id", { count: "exact", head: true }).eq("status", "pending");
-    setPendingReviews(count ?? 0);
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -148,7 +134,7 @@ const AdminDashboardInner = () => {
   };
 
   if (isAuthenticated === null) {
-    return <div className="dash min-h-screen text-foreground flex items-center justify-center">Loading...</div>;
+    return <div className="app dash min-h-screen text-foreground flex items-center justify-center">Loading…</div>;
   }
   if (!isAuthenticated) return <AdminLogin />;
 
@@ -157,7 +143,7 @@ const AdminDashboardInner = () => {
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-6 py-6 border-b border-white/10">
-        <img src={brandLogoWhite} alt="DMI" className="h-10 w-auto" />
+        <img src={brandLogoWhite} alt="Tplum Photography" className="h-10 w-auto" />
         <span className="font-display text-lg font-bold">Admin</span>
       </div>
       <nav data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-4">
@@ -194,7 +180,7 @@ const AdminDashboardInner = () => {
   );
 
   return (
-    <div className="dash min-h-screen text-foreground">
+    <div className="app dash min-h-screen text-foreground">
       {/* Fixed left panel (desktop) */}
       <aside className="hidden md:block fixed inset-y-0 left-0 w-64 bg-neutral-950 text-white z-40">
         {sidebar}
@@ -260,21 +246,24 @@ const AdminDashboardInner = () => {
       <div className="md:ml-64">
         {/* Mobile top bar */}
         <header className="md:hidden sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3">
-          <img src={brandLogo} alt="DMI" className="h-8 w-auto" />
+          <img src={brandLogo} alt="Tplum Photography" className="h-8 w-auto" />
           <span className="font-display text-lg font-bold">{current.label}</span>
           <button onClick={handleLogout} aria-label="Logout" className="p-1 text-muted-foreground hover:text-foreground"><LogOut size={20} /></button>
         </header>
 
         <main className="dash-main px-4 sm:px-6 md:px-10 py-6 md:py-10 pb-28 md:pb-10">
-          <BillingBanner />
-          {active !== "galleries" && active !== "invoices" && active !== "deliveries" && <h1 className="hidden md:block font-display text-4xl md:text-5xl font-bold mb-8">{current.label}</h1>}
+          {active !== "galleries" && active !== "invoices" && active !== "deliveries" && active !== "website" && <h1 className="hidden md:block font-display text-4xl md:text-5xl mb-8">{current.label}</h1>}
 
           {active === "overview" && <Overview pendingReviews={pendingReviews} onNavigate={selectSection} />}
 
           {active === "bookings" && <BookingsSection onDataChanged={() => {}} />}
-          {active === "billing" && <BillingSection />}
-          {active === "galleries" && galleriesPaused && <GalleryPaywall />}
-          {active === "galleries" && !galleriesPaused && (
+          {active === "inquiries" && <InquiriesSection />}
+          {active === "clients" && <ClientsSection />}
+          {active === "contracts" && <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}><ContractsSection /></Suspense>}
+          {active === "website" && <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}><WebsiteSection /></Suspense>}
+          {active === "instagram" && <InstagramPanel />}
+          {active === "settings" && <SettingsSection />}
+          {active === "galleries" && (
             <GalleryAdminProvider>
               <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
                 {galleryBooking ? <GalleryManager key={galleryBooking} bookingId={galleryBooking} /> : galleryOnly ? <GalleryManager key={galleryOnly} galleryId={galleryOnly} /> : <GalleriesSection />}
@@ -297,7 +286,6 @@ const AdminDashboardInner = () => {
               </Suspense>
             </GalleryAdminProvider>
           )}
-          {active === "academy" && <AcademyTable key={"academy-" + refreshKey} onAdd={() => setShowAcademyForm(true)} />}
           {active === "attendance" && <AttendanceSection />}
           {active === "team" && <TeamSection />}
           {active === "emails" && <EmailsSection />}
@@ -307,31 +295,17 @@ const AdminDashboardInner = () => {
               <StudioSpacePromoManager />
             </div>
           )}
-          {active === "content" && <ContentManager />}
-          {active === "blog" && <BlogManager />}
-          {active === "store" && <StoreManager />}
           {active === "pricing" && <PricingManager />}
-          {active === "reviews" && <ReviewsManager />}
         </main>
       </div>
 
       {/* after any payment is recorded: "send an updated invoice?" */}
       <InvoicePrompt />
 
-      {showAcademyForm && (
-        <ManualAcademyForm
-          onClose={() => setShowAcademyForm(false)}
-          onSuccess={() => setRefreshKey(k => k + 1)}
-        />
-      )}
     </div>
   );
 };
 
-const AdminDashboard = () => (
-  <BillingProvider>
-    <AdminDashboardInner />
-  </BillingProvider>
-);
+const AdminDashboard = () => <AdminDashboardInner />;
 
 export default AdminDashboard;

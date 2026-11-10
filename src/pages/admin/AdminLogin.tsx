@@ -43,7 +43,7 @@ const AdminLogin = () => {
       >
         {/* Logo/Branding */}
         <div className="text-center mb-8">
-          <img src={brandLogo} alt="DMI Admin" className="h-16 w-auto mx-auto mb-4" />
+          <img src={brandLogo} alt="Tplum Photography" className="h-16 w-auto mx-auto mb-4" />
           <h1 className="font-display text-3xl font-bold text-foreground">Admin Portal</h1>
           <p className="text-sm text-muted-foreground mt-2">Please sign in to continue</p>
         </div>
@@ -66,7 +66,7 @@ const AdminLogin = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@dmi.com.ng"
+                placeholder="you@example.com"
                 className="w-full border border-border bg-background px-5 py-4 text-sm font-body outline-none focus:border-foreground transition-colors"
                 required
                 autoComplete="email"

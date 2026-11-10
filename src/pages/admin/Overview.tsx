@@ -7,7 +7,7 @@ import { AnimatedNumber, BarList, ColumnChart, Donut, PALETTE, Panel, Sparkline,
 import brandLogoWhite from "@/assets/tplum-logo-white.png";
 import { OverviewDeliveries, OverviewDeliveryButton } from "@/features/delivery/OverviewDeliveries";
 
-type Stream = "Photography" | "Wedding" | "Studio space" | "Events" | "Academy";
+type Stream = "Photography" | "Wedding" | "Studio space" | "Events";
 type Item = {
   stream: Stream;
   created: string;
@@ -39,23 +39,22 @@ const Kpi = ({ label, value, format, spark, color, delay }: { label: string; val
   </Panel>
 );
 
-const Overview = ({ pendingReviews, onNavigate }: { pendingReviews: number; onNavigate: (id: "bookings" | "deliveries" | "reviews" | "finance" | "academy") => void }) => {
+const Overview = ({ pendingReviews, onNavigate }: { pendingReviews: number; onNavigate: (id: "bookings" | "deliveries" | "finance" | "calendar" | "invoices") => void }) => {
   const [items, setItems] = useState<Item[] | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      selectWithPaid("bookings", "created_at, shoot_date, shoot_time, grand_total, payment_status, location, selected_service, shoot_type, full_name, source"),
+      selectWithPaid("bookings", "created_at, shoot_date, shoot_time, grand_total, payment_status, location, selected_service, shoot_type, full_name, source, status"),
       selectWithPaid("studio_bookings", "created_at, rental_date, rental_time, grand_total, payment_status, full_name, space_name"),
       selectWithPaid("event_bookings", "created_at, event_start_date, event_time, agreed_amount, payment_status, full_name, event_type"),
-      supabase.from("academy_applications").select("created_at, amount, payment_status, full_name, plan"),
-    ]).then(([b, s, e, a]) => {
+    ]).then(([b, s, e]) => {
       if (cancelled) return;
-      const err = b.error || s.error || e.error || a.error;
+      const err = b.error || s.error || e.error;
       if (err) setError(err.message);
       const all: Item[] = [
-        ...(b.data ?? []).map((r): Item => ({
+        ...(b.data ?? []).filter((r) => r.status !== "cancelled" && r.status !== "pending_payment").map((r): Item => ({
           stream: r.source === "wedding_form" ? "Wedding" : "Photography", created: r.created_at, date: r.shoot_date, time: r.shoot_time,
           name: r.full_name ?? "", title: r.selected_service || r.shoot_type || "Session", total: Number(r.grand_total) || 0,
           received: receivedAmount(r.payment_status, r.grand_total, r.amount_paid), status: asStatus(r.payment_status),
@@ -71,16 +70,6 @@ const Overview = ({ pendingReviews, onNavigate }: { pendingReviews: number; onNa
           total: Number(r.agreed_amount) || 0, received: receivedAmount(r.payment_status, r.agreed_amount, r.amount_paid), status: asStatus(r.payment_status),
           location: null, shootType: null, service: null,
         })),
-        // Academy tracks Not Paid / Part Payment / Full Payment; either paid state counts as received in Finance, so it does here.
-        ...(a.data ?? []).map((r): Item => {
-          const paid = r.payment_status && r.payment_status !== "Not Paid";
-          return {
-            stream: "Academy", created: r.created_at, date: null, time: null, name: r.full_name ?? "", title: r.plan || "Academy",
-            total: Number(r.amount) || 0, received: paid ? Number(r.amount) || 0 : 0,
-            status: r.payment_status === "Full Payment" ? "Paid" : r.payment_status === "Part Payment" ? "Part Payment" : "Not Paid",
-            location: null, shootType: null, service: null,
-          };
-        }),
       ];
       setItems(all);
     });
@@ -113,7 +102,7 @@ const Overview = ({ pendingReviews, onNavigate }: { pendingReviews: number; onNa
       return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([label, value]) => ({ label, value }));
     };
 
-    const streams: Stream[] = ["Photography", "Wedding", "Studio space", "Events", "Academy"];
+    const streams: Stream[] = ["Photography", "Wedding", "Studio space", "Events"];
     const byStream = streams.map((s) => ({ label: s, value: data.filter((i) => i.stream === s).reduce((t, i) => t + i.received, 0) })).filter((x) => x.value > 0);
 
     // Which day of the week the shoots, rentals and events fall on.
@@ -153,20 +142,15 @@ const Overview = ({ pendingReviews, onNavigate }: { pendingReviews: number; onNa
         <img src={brandLogoWhite} alt="" aria-hidden className="pointer-events-none absolute -right-4 -bottom-6 h-44 opacity-[0.07]" />
         <div className="relative flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="inline-flex items-center gap-2 text-xs font-body font-bold tracking-widest text-white/60"><span className="inline-block w-1.5 h-1.5 rounded-full bg-[#c9a27a]" /> {greeting().toUpperCase()}</p>
+            <p className="inline-flex items-center gap-2 text-xs font-body font-bold tracking-widest text-white/60"><span className="inline-block w-1.5 h-1.5 rounded-full bg-[#9a9a9a]" /> {greeting().toUpperCase()}</p>
             <h2 className="font-display text-3xl sm:text-4xl font-bold mt-3 leading-tight">
               {m.thisWeek > 0
-                ? <>You have <span className="text-[#c9a27a]">{m.thisWeek} booking{m.thisWeek === 1 ? "" : "s"}</span> in the next 7 days.</>
-                : <>Nothing booked this week. <span className="text-[#c9a27a]">A good time to share some work?</span></>}
+                ? <>You have <span className="text-[#9a9a9a]">{m.thisWeek} booking{m.thisWeek === 1 ? "" : "s"}</span> in the next 7 days.</>
+                : <>Nothing booked this week. <span className="text-[#9a9a9a]">A good time to share some work?</span></>}
             </h2>
             <div className="flex flex-wrap gap-3 mt-5">
-              <button onClick={() => onNavigate("bookings")} className="bg-[#f5f1ea] text-[#0a0a0a] px-5 py-2.5 text-xs font-body font-bold tracking-widest hover:bg-[#f0ede6] transition-colors">VIEW BOOKINGS</button>
+              <button onClick={() => onNavigate("bookings")} className="bg-[#f6f6f5] text-[#0a0a0a] px-5 py-2.5 text-xs font-body font-bold tracking-widest hover:bg-[#efefee] transition-colors">VIEW BOOKINGS</button>
               <OverviewDeliveryButton onOpen={() => onNavigate("deliveries")} />
-              {pendingReviews > 0 && (
-                <button onClick={() => onNavigate("reviews")} className="inline-flex items-center gap-2 border border-white/30 px-5 py-2.5 text-xs font-body font-bold tracking-widest hover:bg-white/10 transition-colors">
-                  <MessageSquareQuote size={14} /> {pendingReviews} REVIEW{pendingReviews === 1 ? "" : "S"} TO APPROVE
-                </button>
-              )}
             </div>
           </div>
           <div className="text-right">
@@ -236,7 +220,7 @@ const Overview = ({ pendingReviews, onNavigate }: { pendingReviews: number; onNa
       <div className="grid gap-5 lg:grid-cols-3">
         <Panel delay={0.55} title="Shoot types"><BarList items={m.shootTypes} color={PALETTE.ink} /></Panel>
         <Panel delay={0.6} title="Favourite packages"><BarList items={m.packages} color={PALETTE.brown} /></Panel>
-        <Panel delay={0.65} title="Where clients book"><BarList items={m.locations} color={PALETTE.tan} /></Panel>
+        <Panel delay={0.65} title="Weddings by city / venue"><BarList items={m.locations} color={PALETTE.tan} /></Panel>
       </div>
 
       {m.total === 0 ? (

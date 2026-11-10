@@ -105,8 +105,8 @@ const TeamSection = () => {
       <div className="border border-border p-4 text-sm font-body leading-relaxed">
         <p className="font-bold">Adding a new staff member</p>
         <p className="text-muted-foreground">
-          Ask them to create an account at <b className="text-foreground">dmi.com.ng/account</b> and confirm their email. They then appear below as a
-          Client — change them to <b className="text-foreground">Staff</b>. Staff sign in at <b className="text-foreground">dmi.com.ng/checkin</b> to check in
+          Ask them to create an account at <b className="text-foreground">tplumphotography.com/account</b> and confirm their email. They then appear below as a
+          Client — change them to <b className="text-foreground">Staff</b>. Staff sign in at <b className="text-foreground">tplumphotography.com/checkin</b> to check in
           and see their own attendance. <b className="text-foreground">Admin</b> gives full access to this dashboard.
         </p>
       </div>
@@ -197,7 +197,7 @@ const TeamSection = () => {
             roleChange.to === "admin"
               ? "Admins can see and change everything in this dashboard: bookings, finance, accounts and settings."
               : roleChange.to === "staff"
-                ? "They can sign in at dmi.com.ng/checkin to check in and see their own attendance. They can't open this dashboard."
+                ? "They can sign in at tplumphotography.com/checkin to check in and see their own attendance. They can't open this dashboard."
                 : "They lose all staff access and keep a normal client account. Their past check-ins stay in the attendance records."
           }
           confirmLabel="Change role"

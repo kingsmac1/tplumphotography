@@ -57,7 +57,7 @@ const monthEnd = (offset = 0) => {
   return new Date(Date.UTC(y, m + offset, 0)).toISOString().slice(0, 10);
 };
 const yearStart = () => `${localToday().slice(0, 4)}-01-01`;
-// Week runs Monday-Sunday, in Lagos time.
+// Week runs Monday-Sunday, in Mountain Time.
 const weekStart = () => {
   const d = new Date(`${localToday()}T00:00:00Z`);
   const day = d.getUTCDay(); // 0 = Sunday
@@ -122,16 +122,15 @@ const FinanceOverview = () => {
       selectWithPaid("bookings", "created_at, shoot_date, location, grand_total, payment_status, source"),
       selectWithPaid("studio_bookings", "created_at, rental_date, grand_total, payment_status"),
       selectWithPaid("event_bookings", "created_at, event_start_date, agreed_amount, payment_status"),
-      supabase.from("academy_applications").select("created_at, amount, payment_status"),
       supabase.from("expenses").select("expense_date, amount, category"),
       supabase.from("other_income").select("income_date, source, amount"),
-    ]).then(([b, s, ev, a, e, oi]) => {
-      const err = b.error || s.error || ev.error || a.error || e.error || oi.error;
+    ]).then(([b, s, ev, e, oi]) => {
+      const err = b.error || s.error || ev.error || e.error || oi.error;
       if (err) setError(err.message);
       setBookings((b.data as BookingRow[]) || []);
       setStudio((s.data as StudioRow[]) || []);
       setEvents((ev.data as EventRow[]) || []);
-      setAcademy((a.data as AcademyRow[]) || []);
+      setAcademy([]); // Tplum has no academy
       setExpenses((e.data as ExpenseRow[]) || []);
       setOtherIncome((oi.data as OtherIncomeRow[]) || []);
       setLoading(false);
@@ -210,7 +209,6 @@ const FinanceOverview = () => {
     { name: "Weddings", value: wedding.paid },
     { name: "Studio space", value: studioTotals.paid },
     { name: "Events", value: eventTotals.paid },
-    { name: "Academy", value: academyTotals.paid },
     { name: "Other income", value: otherIncomeTotals.paid },
   ].map((x, i) => ({ ...x, color: SERIES_COLORS[i % SERIES_COLORS.length] }));
 
@@ -269,7 +267,7 @@ const FinanceOverview = () => {
           </div>
         </div>
         <p className="text-xs font-body text-muted-foreground">
-          Showing <b className="text-foreground">{rangeLabel}</b>. Academy applications, Other Income and expenses are always counted by the date they were recorded.
+          Showing <b className="text-foreground">{rangeLabel}</b>. Other Income and expenses are always counted by the date they were recorded.
         </p>
       </div>
 
@@ -327,7 +325,6 @@ const FinanceOverview = () => {
                   <StreamRow label="Wedding bookings" t={wedding} />
                   <StreamRow label="Studio space rentals" t={studioTotals} />
                   <StreamRow label="Event bookings" t={eventTotals} />
-                  <StreamRow label="Academy" t={academyTotals} />
                   <StreamRow label="Other income" t={otherIncomeTotals} />
                   <tr className="font-bold bg-muted/40">
                     <td className="px-4 py-3">Total</td>
@@ -344,11 +341,11 @@ const FinanceOverview = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {byLocation.length > 0 && (
               <div className="border border-border">
-                <p className="px-4 pt-4 pb-2 font-display text-lg font-bold">Bookings by location</p>
+                <p className="px-4 pt-4 pb-2 font-display text-lg font-bold">Bookings by city / venue</p>
                 <table className="w-full text-sm font-body">
                   <thead>
                     <tr className="border-b border-border text-left text-xs font-bold tracking-widest text-muted-foreground">
-                      <th className="px-4 py-2">Location</th>
+                      <th className="px-4 py-2">City / venue</th>
                       <th className="px-4 py-2">Bookings</th>
                       <th className="px-4 py-2">Total booked value</th>
                     </tr>

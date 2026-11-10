@@ -3,7 +3,7 @@
 @font-face { font-family: 'DMI Invoice'; src: url('/fonts/NotoSans-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
 .ad .iv-bar { position: sticky; top: 0; z-index: 25; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 20px; padding: 12px 0; background: hsl(var(--dash-page)); border-bottom: 1px solid var(--line); }
-.ad .iv-bar h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; line-height: 1.2; }
+.ad .iv-bar h1 { font-family: 'Fulgate', Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.2; }
 .ad .iv-bar .sp { flex: 1; min-width: 12px; }
 .ad .iv-saved { color: var(--mute); font-size: 12.5px; white-space: nowrap; }
 .ad .iv-layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 24px; align-items: start; }

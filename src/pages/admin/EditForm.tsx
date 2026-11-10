@@ -5,10 +5,10 @@ import { useBodyScrollLock } from "./useBodyScrollLock";
 import CustomSelect from "./CustomSelect";
 import { PaymentFields, paymentForSave, friendlyPaymentError } from "./payment";
 import { announcePayment } from "@/features/invoices/events";
-import { academyBatchOptions } from "@/data/academyBatches";
+const academyBatchOptions = (_y: number[]) => [] as { value: string; label: string }[]; // no academy in Tplum
 import {
   shootTypes, genderOptions, locationOptions, settingOptions,
-  serviceOptions, paymentStatusOptions, academyPaymentStatusOptions,
+  serviceOptions, paymentStatusOptions,
 } from "./formOptions";
 
 interface EditFormProps {
@@ -101,7 +101,6 @@ export default function EditForm({ table, record, onClose, onSaved }: EditFormPr
       if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email address";
       if (!form.shoot_type) e.shoot_type = "Shoot type is required";
       if (!form.shoot_date) e.shoot_date = "Shoot date is required";
-      if (!form.location) e.location = "Location is required";
       if (!form.shoot_setting) e.shoot_setting = "Setting is required";
       if (form.service_price && isNaN(Number(form.service_price))) e.service_price = "Service price must be a number";
       if (form.payment_status === "Part Payment" && !(Number(form.amount_paid) > 0)) e.amount_paid = "Enter the amount paid so far";
@@ -199,8 +198,8 @@ export default function EditForm({ table, record, onClose, onSaved }: EditFormPr
                 </Field>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Field fieldErrors={fieldErrors} name="location" label="Location" required>
-                  <CustomSelect value={form.location || ""} onChange={v => set("location", v)} options={locationOptsList} placeholder="Select..." hasError={!!fieldErrors.location} />
+                <Field fieldErrors={fieldErrors} name="location" label="Venue / city">
+                  <input value={form.location || ""} onChange={e => set("location", e.target.value)} placeholder="e.g. Calgary" className="w-full border border-border bg-background px-3 py-2.5 text-sm font-body outline-none focus:border-foreground" />
                 </Field>
                 <Field fieldErrors={fieldErrors} name="shoot_setting" label="Setting" required>
                   <CustomSelect value={form.shoot_setting || ""} onChange={v => set("shoot_setting", v)} options={settingOptsList} placeholder="Select..." hasError={!!fieldErrors.shoot_setting} />
@@ -322,7 +321,7 @@ export default function EditForm({ table, record, onClose, onSaved }: EditFormPr
                   <input className={inputCls} type="number" value={form.amount || ""} onChange={e => set("amount", e.target.value)} />
                 </Field>
                 <Field fieldErrors={fieldErrors} name="payment_status" label="Payment Status">
-                  <CustomSelect value={form.payment_status || "Not Paid"} onChange={v => set("payment_status", v)} options={academyPaymentStatusOptions.map(p => ({ value: p, label: p }))} />
+                  <CustomSelect value={form.payment_status || "Not Paid"} onChange={v => set("payment_status", v)} options={paymentStatusOptions.map(p => ({ value: p, label: p }))} />
                 </Field>
               </div>
             </>

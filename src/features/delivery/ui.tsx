@@ -25,7 +25,7 @@ export function DeliveryBadge({ d, className = '', wrap }: { d: Delivery; classN
   )
 }
 
-/** "Fri 6 Nov, 2:00 PM" in Lagos time */
+/** "Fri 6 Nov, 2:00 PM" in Mountain Time */
 export const fmtWhen = (ms: number | string | null | undefined) => {
   if (ms == null) return '—'
   const d = new Date(ms)
@@ -43,7 +43,7 @@ export function deliveryTitle(d: Delivery) {
   }
 }
 
-/** the current Lagos time as a datetime-local value */
+/** the current Mountain Time as a datetime-local value */
 const lagosNowInput = () => {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Edmonton', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).map((x) => [x.type, x.value]))
   return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`

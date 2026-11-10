@@ -52,15 +52,15 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
 
 /** The org's social accounts — same links used on the homepage's "Follow Our Journey" band. */
 export const SOCIAL_LINKS = [
-  { label: "Facebook", href: "https://www.facebook.com/DMIstudios/", icon: "facebook" },
-  { label: "Instagram", href: "https://www.instagram.com/darlmac_impression/", icon: "instagram" },
+  { label: "Instagram", href: "https://www.instagram.com/tplumphotography", icon: "instagram" },
+  { label: "Facebook", href: "https://facebook.com/tplumphotograph", icon: "facebook" },
 ];
 
 // Email HTML needs an absolute image URL regardless of which environment composed
 // it (an admin's localhost, a preview deploy, …), so this is hardcoded rather than
 // read from the request — unlike a page, a sent email has no "current origin".
 // The icons themselves live in public/email-icons/.
-const SITE_ORIGIN = "https://dmi.com.ng";
+const SITE_ORIGIN = (import.meta.env.VITE_SITE_URL as string | undefined)?.startsWith("https://") ? (import.meta.env.VITE_SITE_URL as string).replace(/\/$/, "") : "https://tplumphotography.com";
 
 function newId(): string {
   return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2);

@@ -1,13 +1,13 @@
 /* Shared by the client gallery and the account area: tokens, buttons, the password sign-in panel. */
 .cg, .ca {
   --cg-black: #000;
-  --cg-white: #f5f1ea;
+  --cg-white: #f6f6f5;
   --cg-line: #ddd6c8;
   --cg-grey: #6b6b6b;
   --cg-soft: #ebe5da;
   --cg-red: #c8102e; /* darkroom safelight: used only for picks */
-  --cg-serif: 'Oswald', 'Arial Narrow', sans-serif; /* DMI display face */
-  --cg-sans: 'Space Grotesk', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --cg-serif: 'Fulgate', Georgia, serif; /* Tplum display face */
+  --cg-sans: 'Lato', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   font-family: var(--cg-sans);
   color: var(--cg-black);
   -webkit-font-smoothing: antialiased;
@@ -40,7 +40,7 @@
 .cg-field-top .cg-link { font-size: 13px; color: var(--cg-grey); }
 .cg-auth label { font-size: 14px; font-weight: 600; }
 .cg-auth input {
-  width: 100%; min-width: 0; height: 50px; padding: 0 18px; border-radius: 999px; border: 1px solid #cfcfcb; background: #f5f1ea; color: #000;
+  width: 100%; min-width: 0; height: 50px; padding: 0 18px; border-radius: 999px; border: 1px solid #cfcfcb; background: #f6f6f5; color: #000;
   font: 400 16px var(--cg-sans); outline: none;
 }
 .cg-auth input:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(200,16,46,.18); }
@@ -53,7 +53,7 @@
 .cg-auth-go { width: 100%; min-height: 50px; margin-top: 4px; }
 .cg-auth-tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: 18px; border-radius: 999px; background: var(--cg-soft); }
 .cg-auth-tabs button { min-height: 42px; border: 0; border-radius: 999px; background: transparent; color: var(--cg-grey); font: 600 14px var(--cg-sans); cursor: pointer; }
-.cg-auth-tabs button[aria-selected='true'] { background: #f5f1ea; color: #000; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.cg-auth-tabs button[aria-selected='true'] { background: #f6f6f5; color: #000; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .cg-auth-forgot-head { margin-bottom: 16px; }
 .cg-auth-hint { margin: 0 0 14px; font-size: 14px; line-height: 1.55; color: var(--cg-grey); }
 .cg-auth-small { margin: 0; font-size: 13px; color: var(--cg-grey); line-height: 1.6; }
@@ -67,6 +67,6 @@
 .cg-auth.dark input { border-color: rgba(255,255,255,.35); }
 .cg-auth.dark .cg-auth-tabs { background: rgba(255,255,255,.1); }
 .cg-auth.dark .cg-auth-tabs button { color: rgba(255,255,255,.7); }
-.cg-auth.dark .cg-auth-tabs button[aria-selected='true'] { background: #f5f1ea; color: #000; }
-.cg-auth.dark .cg-btn.solid { background: #f5f1ea; color: #000; }
+.cg-auth.dark .cg-auth-tabs button[aria-selected='true'] { background: #f6f6f5; color: #000; }
+.cg-auth.dark .cg-btn.solid { background: #f6f6f5; color: #000; }
 .cg-auth.dark .cg-btn.solid:not(:disabled):hover { background: #e9e9e6; }

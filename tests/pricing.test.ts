@@ -95,3 +95,11 @@ describe('deposit rules', () => {
     expect(balanceDue(0.3, 0.1)).toBe(0.2)
   })
 })
+
+import { localTime } from '../src/features/delivery/model'
+describe('Mountain Time conversion (delivery clock)', () => {
+  it('handles winter (MST, UTC-7) and summer (MDT, UTC-6)', () => {
+    expect(new Date(localTime('2026-01-15', 14, 0)!).toISOString()).toBe('2026-01-15T21:00:00.000Z')
+    expect(new Date(localTime('2026-07-15', 14, 0)!).toISOString()).toBe('2026-07-15T20:00:00.000Z')
+  })
+})

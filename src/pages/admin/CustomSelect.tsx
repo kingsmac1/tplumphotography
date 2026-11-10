@@ -139,7 +139,7 @@ export default function CustomSelect({
                 left: pos.left,
                 width: pos.width,
                 maxHeight: 240,
-                backgroundColor: "var(--select-panel-bg, #f5f1ea)",
+                backgroundColor: "var(--select-panel-bg, #f6f6f5)",
                 color: "var(--select-panel-fg, hsl(0 0% 7%))",
               }}
             >

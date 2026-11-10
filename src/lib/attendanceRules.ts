@@ -1,4 +1,4 @@
-/** Default resumption times (Lagos time): 9:00 Monday-Friday, 10:00 Saturday, Sunday is a day off.
+/** Default resumption times (Mountain Time): 9:00 Monday-Friday, 10:00 Saturday, Sunday is a day off.
  *  Admins can override these — see attendanceSchedule.ts. */
 export type AttendanceStatus = "on_time" | "late" | "off_day";
 
@@ -15,7 +15,7 @@ export const RESUMPTION_NOTE =
 export const localToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
 export const localDateOf = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date(iso));
 
-/** Minutes after midnight (Lagos time) for a timestamp. */
+/** Minutes after midnight (Mountain Time) for a timestamp. */
 export const lagosMinutes = (iso: string) => {
   const parts = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date(iso));
   const h = Number(parts.find((p) => p.type === "hour")?.value ?? 0) % 24;

@@ -6,7 +6,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, Res
 export const PALETTE = {
   ink: "#0a0a0a",
   brown: "#7d5434",
-  tan: "#c9a27a",
+  tan: "#9a9a9a",
   sand: "#e6dccd",
   stone: "#a8a29a",
   green: "#2f6b45",

@@ -27,6 +27,8 @@ export const TEMPLATE_META: TemplateMeta[] = [
   { key: "re_engagement", name: "Ready for your next session?", group: "Clients", when: "40 to 47 days after the shoot", variables: ["client_name"] },
   { key: "birthday", name: "Birthday", group: "Clients", when: "On the client's birthday, once a year", variables: ["client_name"] },
   { key: "owner_birthday", name: "Client birthdays today", group: "Owner", when: "At 7am on the day, one email to the owner list naming every client with a birthday, with their WhatsApp and email", variables: ["client_count", "date", "details"] },
+  { key: "balance_reminder", name: "Balance reminder", group: "Clients", when: "When the balance is still owed, the number of days before the date set in Settings", variables: ["client_name", "item", "shoot_date", "total", "amount_paid", "balance", "summary"] },
+  { key: "invoice_overdue", name: "Invoice overdue", group: "Clients", when: "Once, the day after an invoice's due date passes with money still owed", variables: ["client_name", "invoice_number", "due_date", "balance", "summary"] },
   { key: "owner_booking", name: "New photography / wedding booking", group: "Owner", when: "Sent to the owner list when a booking arrives", variables: ["client_name", "location", "shoot_date", "details"] },
   { key: "owner_studio", name: "New studio space rental", group: "Owner", when: "Sent to the owner list when a rental request arrives", variables: ["client_name", "rental_date", "details"] },
   { key: "owner_event", name: "New event booking", group: "Owner", when: "Sent to the owner list when an event request arrives", variables: ["client_name", "event_type", "event_dates", "details"] },

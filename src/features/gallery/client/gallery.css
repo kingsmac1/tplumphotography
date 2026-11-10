@@ -9,7 +9,7 @@
 .cg-message { background: #000; color: #fff; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 16px; padding: 48px max(24px, 8vw); }
 .cg-message h1 { font: 400 clamp(32px, 5vw, 56px)/1.1 var(--cg-serif); margin: 24px 0 0; max-width: 18ch; }
 .cg-message p { color: rgba(255,255,255,.75); max-width: 52ch; line-height: 1.6; margin: 0; }
-.cg-message .cg-btn.solid { background: #f5f1ea; color: #000; }
+.cg-message .cg-btn.solid { background: #f6f6f5; color: #000; }
 
 /* titles */
 .cg-title { font: 400 clamp(40px, 7vw, 92px)/1.02 var(--cg-serif); letter-spacing: -.01em; margin: 0; max-width: 16ch; text-wrap: balance; }
@@ -43,7 +43,7 @@
 .cg-bar-line { height: 3px; background: var(--cg-red); transform-origin: left; transition: transform .35s cubic-bezier(.2,.7,.2,1); }
 .cg-filter { display: inline-flex; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.1); }
 .cg-filter button { border: 0; background: none; color: rgba(255,255,255,.75); font: 600 13px var(--cg-sans); padding: 8px 14px; border-radius: 999px; cursor: pointer; min-height: 36px; }
-.cg-filter button[aria-pressed='true'] { background: #f5f1ea; color: #000; }
+.cg-filter button[aria-pressed='true'] { background: #f6f6f5; color: #000; }
 .cg-count { font-variant-numeric: tabular-nums; font-size: 15px; color: rgba(255,255,255,.7); white-space: nowrap; }
 .cg-count b { color: #fff; font-size: 20px; font-weight: 600; }
 .cg-bar .cg-btn { min-height: 40px; }
@@ -89,7 +89,7 @@
   .react-photo-album--photo:hover .cg-heart, .cg-heart:focus-visible { opacity: 1; }
   .cg-heart:not(.on):hover, .cg-dl:hover { background: rgba(0,0,0,.6); }
 }
-.cg-has-note { position: absolute; left: 8px; bottom: 8px; padding: 3px 9px; border-radius: 999px; background: #f5f1ea; color: #000; font-size: 11.5px; font-weight: 600; pointer-events: none; }
+.cg-has-note { position: absolute; left: 8px; bottom: 8px; padding: 3px 9px; border-radius: 999px; background: #f6f6f5; color: #000; font-size: 11.5px; font-weight: 600; pointer-events: none; }
 
 /* lightbox */
 .cg-lb .yarl__toolbar { padding: 10px; gap: 4px; }
@@ -104,7 +104,7 @@
 
 /* sheets */
 .cg-sheet-wrap { position: fixed; inset: 0; z-index: 100000; min-height: 0; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; }
-.cg-sheet { width: 100%; max-width: 560px; max-height: 88vh; overflow: auto; background: #f5f1ea; border-radius: 20px 20px 0 0; padding: 22px 22px max(22px, env(safe-area-inset-bottom)); }
+.cg-sheet { width: 100%; max-width: 560px; max-height: 88vh; overflow: auto; background: #f6f6f5; border-radius: 20px 20px 0 0; padding: 22px 22px max(22px, env(safe-area-inset-bottom)); }
 .cg-sheet.wide { max-width: 920px; }
 @media (min-width: 720px) { .cg-sheet-wrap { align-items: center; } .cg-sheet { border-radius: 20px; } }
 @media (prefers-reduced-motion: no-preference) { .cg-sheet { animation: cg-up .28s cubic-bezier(.2,.7,.2,1); } @keyframes cg-up { from { transform: translateY(24px); opacity: 0; } } }
@@ -134,10 +134,10 @@
 
 /* finals download all */
 .cg-dlall { position: relative; display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.cg-dlall .cg-btn.solid { background: #f5f1ea; color: #000; }
+.cg-dlall .cg-btn.solid { background: #f6f6f5; color: #000; }
 .cg-dlall-bar { width: 80px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.2); overflow: hidden; }
-.cg-dlall-bar i { display: block; height: 100%; background: #f5f1ea; transition: width .2s; }
-.cg-dlall-panel { position: absolute; right: 0; top: calc(100% + 10px); width: min(320px, 90vw); background: #f5f1ea; color: #000; border-radius: 16px; padding: 16px; box-shadow: 0 18px 50px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 8px; }
+.cg-dlall-bar i { display: block; height: 100%; background: #f6f6f5; transition: width .2s; }
+.cg-dlall-panel { position: absolute; right: 0; top: calc(100% + 10px); width: min(320px, 90vw); background: #f6f6f5; color: #000; border-radius: 16px; padding: 16px; box-shadow: 0 18px 50px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 8px; }
 .cg-dlall-panel p { margin: 0 0 4px; font-size: 13px; color: var(--cg-grey); line-height: 1.5; }
 
 /* toast + footer */
@@ -161,7 +161,7 @@
 .cg-save-band p { flex: 1; margin: 0; display: flex; flex-direction: column; gap: 3px; line-height: 1.45; }
 .cg-save-band b { font: 500 19px/1.3 var(--cg-serif); }
 .cg-save-band span { font-size: 14px; color: rgba(255,255,255,.75); }
-.cg-save-band .cg-btn.solid { background: #f5f1ea; color: #000; flex: none; }
+.cg-save-band .cg-btn.solid { background: #f6f6f5; color: #000; flex: none; }
 .cg-save-band .cg-btn.solid:hover { background: #e9e9e6; }
 @media (max-width: 600px) {
   .cg-save-band { flex-wrap: wrap; padding: 18px; gap: 12px; }
@@ -185,7 +185,7 @@
 /* finals: edited / unedited switch, feedback */
 .cg-sets { display: inline-flex; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.12); }
 .cg-sets button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: rgba(255,255,255,.75); font: 600 13px var(--cg-sans); cursor: pointer; white-space: nowrap; }
-.cg-sets button[aria-pressed='true'] { background: #f5f1ea; color: #000; }
+.cg-sets button[aria-pressed='true'] { background: #f6f6f5; color: #000; }
 .cg-fb-mini { position: absolute; left: 8px; bottom: 8px; display: flex; gap: 4px; pointer-events: none; }
 .cg-fb-mini span { min-width: 26px; height: 26px; padding: 0 6px; display: grid; place-items: center; border-radius: 999px; background: rgba(0,0,0,.62); color: #fff; font-size: 13px; }
 .cg-fb-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin: 0 auto 26px; max-width: 980px; padding: 16px 18px; border: 1px solid var(--cg-line); border-radius: 18px; }
@@ -193,6 +193,6 @@
 .cg-fb-bar p b { display: block; font: 500 18px/1.3 var(--cg-serif); margin-bottom: 2px; }
 @media (max-width: 600px) { .cg-fb-bar .cg-btn { width: 100%; } .cg-sets button { padding: 0 10px; } }
 
-/* DMI: Oswald has no italic — the photographer's message and quoted comments stay upright */
+/* The display font has no italic — the photographer's message and quoted comments stay upright */
 .cg-message-text { font-style: normal; letter-spacing: .01em; }
 .cg-lb-foot em { font-style: normal; }

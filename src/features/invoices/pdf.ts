@@ -189,7 +189,8 @@ export async function buildInvoicePdf(doc: InvoiceDoc): Promise<Uint8Array> {
   const rows: [string, string, 'plain' | 'strong' | 'balance'][] = [
     ['Sub Total', bare(t.subtotal), 'plain'],
     ...(t.discount !== 0 ? [[doc.discountLabel, `-${bare(t.discount)}`, 'plain'] as [string, string, 'plain']] : []),
-    ['Total', money(t.total), 'strong'],
+    ...(t.tax > 0 ? [[`${doc.taxName || 'Tax'} (${doc.taxRate}%)`, bare(t.tax), 'plain'] as [string, string, 'plain']] : []),
+    ['Total (CAD)', money(t.total), 'strong'],
     ...payments.map((p) => [`Payment made${p.date ? ` on ${shortDate(p.date)}` : ''}${p.method ? ` (${p.method})` : ''}`, `-${money(Number(p.amount) || 0)}`, 'plain'] as [string, string, 'plain']),
     ['Balance Due', money(t.balance), 'balance'],
   ]
@@ -207,7 +208,13 @@ export async function buildInvoicePdf(doc: InvoiceDoc): Promise<Uint8Array> {
 
   /* notes + bank details */
   const bank = bankLines(doc)
-  const noteLines = [...(doc.notes.trim() ? wrap(doc.notes, regular, 8.5, CONTENT) : []), ...bank.flatMap((b) => wrap(b, regular, 8.5, CONTENT))]
+  const extra = [
+    ...(t.balance > 0 && doc.paymentInstructions?.trim() ? [doc.paymentInstructions] : []),
+    ...bank,
+    ...(doc.taxEnabled && doc.taxNumber?.trim() ? [`${doc.taxName || 'Tax'} number: ${doc.taxNumber.trim()}`] : []),
+    ...(doc.footerText?.trim() && !/^\[/.test(doc.footerText) ? ['', doc.footerText] : []),
+  ]
+  const noteLines = [...(doc.notes.trim() ? wrap(doc.notes, regular, 8.5, CONTENT) : []), ...extra.flatMap((b) => (b ? wrap(b, regular, 8.5, CONTENT) : ['']))]
   if (noteLines.length) {
     y -= 14
     if (y - 18 - noteLines.length * 11.5 < 50) newPage()

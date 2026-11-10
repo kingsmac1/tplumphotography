@@ -3,7 +3,7 @@
  * dashboard, the bookings tables and the tests all use the same rules.
  *
  * Two promises: standard shoots 48–72 hours; events and weddings 7 days (amber for the last 2 days).
- * The clock starts when the shoot ends (shoot date + time + length, Lagos time). An event's clock starts at the end of its
+ * The clock starts when the shoot ends (shoot date + time + length, Mountain Time). An event's clock starts at the end of its
  * last day. While the client has the previews and hasn't sent their picks, the clock is paused: the studio can't finish
  * until the client chooses. So the studio's time = shoot → previews sent, plus picks received → finals delivered.
  *   0 → due hours:          on track
@@ -90,11 +90,21 @@ export function parseTime(t?: string | null): [number, number] | null {
   return h > 23 || min > 59 ? null : [h, min]
 }
 
-/** a Lagos wall-clock time (UTC+1 all year, no daylight saving) as epoch ms */
+/** offset of Calgary/Edmonton time from UTC at a moment, in ms (-6 h in summer, -7 h in winter) */
+function mountainOffsetMs(ms: number): number {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Edmonton', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(ms)).map((x) => [x.type, x.value]))
+  return Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day), Number(p.hour) % 24, Number(p.minute), Number(p.second)) - Math.floor(ms / 1000) * 1000
+}
+
+/** a Calgary/Edmonton wall-clock time (Mountain Time, with daylight saving) as epoch ms */
 export function localTime(date: string, h = 0, min = 0): number | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(date)
   if (!m) return null
-  return Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), h - 1, min)
+  const guess = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), h, min)
+  let t = guess - mountainOffsetMs(guess)
+  const again = guess - mountainOffsetMs(t)
+  if (again !== t) t = again
+  return t
 }
 
 export const lagosDay = (ms: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Edmonton' }).format(new Date(ms))

@@ -231,7 +231,7 @@ const BookingTable = ({ onAdd, restrictSource, title = "Bookings" }: BookingTabl
     { key: "shoot_type", label: "Shoot Type" },
     { key: "shoot_date", label: "Shoot Date" },
     { key: "shoot_time", label: "Shoot Time" },
-    { key: "location", label: "Location" },
+    { key: "location", label: "Venue / city" },
     { key: "shoot_setting", label: "Setting" },
     { key: "selected_service", label: "Service" },
     { key: "service_price", label: "Service Price", render: (v: unknown) => formatMoney(Number(v)) },
@@ -283,7 +283,7 @@ const BookingTable = ({ onAdd, restrictSource, title = "Bookings" }: BookingTabl
           <CustomSelect
             value={locationFilter}
             onChange={setLocationFilter}
-            options={[{ value: ALL, label: "All Locations" }, ...locationOptions.map(v => ({ value: v, label: v }))]}
+            options={[{ value: ALL, label: "All venues / cities" }, ...locationOptions.map(v => ({ value: v, label: v }))]}
             className="w-full sm:w-44"
           />
           <CustomSelect

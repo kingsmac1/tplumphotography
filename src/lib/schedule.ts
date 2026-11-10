@@ -68,10 +68,10 @@ export function slotsFor(date: string): string[] {
 
 /* --------------------------------- Dates --------------------------------- */
 
-/** Today in Lagos as YYYY-MM-DD. */
+/** Today in Calgary/Edmonton as YYYY-MM-DD. */
 export const localToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(new Date());
 
-/** Minutes since midnight right now in Lagos. */
+/** Minutes since midnight right now in Calgary/Edmonton. */
 export const localNowMinutes = () =>
   toMinutes(new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date()));
 

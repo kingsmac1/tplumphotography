@@ -13,7 +13,6 @@ const RECIPIENT_OPTIONS = [
   { value: "wedding", label: "Wedding clients" },
   { value: "studio", label: "Studio space renters" },
   { value: "events", label: "Event clients" },
-  { value: "academy", label: "Academy applicants" },
 ] as const;
 
 type Group = (typeof RECIPIENT_OPTIONS)[number]["value"];

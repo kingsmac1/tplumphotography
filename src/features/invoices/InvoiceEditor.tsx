@@ -4,7 +4,7 @@ import { callFn } from '@/features/gallery/api'
 import { useData } from '@/features/gallery/admin/kit/data'
 import { Badge, Field, fmtDate } from '@/features/gallery/admin/kit/ui'
 import { Modal, addDaysIso, todayIso } from './ui'
-import { BOOKING_KIND, BUSINESS_FIELDS, STAGE_LABEL, STAGE_TONE, blankInvoice, bookingPaid, defaultEmail, emptyItem, invoiceFromBooking, invoiceTotals, isBookingTable, lineAmount, money, nextNumber, normalizeDoc, paymentsFromBooking, pdfFilename, plain, type BookingTable, type BusinessDefaults, type InvoiceDoc, type InvoicePayment, type InvoiceStage } from './model'
+import { BOOKING_KIND, BUSINESS_FIELDS, STAGE_LABEL, STAGE_TONE, blankInvoice, bookingPaid, defaultEmail, emptyItem, invoiceFromBooking, invoiceStatus, invoiceTotals, isBookingTable, lineAmount, money, nextNumber, normalizeDoc, paymentsFromBooking, pdfFilename, plain, type BookingTable, type BusinessDefaults, type InvoiceDoc, type InvoicePayment, type InvoiceStage } from './model'
 import { DEFAULT_LOGO } from './logo'
 import { InvoicePaper } from './InvoicePaper'
 import { SETUP_NOTE, missingTable, type InvoiceRow } from './InvoicesSection'
@@ -114,7 +114,9 @@ export function InvoiceEditor({ path }: { path: string[] }) {
         if (after === 'send') openSend(opening)
         return
       }
-      const base = { ...blankInvoice(today, defaults), number: nextNumber(used.map((u) => u.number)) }
+      // TPL-0001, TPL-0002 … from the database counter (never reused); falls back to the highest number in use
+      const { data: dbNumber } = await supabase.rpc('next_invoice_number')
+      const base = { ...blankInvoice(today, defaults), number: (typeof dbNumber === 'string' && dbNumber) || nextNumber(used.map((u) => u.number)) }
       const start = startRow && startTable ? invoiceFromBooking(base, startTable, startRow) : base
       setDoc(start)
       setDirty(!!startRow)
@@ -165,9 +167,9 @@ export function InvoiceEditor({ path }: { path: string[] }) {
       return patch({ payments: [] })
     }
     if (t.total <= 0) return toast('Add an item with a price first', 'err')
-    if (s === 'paid') return patch({ payments: [...doc!.payments, { date: today, method: 'Bank transfer', amount: plain(t.balance) }] })
+    if (s === 'paid') return patch({ payments: [...doc!.payments, { date: today, method: 'Interac e-Transfer', amount: plain(t.balance) }] })
     const part = plain(Math.round(t.total * PART_SHARE))
-    patch({ payments: [{ date: doc!.payments[0]?.date || today, method: doc!.payments[0]?.method || 'Bank transfer', amount: part }] })
+    patch({ payments: [{ date: doc!.payments[0]?.date || today, method: doc!.payments[0]?.method || 'Interac e-Transfer', amount: part }] })
   }
 
   /* ---------- save ---------- */
@@ -181,7 +183,12 @@ export function InvoiceEditor({ path }: { path: string[] }) {
     const bad = problem()
     if (bad) { toast(bad, 'err'); return null }
     const clean = { ...doc!, number: doc!.number.trim() }
-    const values = { number: clean.number, doc: clean, booking_table: link?.table ?? null, booking_id: link?.id ?? null, updated_at: new Date().toISOString() }
+    // the figures and status are stored next to the document for fast lists, the client page and Stripe
+    const t = invoiceTotals(clean)
+    const status = invoiceStatus(t, { sent: !!row?.sent_at, dueDate: clean.dueDate || undefined, today: todayIso(), void: row?.status === 'void' })
+    const values = { number: clean.number, doc: clean, booking_table: link?.table ?? null, booking_id: link?.id ?? null, updated_at: new Date().toISOString(),
+      status, client_name: clean.billName, client_email: clean.billEmail.trim().toLowerCase(), invoice_date: clean.invoiceDate || null, due_date: clean.dueDate || null,
+      subtotal: t.subtotal, discount: t.discount, tax: t.tax, total: t.total, paid: t.paid, balance: t.balance, paid_at: status === 'paid' ? row?.paid_at ?? new Date().toISOString() : null }
     const res = id ? await supabase.from('invoices').update(values).eq('id', id).select().single() : await supabase.from('invoices').insert(values).select().single()
     if (res.error) {
       const msg = res.error.code === '23505' ? `Invoice number ${clean.number} is already used. Choose another one.` : missingTable(res.error.message) ? SETUP_NOTE : res.error.message
@@ -336,7 +343,16 @@ export function InvoiceEditor({ path }: { path: string[] }) {
               <Field label="Discount name"><input type="text" {...text('discountLabel')} /></Field>
               <Field label="Discount ($)"><input type="number" min="0" step="0.01" {...text('discount')} /></Field>
             </div>
-            <div className="iv-sum big"><span>Total</span><span>{money(totals.total)}</span></div>
+            <div className="iv-grid" style={{ margin: '8px 0' }}>
+              <Field label="Sales tax" hint="Off by default. Turn on if you charge GST/HST.">
+                <label style={{ display: 'flex', gap: 8, alignItems: 'center', height: 38 }}><input type="checkbox" checked={!!doc.taxEnabled} onChange={(e) => patch({ taxEnabled: e.target.checked })} /> Charge tax on this invoice</label>
+              </Field>
+              {doc.taxEnabled && <Field label="Tax name"><input type="text" placeholder="GST" {...text('taxName')} /></Field>}
+              {doc.taxEnabled && <Field label="Rate (%)"><input type="number" min="0" max="100" step="0.01" placeholder="5" {...text('taxRate')} /></Field>}
+              {doc.taxEnabled && <Field label="Tax / business number"><input type="text" placeholder="e.g. 123456789 RT0001" {...text('taxNumber')} /></Field>}
+            </div>
+            {doc.taxEnabled && totals.tax > 0 && <div className="iv-sum"><span>{doc.taxName || 'Tax'} ({doc.taxRate}%)</span><b>{money(totals.tax)}</b></div>}
+            <div className="iv-sum big"><span>Total (CAD)</span><span>{money(totals.total)}</span></div>
             <div style={{ marginTop: 12 }}>
               {doc.payments.map((p, n) => (
                 <div className="iv-pay" key={n} data-invoice-payment>
@@ -375,14 +391,17 @@ export function InvoiceEditor({ path }: { path: string[] }) {
             </div>
           </Section>
 
-          <Section title="Notes and bank details">
-            {!doc.bankName.trim() && !doc.accountNumber.trim() && <p className="ad-note" style={{ marginBottom: 12 }}>Add your bank, account name and account number, then press “Save logo, business, bank and terms as default” below so every new invoice starts with them.</p>}
+          <Section title="Notes and how to pay">
+            {/^\[|^$/.test(doc.etransferEmail.trim()) && <p className="ad-note" style={{ marginBottom: 12 }}>Add your Interac e-Transfer email (and bank details if you take direct deposit), then press “Save … as default” below so every new invoice starts with them.</p>}
             <div className="iv-grid">
               <Field label="Notes" full><textarea rows={2} style={{ minHeight: 60 }} {...text('notes')} /></Field>
-              <Field label="Bank"><input type="text" placeholder="e.g. Moniepoint" {...text('bankName')} /></Field>
-              <Field label="Account name"><input type="text" {...text('accountName')} /></Field>
-              <Field label="Account number"><input type="text" inputMode="numeric" {...text('accountNumber')} /></Field>
+              <Field label="Interac e-Transfer email"><input type="email" placeholder="payments@example.com" {...text('etransferEmail')} /></Field>
               <Field label="Payment reference"><input type="text" {...text('paymentReference')} /></Field>
+              <Field label="Payment instructions" full><textarea rows={2} style={{ minHeight: 60 }} {...text('paymentInstructions')} /></Field>
+              <Field label="Bank (optional)"><input type="text" placeholder="e.g. RBC" {...text('bankName')} /></Field>
+              <Field label="Account name (optional)"><input type="text" {...text('accountName')} /></Field>
+              <Field label="Transit / institution / account (optional)"><input type="text" {...text('accountNumber')} /></Field>
+              <Field label="Footer text" full><input type="text" {...text('footerText')} /></Field>
             </div>
           </Section>
 
@@ -393,7 +412,7 @@ export function InvoiceEditor({ path }: { path: string[] }) {
             </div>
           </Section>
 
-          <div><button type="button" className="ad-btn sm" onClick={saveDefaults}>Save logo, business, bank and terms as default</button></div>
+          <div><button type="button" className="ad-btn sm" onClick={saveDefaults}>Save logo, business, payment, tax and terms as default</button></div>
         </div>
         <div className="iv-preview" aria-label="Invoice preview" data-lenis-prevent><InvoicePaper doc={doc} /></div>
       </div>
