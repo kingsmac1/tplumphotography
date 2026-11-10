@@ -18,6 +18,7 @@ export const PALETTE = {
 export const SERIES_COLORS = [PALETTE.ink, PALETTE.brown, PALETTE.tan, PALETTE.stone, PALETTE.sand, PALETTE.amber];
 
 export const money = (n: number) => `$${Math.round(n).toLocaleString("en-CA")}`;
+const fmtMoney = money;
 export const compactMoney = (n: number) =>
   n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(n % 1_000_000 ? 1 : 0)}M` : n >= 1_000 ? `$${Math.round(n / 1_000)}k` : `$${n}`;
 
@@ -63,7 +64,7 @@ const Tip = ({ active, payload, label, money = true }: { active?: boolean; paylo
         <p key={String(p.dataKey)} className="flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full" style={{ background: p.color }} />
           <span className="text-white/70">{p.name}</span>
-          <b className="ml-auto pl-3">{money ? money(p.value ?? 0) : p.value}</b>
+          <b className="ml-auto pl-3">{money ? fmtMoney(p.value ?? 0) : p.value}</b>
         </p>
       ))}
     </div>

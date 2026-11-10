@@ -66,4 +66,4 @@ export const useNavigate = () => {
 };
 
 export const useParams = <T extends Record<string, string | undefined> = Record<string, string | undefined>>() =>
-  tsUseParams({ strict: false }) as T;
+  (tsUseParams as (o: { strict: false }) => unknown)({ strict: false }) as T;

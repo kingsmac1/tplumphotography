@@ -1,6 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "reference-copies", "supabase/functions", "my-site-reference", "dist", "scripts"],
+  "exclude": ["node_modules", "reference-copies", "supabase/functions", "my-site-reference", "dist", "scripts", "dmi-port-notes"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

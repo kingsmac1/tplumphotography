@@ -18,7 +18,6 @@ const RECIPIENT_OPTIONS = [
 type Group = (typeof RECIPIENT_OPTIONS)[number]["value"];
 type Counts = Record<Exclude<Group, "individual">, number>;
 type SendResult = { sent: number; failed: string[]; total: number };
-type AcademyBatch = { value: string; label: string; count: number };
 
 /** Calls the send-admin-email Edge Function as the signed-in admin and surfaces its error message. */
 export async function invokeAdminEmail<T>(body: Record<string, unknown>): Promise<T> {
@@ -52,8 +51,6 @@ const MessagingPanel = () => {
   const [counts, setCounts] = useState<Counts | null>(null);
   const [countsError, setCountsError] = useState("");
   const [recipientType, setRecipientType] = useState<Group>("individual");
-  const [academyBatch, setAcademyBatch] = useState("all");
-  const [batches, setBatches] = useState<AcademyBatch[]>([]);
   // An address sent from a table's Email button arrives already in the audience field.
   const [customEmails, setCustomEmails] = useState(() => peekEmailPrefill());
   useEffect(() => { takeEmailPrefill(); }, []);
@@ -69,12 +66,6 @@ const MessagingPanel = () => {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    invokeAdminEmail<{ batches: AcademyBatch[] }>({ action: "academy_batches" })
-      .then((r) => setBatches(r.batches))
-      .catch(() => setBatches([]));
-  }, []);
-
-  useEffect(() => {
     invokeAdminEmail<{ counts: Counts }>({ action: "counts" })
       .then((r) => setCounts(r.counts))
       .catch((err) => setCountsError(err instanceof Error ? err.message : "Failed to load recipient counts."));
@@ -84,7 +75,6 @@ const MessagingPanel = () => {
 
   function recipientCount(): number | null {
     if (recipientType === "individual") return customEmails.split(/[\n,]+/).map((e) => e.trim()).filter(Boolean).length;
-    if (recipientType === "academy" && academyBatch !== "all") return batches.find((b) => b.value === academyBatch)?.count ?? 0;
     return counts?.[recipientType] ?? null;
   }
 
@@ -97,8 +87,7 @@ const MessagingPanel = () => {
 
     const count = recipientCount();
     const groupLabel = RECIPIENT_OPTIONS.find((o) => o.value === recipientType)?.label ?? recipientType;
-    const batchLabel = recipientType === "academy" && academyBatch !== "all" ? `, ${batches.find((b) => b.value === academyBatch)?.label ?? academyBatch}` : "";
-    if (!window.confirm(`Send this email to ${count ?? "an unknown number of"} recipient(s) (${groupLabel}${batchLabel})?`)) return;
+    if (!window.confirm(`Send this email to ${count ?? "an unknown number of"} recipient(s) (${groupLabel})?`)) return;
 
     setSending(true);
     try {
@@ -109,7 +98,6 @@ const MessagingPanel = () => {
         action: "send",
         recipient_group: recipientType,
         custom_emails: customEmails,
-        academy_batch: academyBatch,
         subject: subject.trim(),
         body: bodyHtml,
         attachments: files,
@@ -159,18 +147,6 @@ const MessagingPanel = () => {
           {countsError && <p className="text-xs text-destructive mt-2">{countsError}</p>}
         </div>
 
-        {recipientType === "academy" && (
-          <label className="block">
-            <span className={labelCls}>Which batch?</span>
-            <select value={academyBatch} onChange={(e) => setAcademyBatch(e.target.value)} className={inputCls}>
-              <option value="all">All batches ({counts?.academy ?? "…"})</option>
-              {batches.map((b) => (
-                <option key={b.value} value={b.value}>{b.label} ({b.count})</option>
-              ))}
-            </select>
-            {batches.length === 0 && <p className="text-xs text-muted-foreground mt-1.5">No batches found yet. Applications appear here once someone applies.</p>}
-          </label>
-        )}
 
         {recipientType === "individual" && (
           <label className="block">

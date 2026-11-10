@@ -157,7 +157,7 @@ const Weddings = ({ site }: { site?: SiteContent }) => {
             rel="noopener noreferrer"
             className="mt-8 inline-flex items-center gap-2 text-white/90 hover:text-white text-sm tracking-widest border border-white/40 hover:border-white px-5 py-3 transition-colors"
           >
-            <Instagram size={16} /> @TPLUMPHOTOGRAPHY
+            <Instagram className="w-4 h-4" /> @TPLUMPHOTOGRAPHY
           </motion.a>
         </div>
       </section>
