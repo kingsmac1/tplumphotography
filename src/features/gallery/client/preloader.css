@@ -1,0 +1,5 @@
+/* brand preloader — black screen, white logo breathing (same as the gallery's own loading screen) */
+.ilz-pl { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; background: #000; }
+.ilz-pl img { height: 40px; width: auto; opacity: .8; animation: ilz-breathe 1.6s ease-in-out infinite; }
+@keyframes ilz-breathe { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .ilz-pl img { animation: none; } }

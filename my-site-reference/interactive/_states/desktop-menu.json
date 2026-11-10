@@ -1,0 +1,520 @@
+{
+  "html": "<div class=\"dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal\" id=\"elementor-popup-modal-1521\" aria-modal=\"true\" role=\"document\" tabindex=\"0\" style=\"\"><div class=\"dialog-widget-content dialog-lightbox-widget-content animated\"><a role=\"button\" tabindex=\"0\" aria-label=\"Close\" href=\"#\" class=\"dialog-close-button dialog-lightbox-close-button\"><svg class=\"e-font-icon-svg e-eicon-close eicon-close\"><use xlink:href=\"#eicon-close\"></use></svg></a><div class=\"dialog-header dialog-lightbox-header\"></div><div class=\"dialog-message dialog-lightbox-message\"><div data-elementor-type=\"popup\" data-elementor-id=\"1521\" class=\"elementor elementor-1521 elementor-location-popup\" data-elementor-settings=\"{&quot;entrance_animation&quot;:&quot;fadeIn&quot;,&quot;exit_animation&quot;:&quot;fadeIn&quot;,&quot;entrance_animation_duration&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:0.5,&quot;sizes&quot;:[]},&quot;prevent_scroll&quot;:&quot;yes&quot;,&quot;avoid_multiple_popups&quot;:&quot;yes&quot;,&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:[],&quot;timing&quot;:[]}\" data-elementor-post-type=\"elementor_library\" style=\"display: block;\">\n\t\t\t<div class=\"elementor-element elementor-element-4bd66bb e-con-full e-flex e-con e-parent\" data-id=\"4bd66bb\" data-element_type=\"container\" data-e-type=\"container\" data-settings=\"{&quot;background_background&quot;:&quot;classic&quot;}\">\n\t\t<div class=\"elementor-element elementor-element-bb04caf e-flex e-con-boxed e-con e-child\" data-id=\"bb04caf\" data-element_type=\"container\" data-e-type=\"container\">\n\t\t\t\t\t<div class=\"e-con-inner\">\n\t\t\t\t<div class=\"elementor-element elementor-element-a65efc5 elementor-widget elementor-widget-image animated fadeIn\" data-id=\"a65efc5\" data-element_type=\"widget\" data-e-type=\"widget\" data-settings=\"{&quot;_animation&quot;:&quot;fadeIn&quot;,&quot;_animation_delay&quot;:3}\" data-widget_type=\"image.default\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"https://tplumphotography.com/\">\n\t\t\t\t\t\t\t<img width=\"1000\" height=\"560\" src=\"https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-White-1.png\" class=\"attachment-large size-large wp-image-876\" alt=\"\" srcset=\"https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-White-1.png 1000w, https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-White-1-300x168.png 300w, https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-White-1-768x430.png 768w\" sizes=\"(max-width: 1000px) 100vw, 1000px\">\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t<div class=\"elementor-element elementor-element-c95915a elementor-nav-menu__align-center elementor-nav-menu--dropdown-none animated-slow elementor-widget elementor-widget-nav-menu animated fadeIn\" data-id=\"c95915a\" data-element_type=\"widget\" data-e-type=\"widget\" data-settings=\"{&quot;layout&quot;:&quot;vertical&quot;,&quot;_animation&quot;:&quot;fadeIn&quot;,&quot;_animation_delay&quot;:2,&quot;submenu_icon&quot;:{&quot;value&quot;:&quot;&lt;svg aria-hidden=\\&quot;true\\&quot; class=\\&quot;e-font-icon-svg e-fas-caret-down\\&quot; viewBox=\\&quot;0 0 320 512\\&quot; xmlns=\\&quot;http:\\/\\/www.w3.org\\/2000\\/svg\\&quot;&gt;&lt;path d=\\&quot;M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z\\&quot;&gt;&lt;\\/path&gt;&lt;\\/svg&gt;&quot;,&quot;library&quot;:&quot;fa-solid&quot;}}\" data-widget_type=\"nav-menu.default\">\n\t\t\t\t\t\t\t\t<nav aria-label=\"Menu\" class=\"elementor-nav-menu--main elementor-nav-menu__container elementor-nav-menu--layout-vertical e--pointer-underline e--animation-slow\">\n\t\t\t\t<ul id=\"menu-1-c95915a\" class=\"elementor-nav-menu sm-vertical\" data-smartmenus-id=\"17943258488605725\"><li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-853 current_page_item menu-item-1440\"><a href=\"https://tplumphotography.com/\" aria-current=\"page\" class=\"elementor-item elementor-item-active menu-link\">Home</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1608\"><a href=\"https://tplumphotography.com/portfolio/\" class=\"elementor-item menu-link\">Portfolio</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1866\"><a href=\"https://tplumphotography.com/about/\" class=\"elementor-item menu-link\">About</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1436\"><a href=\"https://tplumphotography.com/contact/\" class=\"elementor-item menu-link\">Contact</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1570\"><a href=\"https://tplumphotography.com/the-tplum-signature/\" class=\"elementor-item menu-link\">The Tplum Signature</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1548\"><a href=\"https://tplumphotography.com/faq/\" class=\"elementor-item menu-link\">FAQ</a></li>\n</ul>\t\t\t</nav>\n\t\t\t\t\t\t<nav class=\"elementor-nav-menu--dropdown elementor-nav-menu__container\" aria-hidden=\"true\">\n\t\t\t\t<ul id=\"menu-2-c95915a\" class=\"elementor-nav-menu sm-vertical\" data-smartmenus-id=\"1794325848861437\"><li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-853 current_page_item menu-item-1440\"><a href=\"https://tplumphotography.com/\" aria-current=\"page\" class=\"elementor-item elementor-item-active menu-link\" tabindex=\"-1\">Home</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1608\"><a href=\"https://tplumphotography.com/portfolio/\" class=\"elementor-item menu-link\" tabindex=\"-1\">Portfolio</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1866\"><a href=\"https://tplumphotography.com/about/\" class=\"elementor-item menu-link\" tabindex=\"-1\">About</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1436\"><a href=\"https://tplumphotography.com/contact/\" class=\"elementor-item menu-link\" tabindex=\"-1\">Contact</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1570\"><a href=\"https://tplumphotography.com/the-tplum-signature/\" class=\"elementor-item menu-link\" tabindex=\"-1\">The Tplum Signature</a></li>\n<li class=\"menu-item menu-item-type-post_type menu-item-object-page menu-item-1548\"><a href=\"https://tplumphotography.com/faq/\" class=\"elementor-item menu-link\" tabindex=\"-1\">FAQ</a></li>\n</ul>\t\t\t</nav>\n\t\t\t\t\t\t</div>\n\t\t\t\t<div class=\"elementor-element elementor-element-5b23a51 elementor-shape-circle elementor-grid-3 e-grid-align-right elementor-widget elementor-widget-social-icons\" data-id=\"5b23a51\" data-element_type=\"widget\" data-e-type=\"widget\" data-settings=\"{&quot;_animation&quot;:&quot;none&quot;}\" data-widget_type=\"social-icons.default\">\n\t\t\t\t\t\t\t<div class=\"elementor-social-icons-wrapper elementor-grid\" role=\"list\">\n\t\t\t\t\t\t\t<span class=\"elementor-grid-item\" role=\"listitem\">\n\t\t\t\t\t<a class=\"elementor-icon elementor-social-icon elementor-social-icon-instagram elementor-repeater-item-573c55f\" href=\"https://www.instagram.com/tplumphotography\" target=\"_blank\">\n\t\t\t\t\t\t<span class=\"elementor-screen-only\">Instagram</span>\n\t\t\t\t\t\t<svg aria-hidden=\"true\" class=\"e-font-icon-svg e-fab-instagram\" viewBox=\"0 0 448 512\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z\"></path></svg>\t\t\t\t\t</a>\n\t\t\t\t</span>\n\t\t\t\t\t\t\t<span class=\"elementor-grid-item\" role=\"listitem\">\n\t\t\t\t\t<a class=\"elementor-icon elementor-social-icon elementor-social-icon-facebook elementor-repeater-item-198a887\" href=\"https://facebook.com/tplumphotograph\" target=\"_blank\">\n\t\t\t\t\t\t<span class=\"elementor-screen-only\">Facebook</span>\n\t\t\t\t\t\t<svg aria-hidden=\"true\" class=\"e-font-icon-svg e-fab-facebook\" viewBox=\"0 0 512 512\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z\"></path></svg>\t\t\t\t\t</a>\n\t\t\t\t</span>\n\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t</div></div><div class=\"dialog-buttons-wrapper dialog-lightbox-buttons-wrapper\"></div></div></div>",
+  "links": [
+    {
+      "text": "",
+      "href": "https://tplumphotography.com/#",
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "27px",
+        "weight": "400",
+        "color": "rgb(255, 254, 254)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "27px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 1326.609375,
+        "y": 54,
+        "width": 27,
+        "height": 27,
+        "top": 54,
+        "right": 1353.609375,
+        "bottom": 81,
+        "left": 1326.609375
+      }
+    },
+    {
+      "text": "",
+      "href": "https://tplumphotography.com/",
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "16px",
+        "weight": "400",
+        "color": "rgb(0, 0, 0)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "24px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 220,
+        "y": 150.84375,
+        "width": 1000,
+        "height": 72.796875,
+        "top": 150.84375,
+        "right": 1220,
+        "bottom": 223.640625,
+        "left": 220
+      }
+    },
+    {
+      "text": "Home",
+      "href": "https://tplumphotography.com/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(218, 218, 218)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 493.734375,
+        "y": 283.640625,
+        "width": 452.53125,
+        "height": 68,
+        "top": 283.640625,
+        "right": 946.265625,
+        "bottom": 351.640625,
+        "left": 493.734375
+      }
+    },
+    {
+      "text": "Portfolio",
+      "href": "https://tplumphotography.com/portfolio/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 493.734375,
+        "y": 351.640625,
+        "width": 452.53125,
+        "height": 68,
+        "top": 351.640625,
+        "right": 946.265625,
+        "bottom": 419.640625,
+        "left": 493.734375
+      }
+    },
+    {
+      "text": "About",
+      "href": "https://tplumphotography.com/about/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 493.734375,
+        "y": 419.640625,
+        "width": 452.53125,
+        "height": 68,
+        "top": 419.640625,
+        "right": 946.265625,
+        "bottom": 487.640625,
+        "left": 493.734375
+      }
+    },
+    {
+      "text": "Contact",
+      "href": "https://tplumphotography.com/contact/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 493.734375,
+        "y": 487.640625,
+        "width": 452.53125,
+        "height": 68,
+        "top": 487.640625,
+        "right": 946.265625,
+        "bottom": 555.640625,
+        "left": 493.734375
+      }
+    },
+    {
+      "text": "The Tplum Signature",
+      "href": "https://tplumphotography.com/the-tplum-signature/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 493.734375,
+        "y": 555.640625,
+        "width": 452.53125,
+        "height": 68,
+        "top": 555.640625,
+        "right": 946.265625,
+        "bottom": 623.640625,
+        "left": 493.734375
+      }
+    },
+    {
+      "text": "FAQ",
+      "href": "https://tplumphotography.com/faq/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 493.734375,
+        "y": 623.640625,
+        "width": 452.53125,
+        "height": 68,
+        "top": 623.640625,
+        "right": 946.265625,
+        "bottom": 691.640625,
+        "left": 493.734375
+      }
+    },
+    {
+      "text": "Home",
+      "href": "https://tplumphotography.com/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgb(63, 68, 75)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "text": "Portfolio",
+      "href": "https://tplumphotography.com/portfolio/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(51, 55, 61)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "text": "About",
+      "href": "https://tplumphotography.com/about/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(51, 55, 61)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "text": "Contact",
+      "href": "https://tplumphotography.com/contact/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(51, 55, 61)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "text": "The Tplum Signature",
+      "href": "https://tplumphotography.com/the-tplum-signature/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(51, 55, 61)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "text": "FAQ",
+      "href": "https://tplumphotography.com/faq/",
+      "style": {
+        "font": "Fulgate, sans-serif",
+        "size": "47px",
+        "weight": "600",
+        "color": "rgb(51, 55, 61)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "42px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "text": "Instagram",
+      "href": "https://www.instagram.com/tplumphotography",
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "25px",
+        "weight": "400",
+        "color": "rgb(105, 114, 125)",
+        "bg": "rgba(255, 255, 255, 0)",
+        "ls": "normal",
+        "lh": "25px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 685,
+        "y": 715.640625,
+        "width": 30,
+        "height": 30,
+        "top": 715.640625,
+        "right": 715,
+        "bottom": 745.640625,
+        "left": 685
+      }
+    },
+    {
+      "text": "Facebook",
+      "href": "https://facebook.com/tplumphotograph",
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "25px",
+        "weight": "400",
+        "color": "rgb(105, 114, 125)",
+        "bg": "rgba(255, 255, 255, 0)",
+        "ls": "normal",
+        "lh": "25px",
+        "tt": "none"
+      },
+      "rect": {
+        "x": 720,
+        "y": 715.640625,
+        "width": 30,
+        "height": 30,
+        "top": 715.640625,
+        "right": 750,
+        "bottom": 745.640625,
+        "left": 720
+      }
+    }
+  ],
+  "imgs": [
+    "https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-White-1.png"
+  ],
+  "boxes": [
+    {
+      "id": "4bd66bb",
+      "cls": "elementor-element elementor-element-4bd66bb e-con-full e-flex e-con e-parent",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900,
+        "top": 0,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "16px",
+        "weight": "400",
+        "color": "rgb(47, 47, 47)",
+        "bg": "rgb(0, 0, 0)",
+        "ls": "normal",
+        "lh": "24px",
+        "tt": "none"
+      },
+      "bgImage": "none"
+    },
+    {
+      "id": "bb04caf",
+      "cls": "elementor-element elementor-element-bb04caf e-flex e-con-boxed e-con e-child",
+      "rect": {
+        "x": 10,
+        "y": 140.84375,
+        "width": 1420,
+        "height": 618.296875,
+        "top": 140.84375,
+        "right": 1430,
+        "bottom": 759.140625,
+        "left": 10
+      },
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "16px",
+        "weight": "400",
+        "color": "rgb(47, 47, 47)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "24px",
+        "tt": "none"
+      },
+      "bgImage": "none"
+    },
+    {
+      "id": "a65efc5",
+      "cls": "elementor-element elementor-element-a65efc5 elementor-widget elementor-widget-image animated fadeIn",
+      "rect": {
+        "x": 220,
+        "y": 150.84375,
+        "width": 1000,
+        "height": 72.796875,
+        "top": 150.84375,
+        "right": 1220,
+        "bottom": 223.640625,
+        "left": 220
+      },
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "16px",
+        "weight": "400",
+        "color": "rgb(47, 47, 47)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "24px",
+        "tt": "none"
+      },
+      "bgImage": "none"
+    },
+    {
+      "id": "c95915a",
+      "cls": "elementor-element elementor-element-c95915a elementor-nav-menu__align-center elementor-nav-menu--dropdown-none animated-slow elementor-widget elementor-widget-nav-menu animated fadeIn",
+      "rect": {
+        "x": 493.734375,
+        "y": 283.640625,
+        "width": 452.53125,
+        "height": 408,
+        "top": 283.640625,
+        "right": 946.265625,
+        "bottom": 691.640625,
+        "left": 493.734375
+      },
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "16px",
+        "weight": "400",
+        "color": "rgb(47, 47, 47)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "24px",
+        "tt": "none"
+      },
+      "bgImage": "none"
+    },
+    {
+      "id": "5b23a51",
+      "cls": "elementor-element elementor-element-5b23a51 elementor-shape-circle elementor-grid-3 e-grid-align-right elementor-widget elementor-widget-social-icons",
+      "rect": {
+        "x": 685,
+        "y": 715.640625,
+        "width": 70,
+        "height": 33.5,
+        "top": 715.640625,
+        "right": 755,
+        "bottom": 749.140625,
+        "left": 685
+      },
+      "style": {
+        "font": "-apple-system, \"system-ui\", \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif",
+        "size": "16px",
+        "weight": "400",
+        "color": "rgb(47, 47, 47)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "ls": "normal",
+        "lh": "24px",
+        "tt": "none"
+      },
+      "bgImage": "none"
+    }
+  ],
+  "modalBg": "rgba(0, 0, 0, 0)"
+}

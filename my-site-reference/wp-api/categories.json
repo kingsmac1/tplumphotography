@@ -1,0 +1,712 @@
+[
+  {
+    "id": 5,
+    "count": 4,
+    "description": "",
+    "link": "https://tplumphotography.com/category/illustrations/",
+    "name": "Illustrations",
+    "slug": "illustrations",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "aioseo_head": "\n\t\t<!-- All in One SEO 5.0.5 - aioseo.com -->\n\t<meta name=\"robots\" content=\"max-image-preview:large\" />\n\t<link rel=\"canonical\" href=\"https://tplumphotography.com/category/illustrations/\" />\n\t\t<meta name=\"generator\" content=\"All in One SEO (AIOSEO) 5.0.5\" />\n\t\t<script type=\"application/ld+json\" class=\"aioseo-schema\">\n\t\t\t{\"@context\":\"https:\\/\\/schema.org\",\"@graph\":[{\"@type\":\"BreadcrumbList\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\",\"itemListElement\":[{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https:\\/\\/tplumphotography.com\\/\",\"nextItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/illustrations\\/#listItem\",\"name\":\"Illustrations\"}},{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/illustrations\\/#listItem\",\"position\":2,\"name\":\"Illustrations\",\"previousItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"name\":\"Home\"}}]},{\"@type\":\"CollectionPage\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#collectionpage\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/\",\"name\":\"Illustrations \\u2192 Tplum Photography\",\"inLanguage\":\"en-US\",\"isPartOf\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\"},\"breadcrumb\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\"}},{\"@type\":\"Organization\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-content\\/uploads\\/2026\\/01\\/TPlum-Logo-Dark.png\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\",\"width\":1000,\"height\":560},\"image\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\"}},{\"@type\":\"WebSite\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"inLanguage\":\"en-US\",\"publisher\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\"}}]}\n\t\t</script>\n\t\t<!-- All in One SEO -->\n\n",
+    "aioseo_head_json": {
+      "title": "Illustrations → Tplum Photography",
+      "description": "",
+      "canonical_url": "https://tplumphotography.com/category/illustrations/",
+      "robots": "max-image-preview:large",
+      "keywords": "",
+      "webmasterTools": {
+        "miscellaneous": ""
+      },
+      "schema": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/#listItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://tplumphotography.com/",
+                "nextItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/category/illustrations/#listItem",
+                  "name": "Illustrations"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/category/illustrations/#listItem",
+                "position": 2,
+                "name": "Illustrations",
+                "previousItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/#listItem",
+                  "name": "Home"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "CollectionPage",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#collectionpage",
+            "url": "https://tplumphotography.com/wp-json/wp/v2/categories/",
+            "name": "Illustrations → Tplum Photography",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@id": "https://tplumphotography.com/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://tplumphotography.com/#organization",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "url": "https://tplumphotography.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-Dark.png",
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo",
+              "width": 1000,
+              "height": 560
+            },
+            "image": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://tplumphotography.com/#website",
+            "url": "https://tplumphotography.com/",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "inLanguage": "en-US",
+            "publisher": {
+              "@id": "https://tplumphotography.com/#organization"
+            }
+          }
+        ]
+      }
+    },
+    "aioseo_breadcrumb": "<div class=\"aioseo-breadcrumbs\"><span class=\"aioseo-breadcrumb\">\n\t\t\t<a href=\"https://tplumphotography.com/\" title=\"Home\">Home</a>\n\t\t</span><span class=\"aioseo-breadcrumb-separator\">»</span><span class=\"aioseo-breadcrumb\">\n\t\t\tIllustrations\n\t\t</span></div>",
+    "aioseo_breadcrumb_json": [
+      {
+        "label": "Home",
+        "link": "https://tplumphotography.com/"
+      },
+      {
+        "label": "Illustrations",
+        "link": "https://tplumphotography.com/category/illustrations/"
+      }
+    ],
+    "_links": {
+      "self": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories/5",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/posts?categories=5"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "count": 2,
+    "description": "",
+    "link": "https://tplumphotography.com/category/photography/",
+    "name": "Photography",
+    "slug": "photography",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "aioseo_head": "\n\t\t<!-- All in One SEO 5.0.5 - aioseo.com -->\n\t<meta name=\"robots\" content=\"max-image-preview:large\" />\n\t<link rel=\"canonical\" href=\"https://tplumphotography.com/category/photography/\" />\n\t\t<meta name=\"generator\" content=\"All in One SEO (AIOSEO) 5.0.5\" />\n\t\t<script type=\"application/ld+json\" class=\"aioseo-schema\">\n\t\t\t{\"@context\":\"https:\\/\\/schema.org\",\"@graph\":[{\"@type\":\"BreadcrumbList\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\",\"itemListElement\":[{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https:\\/\\/tplumphotography.com\\/\",\"nextItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/photography\\/#listItem\",\"name\":\"Photography\"}},{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/photography\\/#listItem\",\"position\":2,\"name\":\"Photography\",\"previousItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"name\":\"Home\"}}]},{\"@type\":\"CollectionPage\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#collectionpage\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/\",\"name\":\"Photography \\u2192 Tplum Photography\",\"inLanguage\":\"en-US\",\"isPartOf\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\"},\"breadcrumb\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\"}},{\"@type\":\"Organization\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-content\\/uploads\\/2026\\/01\\/TPlum-Logo-Dark.png\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\",\"width\":1000,\"height\":560},\"image\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\"}},{\"@type\":\"WebSite\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"inLanguage\":\"en-US\",\"publisher\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\"}}]}\n\t\t</script>\n\t\t<!-- All in One SEO -->\n\n",
+    "aioseo_head_json": {
+      "title": "Photography → Tplum Photography",
+      "description": "",
+      "canonical_url": "https://tplumphotography.com/category/photography/",
+      "robots": "max-image-preview:large",
+      "keywords": "",
+      "webmasterTools": {
+        "miscellaneous": ""
+      },
+      "schema": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/#listItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://tplumphotography.com/",
+                "nextItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/category/photography/#listItem",
+                  "name": "Photography"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/category/photography/#listItem",
+                "position": 2,
+                "name": "Photography",
+                "previousItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/#listItem",
+                  "name": "Home"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "CollectionPage",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#collectionpage",
+            "url": "https://tplumphotography.com/wp-json/wp/v2/categories/",
+            "name": "Photography → Tplum Photography",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@id": "https://tplumphotography.com/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://tplumphotography.com/#organization",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "url": "https://tplumphotography.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-Dark.png",
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo",
+              "width": 1000,
+              "height": 560
+            },
+            "image": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://tplumphotography.com/#website",
+            "url": "https://tplumphotography.com/",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "inLanguage": "en-US",
+            "publisher": {
+              "@id": "https://tplumphotography.com/#organization"
+            }
+          }
+        ]
+      }
+    },
+    "aioseo_breadcrumb": "<div class=\"aioseo-breadcrumbs\"><span class=\"aioseo-breadcrumb\">\n\t\t\t<a href=\"https://tplumphotography.com/\" title=\"Home\">Home</a>\n\t\t</span><span class=\"aioseo-breadcrumb-separator\">»</span><span class=\"aioseo-breadcrumb\">\n\t\t\tPhotography\n\t\t</span></div>",
+    "aioseo_breadcrumb_json": [
+      {
+        "label": "Home",
+        "link": "https://tplumphotography.com/"
+      },
+      {
+        "label": "Photography",
+        "link": "https://tplumphotography.com/category/photography/"
+      }
+    ],
+    "_links": {
+      "self": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories/6",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/posts?categories=6"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "count": 3,
+    "description": "",
+    "link": "https://tplumphotography.com/category/uncategorized/",
+    "name": "Uncategorized",
+    "slug": "uncategorized",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "aioseo_head": "\n\t\t<!-- All in One SEO 5.0.5 - aioseo.com -->\n\t<meta name=\"robots\" content=\"max-image-preview:large\" />\n\t<link rel=\"canonical\" href=\"https://tplumphotography.com/category/uncategorized/\" />\n\t\t<meta name=\"generator\" content=\"All in One SEO (AIOSEO) 5.0.5\" />\n\t\t<script type=\"application/ld+json\" class=\"aioseo-schema\">\n\t\t\t{\"@context\":\"https:\\/\\/schema.org\",\"@graph\":[{\"@type\":\"BreadcrumbList\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\",\"itemListElement\":[{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https:\\/\\/tplumphotography.com\\/\",\"nextItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/uncategorized\\/#listItem\",\"name\":\"Uncategorized\"}},{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/uncategorized\\/#listItem\",\"position\":2,\"name\":\"Uncategorized\",\"previousItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"name\":\"Home\"}}]},{\"@type\":\"CollectionPage\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#collectionpage\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/\",\"name\":\"Uncategorized \\u2192 Tplum Photography\",\"inLanguage\":\"en-US\",\"isPartOf\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\"},\"breadcrumb\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\"}},{\"@type\":\"Organization\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-content\\/uploads\\/2026\\/01\\/TPlum-Logo-Dark.png\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\",\"width\":1000,\"height\":560},\"image\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\"}},{\"@type\":\"WebSite\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"inLanguage\":\"en-US\",\"publisher\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\"}}]}\n\t\t</script>\n\t\t<!-- All in One SEO -->\n\n",
+    "aioseo_head_json": {
+      "title": "Uncategorized → Tplum Photography",
+      "description": "",
+      "canonical_url": "https://tplumphotography.com/category/uncategorized/",
+      "robots": "max-image-preview:large",
+      "keywords": "",
+      "webmasterTools": {
+        "miscellaneous": ""
+      },
+      "schema": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/#listItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://tplumphotography.com/",
+                "nextItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/category/uncategorized/#listItem",
+                  "name": "Uncategorized"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/category/uncategorized/#listItem",
+                "position": 2,
+                "name": "Uncategorized",
+                "previousItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/#listItem",
+                  "name": "Home"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "CollectionPage",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#collectionpage",
+            "url": "https://tplumphotography.com/wp-json/wp/v2/categories/",
+            "name": "Uncategorized → Tplum Photography",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@id": "https://tplumphotography.com/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://tplumphotography.com/#organization",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "url": "https://tplumphotography.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-Dark.png",
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo",
+              "width": 1000,
+              "height": 560
+            },
+            "image": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://tplumphotography.com/#website",
+            "url": "https://tplumphotography.com/",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "inLanguage": "en-US",
+            "publisher": {
+              "@id": "https://tplumphotography.com/#organization"
+            }
+          }
+        ]
+      }
+    },
+    "aioseo_breadcrumb": "<div class=\"aioseo-breadcrumbs\"><span class=\"aioseo-breadcrumb\">\n\t\t\t<a href=\"https://tplumphotography.com/\" title=\"Home\">Home</a>\n\t\t</span><span class=\"aioseo-breadcrumb-separator\">»</span><span class=\"aioseo-breadcrumb\">\n\t\t\tUncategorized\n\t\t</span></div>",
+    "aioseo_breadcrumb_json": [
+      {
+        "label": "Home",
+        "link": "https://tplumphotography.com/"
+      },
+      {
+        "label": "Uncategorized",
+        "link": "https://tplumphotography.com/category/uncategorized/"
+      }
+    ],
+    "_links": {
+      "self": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories/1",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/posts?categories=1"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "count": 2,
+    "description": "",
+    "link": "https://tplumphotography.com/category/video-production/",
+    "name": "Video Production",
+    "slug": "video-production",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "aioseo_head": "\n\t\t<!-- All in One SEO 5.0.5 - aioseo.com -->\n\t<meta name=\"robots\" content=\"max-image-preview:large\" />\n\t<link rel=\"canonical\" href=\"https://tplumphotography.com/category/video-production/\" />\n\t\t<meta name=\"generator\" content=\"All in One SEO (AIOSEO) 5.0.5\" />\n\t\t<script type=\"application/ld+json\" class=\"aioseo-schema\">\n\t\t\t{\"@context\":\"https:\\/\\/schema.org\",\"@graph\":[{\"@type\":\"BreadcrumbList\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\",\"itemListElement\":[{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https:\\/\\/tplumphotography.com\\/\",\"nextItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/video-production\\/#listItem\",\"name\":\"Video Production\"}},{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/video-production\\/#listItem\",\"position\":2,\"name\":\"Video Production\",\"previousItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"name\":\"Home\"}}]},{\"@type\":\"CollectionPage\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#collectionpage\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/\",\"name\":\"Video Production \\u2192 Tplum Photography\",\"inLanguage\":\"en-US\",\"isPartOf\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\"},\"breadcrumb\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\"}},{\"@type\":\"Organization\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-content\\/uploads\\/2026\\/01\\/TPlum-Logo-Dark.png\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\",\"width\":1000,\"height\":560},\"image\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\"}},{\"@type\":\"WebSite\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"inLanguage\":\"en-US\",\"publisher\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\"}}]}\n\t\t</script>\n\t\t<!-- All in One SEO -->\n\n",
+    "aioseo_head_json": {
+      "title": "Video Production → Tplum Photography",
+      "description": "",
+      "canonical_url": "https://tplumphotography.com/category/video-production/",
+      "robots": "max-image-preview:large",
+      "keywords": "",
+      "webmasterTools": {
+        "miscellaneous": ""
+      },
+      "schema": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/#listItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://tplumphotography.com/",
+                "nextItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/category/video-production/#listItem",
+                  "name": "Video Production"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/category/video-production/#listItem",
+                "position": 2,
+                "name": "Video Production",
+                "previousItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/#listItem",
+                  "name": "Home"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "CollectionPage",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#collectionpage",
+            "url": "https://tplumphotography.com/wp-json/wp/v2/categories/",
+            "name": "Video Production → Tplum Photography",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@id": "https://tplumphotography.com/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://tplumphotography.com/#organization",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "url": "https://tplumphotography.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-Dark.png",
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo",
+              "width": 1000,
+              "height": 560
+            },
+            "image": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://tplumphotography.com/#website",
+            "url": "https://tplumphotography.com/",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "inLanguage": "en-US",
+            "publisher": {
+              "@id": "https://tplumphotography.com/#organization"
+            }
+          }
+        ]
+      }
+    },
+    "aioseo_breadcrumb": "<div class=\"aioseo-breadcrumbs\"><span class=\"aioseo-breadcrumb\">\n\t\t\t<a href=\"https://tplumphotography.com/\" title=\"Home\">Home</a>\n\t\t</span><span class=\"aioseo-breadcrumb-separator\">»</span><span class=\"aioseo-breadcrumb\">\n\t\t\tVideo Production\n\t\t</span></div>",
+    "aioseo_breadcrumb_json": [
+      {
+        "label": "Home",
+        "link": "https://tplumphotography.com/"
+      },
+      {
+        "label": "Video Production",
+        "link": "https://tplumphotography.com/category/video-production/"
+      }
+    ],
+    "_links": {
+      "self": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories/7",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/posts?categories=7"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "count": 2,
+    "description": "",
+    "link": "https://tplumphotography.com/category/web-developer/",
+    "name": "Web Developer",
+    "slug": "web-developer",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "aioseo_head": "\n\t\t<!-- All in One SEO 5.0.5 - aioseo.com -->\n\t<meta name=\"robots\" content=\"max-image-preview:large\" />\n\t<link rel=\"canonical\" href=\"https://tplumphotography.com/category/web-developer/\" />\n\t\t<meta name=\"generator\" content=\"All in One SEO (AIOSEO) 5.0.5\" />\n\t\t<script type=\"application/ld+json\" class=\"aioseo-schema\">\n\t\t\t{\"@context\":\"https:\\/\\/schema.org\",\"@graph\":[{\"@type\":\"BreadcrumbList\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\",\"itemListElement\":[{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https:\\/\\/tplumphotography.com\\/\",\"nextItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/web-developer\\/#listItem\",\"name\":\"Web Developer\"}},{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/category\\/web-developer\\/#listItem\",\"position\":2,\"name\":\"Web Developer\",\"previousItem\":{\"@type\":\"ListItem\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#listItem\",\"name\":\"Home\"}}]},{\"@type\":\"CollectionPage\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#collectionpage\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/\",\"name\":\"Web Developer \\u2192 Tplum Photography\",\"inLanguage\":\"en-US\",\"isPartOf\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\"},\"breadcrumb\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#breadcrumblist\"}},{\"@type\":\"Organization\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/tplumphotography.com\\/wp-content\\/uploads\\/2026\\/01\\/TPlum-Logo-Dark.png\",\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\",\"width\":1000,\"height\":560},\"image\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/wp-json\\/wp\\/v2\\/categories\\/#organizationLogo\"}},{\"@type\":\"WebSite\",\"@id\":\"https:\\/\\/tplumphotography.com\\/#website\",\"url\":\"https:\\/\\/tplumphotography.com\\/\",\"name\":\"Tplum Photography\",\"description\":\"Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding\",\"inLanguage\":\"en-US\",\"publisher\":{\"@id\":\"https:\\/\\/tplumphotography.com\\/#organization\"}}]}\n\t\t</script>\n\t\t<!-- All in One SEO -->\n\n",
+    "aioseo_head_json": {
+      "title": "Web Developer → Tplum Photography",
+      "description": "",
+      "canonical_url": "https://tplumphotography.com/category/web-developer/",
+      "robots": "max-image-preview:large",
+      "keywords": "",
+      "webmasterTools": {
+        "miscellaneous": ""
+      },
+      "schema": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/#listItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://tplumphotography.com/",
+                "nextItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/category/web-developer/#listItem",
+                  "name": "Web Developer"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "@id": "https://tplumphotography.com/category/web-developer/#listItem",
+                "position": 2,
+                "name": "Web Developer",
+                "previousItem": {
+                  "@type": "ListItem",
+                  "@id": "https://tplumphotography.com/#listItem",
+                  "name": "Home"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "CollectionPage",
+            "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#collectionpage",
+            "url": "https://tplumphotography.com/wp-json/wp/v2/categories/",
+            "name": "Web Developer → Tplum Photography",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@id": "https://tplumphotography.com/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#breadcrumblist"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://tplumphotography.com/#organization",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "url": "https://tplumphotography.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://tplumphotography.com/wp-content/uploads/2026/01/TPlum-Logo-Dark.png",
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo",
+              "width": 1000,
+              "height": 560
+            },
+            "image": {
+              "@id": "https://tplumphotography.com/wp-json/wp/v2/categories/#organizationLogo"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://tplumphotography.com/#website",
+            "url": "https://tplumphotography.com/",
+            "name": "Tplum Photography",
+            "description": "Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding",
+            "inLanguage": "en-US",
+            "publisher": {
+              "@id": "https://tplumphotography.com/#organization"
+            }
+          }
+        ]
+      }
+    },
+    "aioseo_breadcrumb": "<div class=\"aioseo-breadcrumbs\"><span class=\"aioseo-breadcrumb\">\n\t\t\t<a href=\"https://tplumphotography.com/\" title=\"Home\">Home</a>\n\t\t</span><span class=\"aioseo-breadcrumb-separator\">»</span><span class=\"aioseo-breadcrumb\">\n\t\t\tWeb Developer\n\t\t</span></div>",
+    "aioseo_breadcrumb_json": [
+      {
+        "label": "Home",
+        "link": "https://tplumphotography.com/"
+      },
+      {
+        "label": "Web Developer",
+        "link": "https://tplumphotography.com/category/web-developer/"
+      }
+    ],
+    "_links": {
+      "self": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories/8",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://tplumphotography.com/wp-json/wp/v2/posts?categories=8"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

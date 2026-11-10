@@ -27,3 +27,7 @@ playwright-report/
 # large local-only folders
 reference-copies/
 my-site-reference/raw/
+my-site-reference/images/
+my-site-reference/wp-api/media/
+my-site-reference/raw/
+dmi-port-notes/

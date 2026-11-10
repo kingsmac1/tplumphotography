@@ -1,0 +1,14 @@
+/* Dashboard → Deliveries (inside the .ad kit) */
+.dl-stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 18px; }
+.dl .ad-tablewrap tr.dl-overdue td:first-child { box-shadow: inset 3px 0 0 #dc2626; }
+.dl .ad-tablewrap tr.dl-due td:first-child { box-shadow: inset 3px 0 0 #d97706; }
+.dl .ad-tablewrap td .sub { display: block; }
+.dl .ad-tablewrap td .ad-badge { text-transform: none; }
+.dl-act { text-align: right; white-space: nowrap; }
+.dl-settings { margin-bottom: 18px; }
+.dl-settings-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.dl-err { color: var(--red); margin-top: 10px; font-size: 13px; }
+.dl-foot { font-size: 12.5px; margin-top: 4px; max-width: 72ch; }
+.dl-pair { border: 0; padding: 0; margin: 16px 0 0; }
+.dl-pair legend { font-weight: 700; font-size: 13.5px; margin-bottom: 8px; padding: 0; }
+.dl-pair legend small { font-weight: 500; color: var(--mute); }

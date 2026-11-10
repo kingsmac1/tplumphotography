@@ -1,0 +1,89 @@
+/* Dashboard → Invoices: the form on the left, the sheet of paper on the right. Everything sits inside the gallery kit (.ad). */
+@font-face { font-family: 'DMI Invoice'; src: url('/fonts/NotoSans-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'DMI Invoice'; src: url('/fonts/NotoSans-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+
+.ad .iv-bar { position: sticky; top: 0; z-index: 25; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 20px; padding: 12px 0; background: hsl(var(--dash-page)); border-bottom: 1px solid var(--line); }
+.ad .iv-bar h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; line-height: 1.2; }
+.ad .iv-bar .sp { flex: 1; min-width: 12px; }
+.ad .iv-saved { color: var(--mute); font-size: 12.5px; white-space: nowrap; }
+.ad .iv-layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 24px; align-items: start; }
+.ad .iv-form { display: grid; gap: 14px; min-width: 0; }
+.ad .iv-form .ad-card h3 { margin-bottom: 12px; }
+.ad .iv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ad .iv-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ad .iv-stages button { padding: 11px 6px; border: 0; border-right: 1px solid var(--line); background: #fff; font-weight: 600; color: var(--ink2); }
+.ad .iv-stages button:last-child { border-right: 0; }
+.ad .iv-stages button:hover { background: #faf9f6; }
+.ad .iv-stages button[aria-pressed='true'] { background: var(--ink); color: #fff; }
+.ad .iv-hint { margin-top: 10px; color: var(--mute); font-size: 13px; }
+.ad .iv-row { border: 1px solid var(--line); border-radius: 11px; padding: 12px; display: grid; gap: 10px; margin-bottom: 10px; }
+.ad .iv-row-top { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 12.5px; color: var(--mute); }
+.ad .iv-row-nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ad .iv-pay { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, .9fr) auto; gap: 8px; align-items: end; margin-bottom: 10px; }
+.ad .iv-sum { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+.ad .iv-sum.big { font-weight: 700; font-size: 15px; border-top: 1px solid var(--line); margin-top: 4px; padding-top: 10px; }
+.ad .iv-logo-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ad .iv-logo-row img { display: block; height: 44px; max-width: 170px; object-fit: contain; }
+.ad .iv-preview { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; border-radius: 12px; background: #dddbd3; padding: 14px; min-width: 0; }
+.ad .iv-tabs { display: none; }
+
+/* the sheet: measured in px at A4 / 96 dpi to match the PDF, then scaled to the column */
+.ad .iv-sheets { display: grid; gap: 14px; min-width: 0; }
+.ad .iv-paper { width: 794px; min-height: 1123px; background: #fff; padding: 66px; color: #222; font: 12.5px/1.45 'DMI Invoice', Helvetica, Arial, sans-serif; box-shadow: 0 8px 24px -14px rgba(0,0,0,.45); overflow-wrap: anywhere; }
+.ad .iv-paper-terms { font-size: 11.3px; line-height: 1.35; }
+.ad .iv-paper h5 { font-family: inherit; text-transform: none; letter-spacing: 0; }
+.ad .iv-paper-terms h5 { margin: 0 0 12px; font-size: 16px; }
+.ad .iv-pre { white-space: pre-wrap; color: #6b6b6b; }
+.ad .iv-head { display: flex; justify-content: space-between; gap: 20px; min-height: 170px; }
+.ad .iv-logo { display: block; width: auto; height: auto; max-width: 200px; max-height: 83px; }
+.ad .iv-head-r { text-align: right; flex: none; max-width: 60%; }
+.ad .iv-title { font-size: 37px; line-height: 1.1; }
+.ad .iv-number { font-weight: 700; margin-top: 2px; }
+.ad .iv-due-l { font-size: 11px; font-weight: 700; margin-top: 16px; }
+.ad .iv-due { font-size: 17.5px; font-weight: 700; }
+.ad .iv-stamp { display: inline-block; margin-top: 8px; padding: 2px 10px; border: 1.5px solid; font-size: 13px; font-weight: 700; }
+.ad .iv-stamp.paid { color: #17803d; }
+.ad .iv-stamp.part { color: #1c4fd9; }
+.ad .iv-from { margin-bottom: 30px; }
+.ad .iv-parties { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+.ad .iv-bill { min-width: 0; padding-top: 28px; }
+.ad .iv-bill > span:first-child { color: #6b6b6b; font-size: 13.5px; }
+.ad .iv-meta { display: grid; grid-template-columns: auto minmax(90px, auto); gap: 9px 22px; margin: 0; flex: none; align-self: flex-start; max-width: 55%; }
+.ad .iv-meta dt { color: #6b6b6b; font-size: 13.5px; text-align: right; }
+.ad .iv-meta dd { margin: 0; text-align: right; }
+.ad .iv-items { width: 100%; border-collapse: collapse; }
+.ad .iv-items th { background: #3c3c3c; color: #fff; font-size: 12.5px; font-weight: 400; letter-spacing: 0; text-transform: none; padding: 9px 12px; border: 0; text-align: left; }
+.ad .iv-items td { padding: 10px 12px 14px; border: 0; border-bottom: 1px solid #b8b8b8; vertical-align: top; color: #222; }
+.ad .iv-items .r { text-align: right; white-space: nowrap; width: 110px; }
+.ad .iv-items .n { width: 48px; }
+.ad .iv-totals { margin: 14px 0 0 auto; width: 460px; }
+.ad .iv-totals > div { display: flex; justify-content: space-between; gap: 18px; padding: 8px 12px; text-align: right; }
+.ad .iv-totals > div > span:first-child { flex: 1; }
+.ad .iv-totals > div > span:last-child { flex: none; min-width: 110px; }
+.ad .iv-totals .strong { font-weight: 700; }
+.ad .iv-totals .balance { background: #f4f2f0; font-weight: 700; padding: 13px 12px; margin-top: 4px; }
+.ad .iv-notes { margin-top: 34px; font-size: 11.3px; line-height: 1.35; }
+.ad .iv-notes h5 { margin: 0 0 6px; font-size: 13.5px; font-weight: 400; color: #6b6b6b; }
+.ad .iv-notes .iv-pre { color: #222; }
+.ad .iv-gap { height: 10px; }
+.ad .iv-term.head { font-weight: 700; }
+.ad .iv-term.bullet { position: relative; padding-left: 32px; }
+.ad .iv-term.bullet::before { content: '•'; position: absolute; left: 16px; }
+
+@media (max-width: 1240px) {
+  .ad .iv-layout { grid-template-columns: minmax(0, 1fr); }
+  .ad .iv-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+  .ad .iv-tabs button { padding: 11px; border: 0; background: none; font-weight: 600; color: var(--ink2); }
+  .ad .iv-tabs button[aria-selected='true'] { background: var(--ink); color: #fff; }
+  .ad .iv-layout[data-view='edit'] .iv-preview, .ad .iv-layout[data-view='preview'] .iv-form { display: none; }
+  .ad .iv-preview { position: static; max-height: none; padding: 8px; }
+}
+@media (max-width: 767px) {
+  /* the dashboard's own top bar is sticky on phones, so this bar scrolls away instead */
+  .ad .iv-bar { position: static; padding-top: 0; }
+  .ad .iv-bar h1 { width: 100%; font-size: 21px; }
+  .ad .iv-bar .sp { display: none; }
+  .ad .iv-grid { grid-template-columns: minmax(0, 1fr); }
+  .ad .iv-pay { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ad .iv-form input, .ad .iv-form select, .ad .iv-form textarea { font-size: 16px; }
+}

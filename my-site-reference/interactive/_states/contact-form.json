@@ -1,0 +1,169 @@
+{
+  "fields": [
+    {
+      "id": "wpforms-1371-field_1-container",
+      "type": "wpforms-field-name",
+      "label": "Name *",
+      "sublabels": [
+        "First",
+        "Last"
+      ],
+      "required": true,
+      "placeholder": [
+        "",
+        ""
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_2-container",
+      "type": "wpforms-field-layout",
+      "label": "Layout",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        "",
+        "0802 123 4567",
+        ""
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_3-container",
+      "type": "wpforms-field-email",
+      "label": "Email *",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        ""
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_4-container",
+      "type": "wpforms-field-phone",
+      "label": "Phone *",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        "0802 123 4567",
+        ""
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_6-container",
+      "type": "wpforms-field-layout",
+      "label": "Layout",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        "",
+        ""
+      ],
+      "options": [
+        "Wedding",
+        "Engagement Shoot",
+        "Vow Renewal",
+        "Studio Portrait",
+        "Coporate Event",
+        "Others"
+      ],
+      "desc": "Type or describe the service here"
+    },
+    {
+      "id": "wpforms-1371-field_5-container",
+      "type": "wpforms-field-select",
+      "label": "What service are you booking? *",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        ""
+      ],
+      "options": [
+        "Wedding",
+        "Engagement Shoot",
+        "Vow Renewal",
+        "Studio Portrait",
+        "Coporate Event",
+        "Others"
+      ]
+    },
+    {
+      "id": "wpforms-1371-field_7-container",
+      "type": "wpforms-field-text",
+      "label": "Others",
+      "sublabels": [],
+      "required": false,
+      "placeholder": [
+        ""
+      ],
+      "options": [],
+      "desc": "Type or describe the service here"
+    },
+    {
+      "id": "wpforms-1371-field_9-container",
+      "type": "wpforms-field-date-time",
+      "label": "Preferred Date of Event *",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        ""
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_10-container",
+      "type": "wpforms-field-text",
+      "label": "Location *",
+      "sublabels": [],
+      "required": true,
+      "placeholder": [
+        ""
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_11-container",
+      "type": "wpforms-field-text",
+      "label": "What's your instagram? Let's connect",
+      "sublabels": [],
+      "required": false,
+      "placeholder": [
+        "@"
+      ],
+      "options": []
+    },
+    {
+      "id": "wpforms-1371-field_12-container",
+      "type": "wpforms-field-select",
+      "label": "How did you hear about us?",
+      "sublabels": [],
+      "required": false,
+      "placeholder": [
+        ""
+      ],
+      "options": [
+        "Instagram",
+        "Referral",
+        "Google",
+        "Weddings Blogs",
+        "Planner",
+        "Partner",
+        "Ads"
+      ]
+    },
+    {
+      "id": "wpforms-1371-field_13-container",
+      "type": "wpforms-field-textarea",
+      "label": "Is There Anything Else You Want Us To Know ?",
+      "sublabels": [],
+      "required": false,
+      "placeholder": [
+        ""
+      ],
+      "options": []
+    }
+  ],
+  "submit": "Submit"
+}
