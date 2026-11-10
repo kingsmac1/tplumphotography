@@ -1,20 +1,15 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Check, ChevronRight, MapPin, Plus, X } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FindStudio from "@/components/FindStudio";
 import SlotPicker from "@/components/SlotPicker";
-import { isSlotTaken, longDate, slotLabel } from "@/lib/schedule";
+import { longDate, slotLabel } from "@/lib/schedule";
 import { Link } from "@/lib/router-compat";
-import { openWhatsApp } from "@/lib/whatsapp";
-import { logToSheet, logToSupabase } from "@/lib/bookingLog";
 import InspirationImages, { uploadInspiration } from "@/components/InspirationImages";
 import { supabase } from "@/lib/supabaseClient";
-import { useBookingPricing } from "@/lib/content";
-import { BOOKING_LOCATIONS } from "@/data/pricingDefaults";
+import { useBookingPricing, useBusinessSettings } from "@/lib/content";
+import { depositFor } from "@/lib/pricing";
+import { createBooking } from "@/lib/bookingLog";
 
-type LocationId = "lagos" | "abuja" | "uyo";
 type SettingId = "indoor" | "outdoor";
 type GroupId = string;
 
@@ -37,11 +32,9 @@ type Extra = {
   followsPackage?: boolean;
 };
 
-const locations = BOOKING_LOCATIONS as { id: LocationId; name: string }[];
-
 const shootTypes = [
-  "Portrait", "Pre-Wedding", "Birthday", "Graduation",
-  "Fashion/Editorial", "Product", "Event", "Corporate", "Family",
+  "Portrait", "Engagement", "Maternity", "Proposal", "Couple",
+  "Family", "Birthday", "Graduation", "Corporate", "Other",
 ];
 
 const genderOptions = ["Male", "Female", "Prefer not to say"];
@@ -66,7 +59,6 @@ const inputCls =
 
 const Booking = () => {
   const formRef = useRef<HTMLDivElement>(null);
-  const [location, setLocation] = useState<LocationId>("uyo");
   const [setting, setSetting] = useState<SettingId>("indoor");
   const [selectedService, setSelectedService] = useState<GroupId | "">("");
   const [name, setName] = useState("");
@@ -82,7 +74,10 @@ const Booking = () => {
     setShootTime(t);
     if (t) setSlotError("");
   }, []);
-  const [whatsapp, setWhatsapp] = useState("");
+  const [phone, setPhone] = useState("");
+  const [agree, setAgree] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const { settings: business } = useBusinessSettings();
   const [email, setEmail] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
@@ -107,7 +102,7 @@ const Booking = () => {
     () =>
       pricing.loaded
         ? pricing.services
-            .filter((r) => r.location === location && r.setting === setting)
+            .filter((r) => r.setting === setting)
             .sort((a, b) => a.sort_order - b.sort_order)
             .map((r) => ({
               id: r.service_id,
@@ -117,7 +112,7 @@ const Booking = () => {
               desc: r.description,
             }))
         : [],
-    [pricing.loaded, pricing.services, location, setting],
+    [pricing.loaded, pricing.services, setting],
   );
   const chosenService = services.find((s) => s.id === selectedService);
   const packagePrice = chosenService?.price ?? 0;
@@ -125,7 +120,6 @@ const Booking = () => {
     () =>
       pricing.loaded
         ? pricing.extras
-            .filter((r) => r.location === location)
             .sort((a, b) => a.sort_order - b.sort_order)
             .map((r) => ({
               name: r.name,
@@ -135,7 +129,7 @@ const Booking = () => {
               followsPackage: r.follows_package,
             }))
         : [],
-    [pricing.loaded, pricing.extras, location, packagePrice],
+    [pricing.loaded, pricing.extras, packagePrice],
   );
   const serviceTotal = chosenService
     ? chosenService.pricingMode === "per_outfit"
@@ -155,8 +149,8 @@ const Booking = () => {
   const grandTotal = subtotal - discount;
   const couponNote = promo ? `Coupon ${promo.code} (${promo.percent}% off): -${formatMoney(discount)}` : "";
 
-  const settingLabel = setting.charAt(0).toUpperCase() + setting.slice(1);
-  const locationLabel = (loc: LocationId) => loc.charAt(0).toUpperCase() + loc.slice(1);
+  const settingLabel = setting === "indoor" ? "Studio" : "On location";
+  const depositNow = business.online_payments_enabled ? depositFor(grandTotal, business) : 0;
   const birthdayLabel = birthMonth && birthDay ? `${Number(birthDay)} ${monthNames[Number(birthMonth) - 1]}` : "";
 
   const extraLabel = (extra: Extra) =>
@@ -248,7 +242,7 @@ const Booking = () => {
 
   const canSubmit =
     !!chosenService &&
-    !!(name.trim() && gender && shootType && shootDate && shootTime && whatsapp.trim() && email.trim() && birthMonth && birthDay);
+    !!(name.trim() && gender && shootType && shootDate && shootTime && phone.trim() && email.trim() && birthMonth && birthDay) && agree;
 
   const buildSheetPayload = () => {
     const socials = socialHandles
@@ -272,13 +266,13 @@ const Booking = () => {
       shoot_type: shootType,
       shoot_date: shootDate,
       shoot_time: shootTime,
-      phone: whatsapp,
+      phone,
       email,
       // Only day & month are collected; the placeholder year 2000 keeps the value a valid date.
       date_of_birth: `2000-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`,
       social_handles: socials.join(" | "),
       inspiration_links: links.join(" | "),
-      location: locationLabel(location),
+      location: "",
       shoot_setting: settingLabel,
       selected_service: chosenService?.name ?? "",
       service_price: chosenService ? String(chosenService.price) : "",
@@ -295,75 +289,36 @@ const Booking = () => {
     };
   };
 
-  const buildWhatsAppMessage = (uploaded = imagesUploaded) => {
-    const socials = socialHandles
-      .filter((h) => h.handle.trim())
-      .map((h) => `${h.platform}: ${h.handle}`);
-    const extrasList = selectedExtraObjects.map((e) =>
-      e.maxQty
-        ? `${e.name} x${qtyOf(e.name)} (${formatMoney(e.price)} each = ${formatMoney(extraLineTotal(e))})`
-        : `${e.name} (${formatMoney(e.price)})`
-    );
-
-    const links = inspirationLinks
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    const serviceLine = chosenService
-      ? chosenService.pricingMode === "per_outfit"
-        ? `${chosenService.name} - ${formatMoney(chosenService.price)} x ${outfits} outfit${outfits > 1 ? "s" : ""} = ${formatMoney(serviceTotal)}`
-        : `${chosenService.name} - ${formatMoney(serviceTotal)} (${chosenService.desc})`
-      : "-";
-
-    const lines = [
-      "*NEW DMI BOOKING*",
-      `*Name:* ${name}`,
-      `*Gender:* ${gender}`,
-      `*WhatsApp:* ${whatsapp}`,
-      `*Email:* ${email}`,
-      `*Birthday:* ${birthdayLabel}`,
-      `*Shoot Type:* ${shootType}`,
-      `*Shoot Date:* ${longDate(shootDate)}`,
-      `*Shoot Time:* ${slotLabel(shootTime)}`,
-      `*Shoot Location:* ${locationLabel(location)} - ${settingLabel}`,
-      `*Service:* ${serviceLine}`,
-      `*Extras:* ${extrasList.length ? extrasList.join(", ") : "-"}`,
-      `*Social Handles:* ${socials.length ? socials.join(" | ") : "-"}`,
-    ];
-
-    if (links.length > 0) {
-      lines.push("*Inspiration Image Links:*");
-      lines.push(...links.map((url, index) => `${index + 1}. ${url}`));
-    }
-
-    if (uploaded > 0) lines.push(`*Inspiration Images:* ${uploaded} uploaded with this booking`);
-    if (couponNote) lines.push(`*${couponNote}*`);
-    lines.push(`*TOTAL: ${formatMoney(grandTotal)}*`);
-
-    return lines.join("\n");
-  };
-
   const handleSubmit = async () => {
-    if (!canSubmit || submitting) return;
+    if (!canSubmit || submitting || !chosenService) return;
     setSubmitting(true);
+    setSubmitError("");
     const payload = buildSheetPayload();
-    // The database refuses a time someone else has just taken; stop before WhatsApp so the client picks again.
-    const bookingId = crypto.randomUUID();
-    const error = await logToSupabase(payload, bookingId);
-    if (isSlotTaken(error)) {
+    // The server recalculates every price from the database, holds the slot for 30 minutes and starts Stripe Checkout for the deposit.
+    const res = await createBooking({
+      kind: "session",
+      serviceId: chosenService.id,
+      setting,
+      outfits,
+      extras: selectedExtraObjects.map((e) => ({ name: e.name, qty: e.maxQty ? qtyOf(e.name) : 1 })),
+      promoCode: promo?.code ?? "",
+      client: payload,
+      returnUrl: typeof window !== "undefined" ? window.location.origin : "",
+    });
+    if (!res.ok) {
       setSubmitting(false);
-      setSlotError("Sorry, that time was just taken. Please pick another slot.");
-      setSlotsVersion((v) => v + 1);
-      document.getElementById("shoot-slot")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (res.code === "slot_taken") {
+        setSlotError("Sorry, that time was just taken. Please pick another slot.");
+        setSlotsVersion((v) => v + 1);
+        document.getElementById("shoot-slot")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else setSubmitError(res.error);
       return;
     }
-    // a failed image never stops the booking: the client is told to send it on WhatsApp instead
-    const images = error ? { uploaded: 0, failed: inspirationFiles.length } : await uploadInspiration(inspirationFiles, bookingId);
+    // a failed image never stops the booking: the client is told to email it instead
+    const images = await uploadInspiration(inspirationFiles, res.bookingId);
     setImagesUploaded(images.uploaded);
     setImagesFailed(images.failed);
-    await logToSheet(payload);
-    openWhatsApp(buildWhatsAppMessage(images.uploaded));
+    if (res.checkoutUrl) { window.location.href = res.checkoutUrl; return; }
     setSubmitting(false);
     setSubmitted(true);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
@@ -372,19 +327,19 @@ const Booking = () => {
   if (submitted) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <Header />
+        
         <section className="pt-32 pb-24 px-6 md:px-16 lg:px-20 text-center">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}>
             <div className="w-20 h-20 rounded-full bg-accent mx-auto flex items-center justify-center mb-8">
               <Check size={36} className="text-accent-foreground" />
             </div>
-            <h1 className="font-display text-5xl md:text-7xl font-bold mb-4">ALMOST THERE</h1>
+            <h1 className="font-display text-5xl md:text-7xl mb-4">Booking received</h1>
             <p className="text-muted-foreground font-body text-lg max-w-md mx-auto mb-4">
-              Thanks {name}! We just opened WhatsApp with your booking details pre-filled — tap <span className="font-bold text-foreground">Send</span> in WhatsApp to deliver it to our team.
+              Thanks {name}! Your session request is in and a confirmation is on its way to <span className="font-bold text-foreground">{email}</span>. We'll be in touch about payment and the final details.
             </p>
             {imagesFailed > 0 && (
               <p role="alert" className="text-sm font-body font-medium text-destructive max-w-md mx-auto mb-4">
-                {imagesFailed} of your inspiration images could not be uploaded. Please send {imagesFailed === 1 ? "it" : "them"} to us on WhatsApp.
+                {imagesFailed} of your inspiration images could not be uploaded. Please email {imagesFailed === 1 ? "it" : "them"} to info@tplumphotography.com.
               </p>
             )}
             <div className="mt-8 flex flex-col items-center gap-4">
@@ -394,8 +349,8 @@ const Booking = () => {
                   <p className="font-display text-3xl font-bold text-accent mt-2">{formatMoney(grandTotal)}</p>
                   <p className="text-sm text-muted-foreground font-body mt-1">
                     {chosenService.pricingMode === "per_outfit"
-                      ? `${outfits} outfit${outfits > 1 ? "s" : ""} · ${locationLabel(location)} ${setting}`
-                      : `${chosenService.desc} · ${locationLabel(location)} ${setting}`}
+                      ? `${outfits} outfit${outfits > 1 ? "s" : ""} · ${settingLabel}`
+                      : `${chosenService.desc} · ${settingLabel}`}
                   </p>
                   {selectedExtras.length > 0 && (
                     <p className="text-xs text-muted-foreground font-body mt-2">
@@ -404,30 +359,23 @@ const Booking = () => {
                   )}
                 </div>
               )}
-
-              <button
-                onClick={() => openWhatsApp(buildWhatsAppMessage())}
-                className="text-xs font-body tracking-widest underline text-muted-foreground hover:text-foreground"
-              >
-                DIDN'T OPEN? CLICK TO OPEN AGAIN
-              </button>
             </div>
           </motion.div>
         </section>
-        <Footer />
+        
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      
 
       <section className="pt-28 pb-24 px-6 md:px-16 lg:px-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="font-display text-5xl md:text-7xl font-bold mb-2">PRICING & BOOKING</h1>
+          <h1 className="font-display text-5xl md:text-7xl mb-2">Pricing &amp; Booking</h1>
           <Link
-            to="/weddings"
+            to="/booking/wedding/"
             className="group flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-accent text-accent-foreground px-6 py-6 md:px-10 md:py-8 my-6 transition-opacity hover:opacity-90"
           >
             <div>
@@ -435,7 +383,7 @@ const Booking = () => {
                 BOOKING A WEDDING?
               </p>
               <p className="font-body text-base md:text-lg font-bold mt-1">
-                Weddings, Pre-wedding, Court wedding &amp; more — book on our wedding page.
+                Weddings, elopements, vow renewals &amp; more — see our wedding collections.
               </p>
             </div>
             <span className="inline-flex items-center justify-center gap-2 bg-background text-foreground px-8 py-4 font-body text-sm md:text-base font-bold tracking-widest shrink-0 group-hover:gap-4 transition-all">
@@ -443,7 +391,7 @@ const Booking = () => {
             </span>
           </Link>
           <p className="text-muted-foreground font-body mb-10">
-            Pick your location, choose a package, then fill in your details to reserve your session.
+            Choose studio or on location, pick a package, then fill in your details to reserve your session.
           </p>
 
           {publicPromos.length > 0 && (
@@ -457,29 +405,10 @@ const Booking = () => {
             </div>
           )}
 
-          {/* Location tabs */}
-          <div role="tablist" aria-label="Location" className="grid grid-cols-3 border-b border-border">
-            {locations.map((loc) => (
-              <button
-                key={loc.id}
-                role="tab"
-                aria-selected={location === loc.id}
-                onClick={() => setLocation(loc.id)}
-                className={`flex items-center justify-center gap-2 py-4 font-display text-lg md:text-xl font-bold border-b-2 -mb-px transition-colors ${
-                  location === loc.id
-                    ? "border-foreground text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <MapPin size={16} /> {loc.name}
-              </button>
-            ))}
-          </div>
-
           {/* Setting toggle */}
           <div className="flex flex-wrap items-center justify-between gap-4 mt-6 mb-6">
             <p className="text-sm text-muted-foreground font-body">
-              {location === "uyo" ? "Bundle includes 1 outfit & 3 edited images" : "Session rate"}
+              Every session is a 1-hour slot
             </p>
             <div className="inline-flex border border-border">
               {(["indoor", "outdoor"] as const).map((opt) => (
@@ -490,7 +419,7 @@ const Booking = () => {
                     setting === opt ? "bg-foreground text-background" : "hover:bg-muted"
                   }`}
                 >
-                  {opt === "indoor" ? "INDOOR · STUDIO" : "OUTDOOR · ON-LOCATION"}
+                  {opt === "indoor" ? "STUDIO" : "ON LOCATION"}
                 </button>
               ))}
             </div>
@@ -524,7 +453,7 @@ const Booking = () => {
 
           {/* Extras price list */}
           <div className="mt-8 border border-border p-6">
-            <p className="text-xs font-body font-bold tracking-widest mb-4">ADD-ONS · {locationLabel(location).toUpperCase()}</p>
+            <p className="text-xs font-body font-bold tracking-widest mb-4">ADD-ONS</p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
               {availableExtras.map((extra) => (
                 <li key={extra.name} className="flex items-baseline justify-between gap-4 text-sm font-body">
@@ -558,7 +487,7 @@ const Booking = () => {
                   <div>
                     <p className="text-xs font-body tracking-widest opacity-70">YOUR PACKAGE</p>
                     <p className="font-display text-xl md:text-2xl font-bold">{chosenService.name}</p>
-                    <p className="text-xs font-body opacity-70 mt-1">{locationLabel(location)} · {settingLabel}</p>
+                    <p className="text-xs font-body opacity-70 mt-1">{settingLabel}</p>
                   </div>
                   <p className="font-display text-2xl md:text-3xl font-bold">{formatMoney(chosenService.price)}</p>
                 </div>
@@ -612,8 +541,8 @@ const Booking = () => {
                   </div>
 
                   <div>
-                    <label className={labelCls}>WHATSAPP NUMBER *</label>
-                    <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(403) 555-0123" className={inputCls} />
+                    <label className={labelCls}>PHONE NUMBER *</label>
+                    <input type="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(403) 555-0123" className={inputCls} />
                   </div>
 
                   <div>
@@ -805,7 +734,7 @@ const Booking = () => {
 
                 {/* Summary + submit */}
                 <div className="border border-border p-5 space-y-2 font-body text-sm">
-                  <div className="flex justify-between"><span className="text-muted-foreground">{chosenService.name} · {locationLabel(location)} {settingLabel}</span><span>{formatMoney(serviceTotal)}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">{chosenService.name} · {settingLabel}</span><span>{formatMoney(serviceTotal)}</span></div>
                   {selectedExtraObjects.map((e) => (
                     <div key={e.name} className="flex justify-between"><span className="text-muted-foreground">{extraLabel(e)}</span><span>{formatMoney(extraLineTotal(e))}</span></div>
                   ))}
@@ -816,7 +745,24 @@ const Booking = () => {
                     <span className="font-bold tracking-widest text-xs">TOTAL</span>
                     <span className="font-display text-2xl font-bold">{formatMoney(grandTotal)}</span>
                   </div>
+                  {depositNow > 0 && (
+                    <>
+                      <div className="flex justify-between pt-2"><span className="font-bold">Deposit due now</span><span className="font-bold">{formatMoney(depositNow)}</span></div>
+                      <div className="flex justify-between text-muted-foreground"><span>Balance due before your session</span><span>{formatMoney(Math.max(0, grandTotal - depositNow))}</span></div>
+                    </>
+                  )}
+                  <p className="text-[11px] text-muted-foreground pt-2">All prices in Canadian dollars (CAD).</p>
                 </div>
+
+                <label className="flex items-start gap-3 text-sm font-body cursor-pointer">
+                  <input type="checkbox" className="mt-1" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
+                  <span>
+                    I agree to the booking terms{business.booking_terms ? ":" : "."}
+                    {business.booking_terms && <span className="block text-xs text-muted-foreground mt-1 whitespace-pre-line">{business.booking_terms}</span>}
+                    {business.cancellation_policy && <span className="block text-xs text-muted-foreground mt-1 whitespace-pre-line">{business.cancellation_policy}</span>}
+                  </span>
+                </label>
+                {submitError && <p role="alert" className="text-sm font-body text-destructive">{submitError}</p>}
 
                 <button
                   onClick={() => void handleSubmit()}
@@ -827,11 +773,11 @@ const Booking = () => {
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   }`}
                 >
-                  {submitting ? (inspirationFiles.length ? "UPLOADING IMAGES…" : "SUBMITTING…") : "SUBMIT BOOKING"} <ChevronRight size={16} />
+                  {submitting ? (inspirationFiles.length ? "UPLOADING IMAGES…" : "SUBMITTING…") : depositNow > 0 ? `PAY ${formatMoney(depositNow)} DEPOSIT & BOOK` : "SUBMIT BOOKING"} <ChevronRight size={16} />
                 </button>
                 {!canSubmit && (
                   <p className="text-xs text-center text-muted-foreground font-body -mt-4">
-                    Fill in all fields marked * to submit.
+                    Fill in all fields marked * and accept the booking terms to continue.
                   </p>
                 )}
               </motion.div>
@@ -840,8 +786,7 @@ const Booking = () => {
         </div>
       </section>
 
-      <FindStudio title="Visit the studio" />
-      <Footer />
+      
     </div>
   );
 };

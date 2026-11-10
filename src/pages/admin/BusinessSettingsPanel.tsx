@@ -13,7 +13,9 @@ const inputCls = "w-full border border-border bg-background px-4 py-3 text-sm fo
  * The booking-create and invoice functions read these on the server, so changing them here
  * changes what clients are charged — nothing is hard-coded.
  */
-export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "business" }) {
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "business" | "hours" }) {
   const [s, setS] = useState<Settings | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -47,8 +49,11 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
     setMsg("Saved.");
   }
 
-  const showDeposit = only !== "business";
-  const showBusiness = only !== "deposit";
+  const showDeposit = !only || only === "deposit";
+  const showBusiness = !only || only === "business";
+  const showHours = !only || only === "hours";
+  const hours = ((s.opening_hours as unknown) ?? {}) as Record<string, [string, string] | null>;
+  const setDay = (d: number, v: [string, string] | null) => set("opening_hours", { ...hours, [d]: v } as unknown as string);
 
   return (
     <div className="border border-border p-6 space-y-6 max-w-3xl">
@@ -80,6 +85,33 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
           <div>
             <label className={labelCls}>CANCELLATION POLICY</label>
             <textarea rows={4} className={inputCls} value={String(s.cancellation_policy ?? "")} onChange={(e) => set("cancellation_policy", e.target.value)} />
+          </div>
+        </section>
+      )}
+      {showHours && (
+        <section className="space-y-4">
+          <h2 className="font-display text-2xl">Booking hours</h2>
+          <p className="text-sm text-muted-foreground">When clients can book 1-hour sessions on the website. Close single dates or times from Calendar.</p>
+          <div className="space-y-2">
+            {DAYS.map((name, d) => {
+              const v = hours[d] ?? hours[String(d) as unknown as number];
+              return (
+                <div key={d} className="flex flex-wrap items-center gap-3 text-sm">
+                  <label className="w-32 flex items-center gap-2"><input type="checkbox" checked={!!v} onChange={(e) => setDay(d, e.target.checked ? ["10:00", "18:00"] : null)} /> {name}</label>
+                  {v ? (
+                    <>
+                      <input type="time" className="border border-border px-2 py-1" value={v[0]} onChange={(e) => setDay(d, [e.target.value, v[1]])} />
+                      <span>to</span>
+                      <input type="time" className="border border-border px-2 py-1" value={v[1]} onChange={(e) => setDay(d, [v[0], e.target.value])} />
+                    </>
+                  ) : <span className="text-muted-foreground">Closed</span>}
+                </div>
+              );
+            })}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {text("booking_horizon_days", "HOW FAR AHEAD CLIENTS CAN BOOK (DAYS)", undefined, "number")}
+            {text("min_notice_hours", "MINIMUM NOTICE (HOURS)", "e.g. 24 = no same-day bookings.", "number")}
           </div>
         </section>
       )}

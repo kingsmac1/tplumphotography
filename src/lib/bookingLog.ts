@@ -1,9 +1,16 @@
-import { supabase } from "@/lib/supabaseClient";
+import { callFunction } from "@/lib/functions";
 
-const SHEET_WEB_APP_URL =
-  "" /* DMI Google Sheet removed: Tplum logs bookings in Supabase only */;
+/**
+ * Client side of the booking flow. DMI wrote bookings straight into the table (and to a Google Sheet);
+ * Tplum sends the client's choices to the `booking-create` Edge Function instead, which:
+ *   1. validates every field (same rules as the form),
+ *   2. recalculates the price from the database (never trusts the browser),
+ *   3. inserts the booking (the database refuses a taken slot, errcode 23P01 -> "slot_taken"),
+ *   4. starts Stripe Checkout for the deposit (when online payments are on) and returns its URL,
+ *   5. emails the client and the studio.
+ */
 
-/** Flat, string-valued booking record shared by the booking and wedding forms. */
+/** Flat booking record (DMI's BookingPayload, WhatsApp number renamed to phone). */
 export type BookingPayload = {
   full_name: string;
   gender: string;
@@ -28,51 +35,20 @@ export type BookingPayload = {
   grand_total: string;
   service_summary: string;
   source: string;
+  notes?: string;
 };
 
-/**
- * Posts the booking to the Google Apps Script web app, which appends the Sheet row
- * and adds the shoot date to Google Calendar. Emails are sent by Resend from Supabase.
- */
-export const logToSheet = async (payload: BookingPayload) => {
-  const data = new URLSearchParams();
-  Object.entries(payload).forEach(([key, value]) => data.append(key, String(value)));
-  try {
-    await fetch(SHEET_WEB_APP_URL, { method: "POST", mode: "no-cors", body: data });
-  } catch (err) {
-    console.error("Booking sheet log failed:", err);
-  }
-};
+export type CreateBookingRequest =
+  | { kind: "session"; serviceId: string; setting: string; outfits: number; extras: { name: string; qty: number }[]; promoCode: string; client: BookingPayload; returnUrl: string }
+  | { kind: "wedding"; packageId: string; days: "one" | "two"; extras: string[]; promoCode?: string; client: BookingPayload; returnUrl: string }
+  | { kind: "studio"; spaceId: string; extras: { id: string; qty: number }[]; promoCode: string; client: { full_name: string; phone: string; email: string; rental_date: string; rental_time: string; notes: string }; returnUrl: string };
 
-/** Writes the same booking into Supabase, powering the admin dashboard. Returns the error, if any. */
-/** `id`: set by the booking form so its inspiration images can be tagged with the booking (the public can't read a row back). */
-export const logToSupabase = async (payload: BookingPayload, id?: string) => {
-  const { error } = await supabase.from("bookings").insert({
-    ...(id ? { id } : {}),
-    full_name: payload.full_name,
-    gender: payload.gender,
-    shoot_type: payload.shoot_type,
-    shoot_date: payload.shoot_date || null,
-    shoot_time: payload.shoot_time || null,
-    phone: payload.phone,
-    email: payload.email,
-    date_of_birth: payload.date_of_birth || null,
-    social_handles: payload.social_handles,
-    inspiration_links: payload.inspiration_links,
-    location: payload.location,
-    shoot_setting: payload.shoot_setting,
-    selected_service: payload.selected_service,
-    service_price: Number(payload.service_price) || null,
-    service_pricing_mode: payload.service_pricing_mode,
-    outfits: Number(payload.outfits) || null,
-    selected_extras: payload.selected_extras,
-    extra_edited_count: Number(payload.extra_edited_count) || null,
-    service_total: Number(payload.service_total) || null,
-    extras_total: Number(payload.extras_total) || null,
-    grand_total: Number(payload.grand_total) || null,
-    service_summary: payload.service_summary,
-    source: payload.source,
-  });
-  if (error) console.error("Supabase booking insert failed:", error);
-  return error;
-};
+export type CreateBookingResult =
+  | { ok: true; bookingId: string; reference: string; total: number; deposit: number; checkoutUrl: string | null }
+  | { ok: false; error: string; code?: string };
+
+export async function createBooking(req: CreateBookingRequest): Promise<CreateBookingResult> {
+  const res = await callFunction<{ bookingId: string; reference: string; total: number; deposit: number; checkoutUrl: string | null; code?: string }>("booking-create", req);
+  if (!res.ok) return { ok: false, error: res.error, code: /taken|23P01/i.test(res.error) ? "slot_taken" : undefined };
+  return { ok: true, ...res.data };
+}

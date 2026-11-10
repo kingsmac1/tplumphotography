@@ -13,9 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ComingSoonRouteImport } from './routes/coming-soon'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as StudioSpaceRouteImport } from './routes/studio-space'
 import { Route as TheTplumSignatureRouteImport } from './routes/the-tplum-signature'
+import { Route as BookingIndexRouteImport } from './routes/booking/index'
+import { Route as BookingConfirmedRouteImport } from './routes/booking/confirmed'
+import { Route as BookingWeddingRouteImport } from './routes/booking/wedding'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -37,6 +42,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -47,9 +57,29 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudioSpaceRoute = StudioSpaceRouteImport.update({
+  id: '/studio-space',
+  path: '/studio-space',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TheTplumSignatureRoute = TheTplumSignatureRouteImport.update({
   id: '/the-tplum-signature',
   path: '/the-tplum-signature',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingIndexRoute = BookingIndexRouteImport.update({
+  id: '/booking/',
+  path: '/booking/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingConfirmedRoute = BookingConfirmedRouteImport.update({
+  id: '/booking/confirmed',
+  path: '/booking/confirmed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingWeddingRoute = BookingWeddingRouteImport.update({
+  id: '/booking/wedding',
+  path: '/booking/wedding',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -58,18 +88,28 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/coming-soon': typeof ComingSoonRoute
   '/contact': typeof ContactRoute
+  '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
+  '/studio-space': typeof StudioSpaceRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
+  '/booking/confirmed': typeof BookingConfirmedRoute
+  '/booking/wedding': typeof BookingWeddingRoute
+  '/booking/': typeof BookingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/coming-soon': typeof ComingSoonRoute
   '/contact': typeof ContactRoute
+  '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
+  '/studio-space': typeof StudioSpaceRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
+  '/booking/confirmed': typeof BookingConfirmedRoute
+  '/booking/wedding': typeof BookingWeddingRoute
+  '/booking': typeof BookingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +117,14 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/coming-soon': typeof ComingSoonRoute
   '/contact': typeof ContactRoute
+  '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
+  '/studio-space': typeof StudioSpaceRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
+  '/booking/confirmed': typeof BookingConfirmedRoute
+  '/booking/wedding': typeof BookingWeddingRoute
+  '/booking/': typeof BookingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,27 +133,42 @@ export interface FileRouteTypes {
     | '/about'
     | '/coming-soon'
     | '/contact'
+    | '/events'
     | '/faq'
     | '/portfolio'
+    | '/studio-space'
     | '/the-tplum-signature'
+    | '/booking/confirmed'
+    | '/booking/wedding'
+    | '/booking/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/coming-soon'
     | '/contact'
+    | '/events'
     | '/faq'
     | '/portfolio'
+    | '/studio-space'
     | '/the-tplum-signature'
+    | '/booking/confirmed'
+    | '/booking/wedding'
+    | '/booking'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/coming-soon'
     | '/contact'
+    | '/events'
     | '/faq'
     | '/portfolio'
+    | '/studio-space'
     | '/the-tplum-signature'
+    | '/booking/confirmed'
+    | '/booking/wedding'
+    | '/booking/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,9 +176,14 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ComingSoonRoute: typeof ComingSoonRoute
   ContactRoute: typeof ContactRoute
+  EventsRoute: typeof EventsRoute
   FaqRoute: typeof FaqRoute
   PortfolioRoute: typeof PortfolioRoute
+  StudioSpaceRoute: typeof StudioSpaceRoute
   TheTplumSignatureRoute: typeof TheTplumSignatureRoute
+  BookingConfirmedRoute: typeof BookingConfirmedRoute
+  BookingWeddingRoute: typeof BookingWeddingRoute
+  BookingIndexRoute: typeof BookingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -151,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -165,11 +237,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/studio-space': {
+      id: '/studio-space'
+      path: '/studio-space'
+      fullPath: '/studio-space'
+      preLoaderRoute: typeof StudioSpaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/the-tplum-signature': {
       id: '/the-tplum-signature'
       path: '/the-tplum-signature'
       fullPath: '/the-tplum-signature'
       preLoaderRoute: typeof TheTplumSignatureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/': {
+      id: '/booking/'
+      path: '/booking'
+      fullPath: '/booking/'
+      preLoaderRoute: typeof BookingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/confirmed': {
+      id: '/booking/confirmed'
+      path: '/booking/confirmed'
+      fullPath: '/booking/confirmed'
+      preLoaderRoute: typeof BookingConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/wedding': {
+      id: '/booking/wedding'
+      path: '/booking/wedding'
+      fullPath: '/booking/wedding'
+      preLoaderRoute: typeof BookingWeddingRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -180,9 +280,14 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ComingSoonRoute: ComingSoonRoute,
   ContactRoute: ContactRoute,
+  EventsRoute: EventsRoute,
   FaqRoute: FaqRoute,
   PortfolioRoute: PortfolioRoute,
+  StudioSpaceRoute: StudioSpaceRoute,
   TheTplumSignatureRoute: TheTplumSignatureRoute,
+  BookingConfirmedRoute: BookingConfirmedRoute,
+  BookingWeddingRoute: BookingWeddingRoute,
+  BookingIndexRoute: BookingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

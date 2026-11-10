@@ -19,8 +19,7 @@ export function Img({ image, sizes = "100vw", className, style, loading = "lazy"
       alt={alt ?? image.alt ?? ""}
       loading={loading}
       decoding="async"
-      // @ts-expect-error fetchpriority is a valid attribute
-      fetchpriority={fetchPriority}
+      fetchPriority={fetchPriority}
       className={className}
       style={pos ? { objectPosition: pos, ...style } : style}
     />

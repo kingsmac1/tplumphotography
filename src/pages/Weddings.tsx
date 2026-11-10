@@ -1,18 +1,18 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Check, X, Instagram, ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import AnimatedSection from "@/components/AnimatedSection";
-import { galleryImagesBySlug } from "@/lib/gallery-images";
-import { cmsImages, useCms } from "@/lib/cms";
-import { openWhatsApp } from "@/lib/whatsapp";
-import { useWeddingPricing } from "@/lib/content";
-import { BOOKING_LOCATIONS } from "@/data/pricingDefaults";
+import { ArrowUpRight, Check, X, ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react";
+import { IconInstagram as Instagram } from "@/site/icons";
+import { useBusinessSettings, useWeddingPricing } from "@/lib/content";
+import { depositFor } from "@/lib/pricing";
 import type { WeddingPackage } from "@/data/weddingDefaults";
-import { logToSheet, logToSupabase, type BookingPayload } from "@/lib/bookingLog";
+import { createBooking, type BookingPayload } from "@/lib/bookingLog";
+import type { SiteContent } from "@/cms/types";
+import { SEED } from "@/cms/types";
 
-const DMI_WEDDINGS_IG = "https://www.instagram.com/dmi_weddings?igsh=bGZxM3pnMmR3cGJi";
+/** Simple fade-in wrapper (DMI's AnimatedSection). */
+const AnimatedSection = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number; distance?: number }) => (
+  <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.6, delay }}>{children}</motion.div>
+);
 
 type Pkg = WeddingPackage;
 
@@ -21,20 +21,15 @@ const formatMoney = (amount: number) =>
 
 const ASPECTS = ["aspect-[2/3]", "aspect-[4/3]", "aspect-square", "aspect-[3/5]", "aspect-[3/4]"];
 
-const Weddings = () => {
-  const { loaded: pricingLoaded, packages: allPackages, extras: allExtras, configuredLocations } = useWeddingPricing();
-  // Prices are per studio location, Uyo first. A location with no prices set up yet shows Uyo's list.
-  const [location, setLocation] = useState("uyo");
-  const priceLocation = configuredLocations.includes(location) ? location : "uyo";
-  const locationLabel = location.charAt(0).toUpperCase() + location.slice(1);
-  const packages = pricingLoaded ? allPackages.filter((p) => (p.location ?? "uyo") === priceLocation) : [];
-  const extrasList = pricingLoaded ? allExtras.filter((e) => (e.location ?? "uyo") === priceLocation) : [];
-  const cms = useCms();
-  const weddingImages = useMemo(
-    () => (cms.loaded ? cmsImages(cms.data, "wedding", galleryImagesBySlug["wedding"] ?? []) : (galleryImagesBySlug["wedding"] ?? [])),
-    [cms],
-  );
-  const heroImage = weddingImages[0];
+const Weddings = ({ site }: { site?: SiteContent }) => {
+  const instagramUrl = site?.contact.instagramUrl ?? SEED.site.contact.instagramUrl;
+  const { settings: business } = useBusinessSettings();
+  const { loaded: pricingLoaded, packages: allPackages, extras: allExtras } = useWeddingPricing();
+  const packages = pricingLoaded ? allPackages : [];
+  const extrasList = pricingLoaded ? allExtras : [];
+  // Gallery: the portfolio photos (managed in Dashboard -> Website -> Portfolio).
+  const weddingImages = useMemo(() => SEED.portfolio.gallery.images.slice(0, 12).map((i) => i.src), []);
+  const heroImage = SEED.portfolio.hero.image.src;
 
   const [selectedPkg, setSelectedPkg] = useState<Pkg | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -45,6 +40,7 @@ const Weddings = () => {
     partnerName: "",
     email: "",
     whatsapp: "",
+    agree: false,
     weddingDate: "",
     venue: "",
     city: "",
@@ -66,12 +62,6 @@ const Weddings = () => {
     return base + extrasSum;
   };
 
-  const changeLocation = (loc: string) => {
-    setLocation(loc);
-    // The open package belongs to the old location's price list.
-    setSelectedPkg(null);
-    setForm((f) => ({ ...f, extras: [] }));
-  };
 
   const toggleExtra = (name: string) => {
     setForm(f => ({ ...f, extras: f.extras.includes(name) ? f.extras.filter(x => x !== name) : [...f.extras, name] }));
@@ -79,41 +69,27 @@ const Weddings = () => {
 
   const [submitting, setSubmitting] = useState(false);
 
+  const [submitError, setSubmitError] = useState("");
   const submitForm = async () => {
     if (!selectedPkg || submitting) return;
     setSubmitting(true);
+    setSubmitError("");
     const base = form.events === "two" && selectedPkg.twoEvents ? selectedPkg.twoEvents : selectedPkg.oneEvent;
-    const lines = [
-      "*NEW DMI WEDDING BOOKING*",
-      `*Pricing Location:* ${locationLabel}`,
-      `*Package:* ${selectedPkg.name} — ${form.events === "two" ? "Two events" : "One event"}`,
-      `*Base:* ${formatMoney(base)}`,
-      `*Couple:* ${form.name}${form.partnerName ? ` & ${form.partnerName}` : ""}`,
-      `*Email:* ${form.email}`,
-      `*WhatsApp:* ${form.whatsapp}`,
-      `*Wedding Date:* ${form.weddingDate}`,
-      `*Venue:* ${form.venue}`,
-      `*City:* ${form.city}`,
-      `*Extras:* ${form.extras.length ? form.extras.join(", ") : "-"}`,
-      `*Notes:* ${form.notes || "-"}`,
-      `*TOTAL: ${formatMoney(packageTotal())}*`,
-    ];
-
-    // Log to the Sheet (which also adds the wedding date to Google Calendar) and the dashboard.
     const extrasSum = packageTotal() - base;
-    const eventsLabel = form.events === "two" ? "Two events" : "One event";
+    const eventsLabel = form.events === "two" ? "Two days" : "One day";
     const payload: BookingPayload = {
       full_name: `${form.name}${form.partnerName ? ` & ${form.partnerName}` : ""}`,
       gender: "",
-      shoot_type: `Wedding - ${selectedPkg.name}`,
+      shoot_type: "Wedding",
       shoot_date: form.weddingDate,
       shoot_time: "",
       phone: form.whatsapp,
       email: form.email,
       date_of_birth: "",
       social_handles: "",
-      inspiration_links: form.notes,
-      location: form.city || locationLabel,
+      inspiration_links: "",
+      notes: form.notes,
+      location: form.city,
       shoot_setting: form.venue || "Wedding",
       selected_service: selectedPkg.name,
       service_price: String(base),
@@ -124,25 +100,26 @@ const Weddings = () => {
       service_total: String(base),
       extras_total: String(extrasSum),
       grand_total: String(packageTotal()),
-      service_summary: `${selectedPkg.name} (${eventsLabel}) - ${formatMoney(base)} · ${locationLabel} pricing`,
+      service_summary: `${selectedPkg.name} (${eventsLabel})`,
       source: "wedding_form",
     };
-    await logToSheet(payload);
-    await logToSupabase(payload);
-    setSubmitting(false);
-    openWhatsApp(lines.join("\n"));
+    const res = await createBooking({ kind: "wedding", packageId: selectedPkg.id, days: form.events, extras: form.extras, client: payload, returnUrl: window.location.origin });
+    if (!res.ok) { setSubmitting(false); setSubmitError(res.error); return; }
+    if (res.checkoutUrl) { window.location.href = res.checkoutUrl; return; }
+    window.location.href = `/booking/confirmed/?ref=${encodeURIComponent(res.reference)}`;
   };
+  const depositNow = selectedPkg && business.online_payments_enabled ? depositFor(packageTotal(), business) : 0;
 
-  const formValid = form.name && form.email && form.whatsapp && form.weddingDate;
+  const formValid = form.name && form.email && form.whatsapp && form.weddingDate && form.agree;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      
 
       {/* HERO */}
       <section className="relative h-[88vh] min-h-[640px] w-full overflow-hidden">
         {heroImage && (
-          <img src={heroImage} alt="DMI Weddings" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={heroImage} alt="Tplum Photography weddings" className="absolute inset-0 h-full w-full object-cover" />
         )}
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 py-20 md:py-28">
@@ -160,7 +137,7 @@ const Weddings = () => {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-white text-6xl md:text-8xl lg:text-9xl font-bold leading-[0.9]"
           >
-            DMI<br />WEDDINGS
+            TPLUM<br />WEDDINGS
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -168,19 +145,19 @@ const Weddings = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-white/85 font-body max-w-xl mt-8 text-base md:text-lg"
           >
-            Timeless imagery of your special day, captured across Nigeria.
+            Calgary | Edmonton | Toronto Wedding & Portrait Photographer + Destination Wedding
             Now accepting bookings for weddings in 2026.
           </motion.p>
           <motion.a
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            href={DMI_WEDDINGS_IG}
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-8 inline-flex items-center gap-2 text-white/90 hover:text-white text-sm tracking-widest border border-white/40 hover:border-white px-5 py-3 transition-colors"
           >
-            <Instagram size={16} /> @DMI_WEDDINGS
+            <Instagram size={16} /> @TPLUMPHOTOGRAPHY
           </motion.a>
         </div>
       </section>
@@ -190,21 +167,12 @@ const Weddings = () => {
         <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
           <AnimatedSection>
             <h2 className="font-display text-4xl md:text-5xl font-bold leading-tight">
-              CAPTURING<br />YOUR FOREVER
+              THE TPLUM<br />SIGNATURE
             </h2>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <p className="font-body text-muted-foreground leading-relaxed mb-6">
-              When it comes to photographing your special day, collaboration is key. From your first message on
-              WhatsApp to the final delivery of your gallery, DMI is with you — getting to know you and your
-              partner, understanding your desired wedding style so that every frame captures it perfectly.
-            </p>
-            <p className="font-body text-muted-foreground leading-relaxed">
-              On the day itself, we aim to be stress-free and informative. We arrive early, quietly document
-              the getting-ready moments, the ceremony, speeches and cake-cutting, and stay through until your
-              last dance. With years of experience across celebrations all over Nigeria, we deliver imagery
-              that will last a lifetime.
-            </p>
+            <div className="font-body text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: SEED["the-tplum-signature"].intro.body }} />
+            <p className="font-body text-muted-foreground leading-relaxed mt-6">Destination weddings | Available to travel</p>
           </AnimatedSection>
         </div>
       </section>
@@ -213,32 +181,10 @@ const Weddings = () => {
       <section id="packages" className="py-20 px-6 md:px-16 lg:px-20 border-t border-border bg-muted/20">
         <AnimatedSection>
           <div className="flex justify-between items-end mb-14 max-w-6xl mx-auto">
-            <h2 className="font-display text-4xl md:text-6xl font-bold">WEDDING<br />PACKAGES</h2>
+            <h2 className="font-display text-4xl md:text-6xl font-bold">WEDDING<br />COLLECTIONS</h2>
             <span className="text-xs text-muted-foreground font-body tracking-widest hidden md:block">CLICK A CARD TO BOOK</span>
           </div>
         </AnimatedSection>
-
-        {/* Location tabs — same pattern as the Booking page */}
-        <div className="max-w-6xl mx-auto mb-10">
-          <div role="tablist" aria-label="Location" className="grid grid-cols-3 border-b border-border">
-            {BOOKING_LOCATIONS.map((loc) => (
-              <button
-                key={loc.id}
-                role="tab"
-                aria-selected={location === loc.id}
-                onClick={() => changeLocation(loc.id)}
-                className={`flex items-center justify-center gap-2 py-4 font-display text-lg md:text-xl font-bold border-b-2 -mb-px transition-colors ${
-                  location === loc.id
-                    ? "border-foreground text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <MapPin size={16} /> {loc.name}
-              </button>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground font-body mt-4">Showing {locationLabel} prices.</p>
-        </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {packages.map((pkg, i) => (
@@ -277,9 +223,9 @@ const Weddings = () => {
                     <p className="font-display text-3xl font-bold">{formatMoney(pkg.singlePrice)}</p>
                   ) : (
                     <div className="space-y-1">
-                      <p className="font-display text-2xl font-bold">{formatMoney(pkg.oneEvent)} <span className="text-xs font-body font-normal opacity-70">/ one event</span></p>
+                      <p className="font-display text-2xl font-bold">{formatMoney(pkg.oneEvent)} <span className="text-xs font-body font-normal opacity-70">/ one day</span></p>
                       {pkg.twoEvents && (
-                        <p className="font-display text-xl font-bold opacity-80">{formatMoney(pkg.twoEvents)} <span className="text-xs font-body font-normal opacity-70">/ two events</span></p>
+                        <p className="font-display text-xl font-bold opacity-80">{formatMoney(pkg.twoEvents)} <span className="text-xs font-body font-normal opacity-70">/ two days</span></p>
                       )}
                     </div>
                   )}
@@ -332,7 +278,7 @@ const Weddings = () => {
               >
                 <img
                   src={src}
-                  alt={`DMI wedding ${i + 1}`}
+                  alt={`Tplum Photography wedding ${i + 1}`}
                   className={`w-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out ${ASPECTS[i % ASPECTS.length]}`}
                   loading="lazy"
                 />
@@ -347,30 +293,23 @@ const Weddings = () => {
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
           <AnimatedSection>
             <h3 className="font-display text-3xl font-bold mb-6">TERMS & CONDITIONS</h3>
-            <ul className="space-y-3 font-body text-sm text-muted-foreground leading-relaxed">
-              <li>• A non-refundable 70% deposit secures your booking. The 30% balance is due within 3 days after the event.</li>
-              <li>• Kindly review our shooting and editing style before booking.</li>
-              <li>• Client provides logistics and accommodation for destination events. A vehicle is provided for our team in your city.</li>
-              <li>• Cancellations attract no refund. Postponed dates attract an extra $150,000.</li>
-              <li>• Social-media previews delivered in 7 days. Full items delivered within 6 weeks.</li>
-              <li>• Our work runs 6am–6pm. After-parties attract an extra $200,000.</li>
-            </ul>
+            <div className="space-y-3 font-body text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+              {business.booking_terms || "Your date is secured once your contract is signed and your retainer is paid."}
+              {business.cancellation_policy ? `
+
+${business.cancellation_policy}` : ""}
+            </div>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <h3 className="font-display text-3xl font-bold mb-6">CLIENT SATISFACTION</h3>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-              Every aspect of your day must come together seamlessly. That's why DMI is the perfect partner for your
-              wedding adventure — with years of experience capturing stunning images at celebrations all over Nigeria.
-            </p>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed">
-              We take great pride in setting up special shots to capture the unique atmosphere of your day, and deliver
-              a skilled, experienced and professional service to ensure your wedding photos are of the highest quality.
-            </p>
+            <h3 className="font-display text-3xl font-bold mb-6">OUR PROCESS</h3>
+            <ol className="space-y-2 font-body text-sm text-muted-foreground leading-relaxed">
+              {SEED["the-tplum-signature"].process.steps.map((st) => <li key={st.title}>{st.title}</li>)}
+            </ol>
           </AnimatedSection>
         </div>
       </section>
 
-      <Footer />
+      
 
       {/* BOOKING MODAL */}
       <AnimatePresence>
@@ -415,7 +354,7 @@ const Weddings = () => {
                           form.events === v ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"
                         }`}
                       >
-                        {v === "one" ? `ONE EVENT · ${formatMoney(selectedPkg.oneEvent)}` : `TWO EVENTS · ${formatMoney(selectedPkg.twoEvents!)}`}
+                        {v === "one" ? `ONE DAY · ${formatMoney(selectedPkg.oneEvent)}` : `TWO DAYS · ${formatMoney(selectedPkg.twoEvents!)}`}
                       </button>
                     ))}
                   </div>
@@ -425,7 +364,7 @@ const Weddings = () => {
                   <input required placeholder="Your full name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="border border-border px-4 py-3 bg-transparent focus:border-foreground outline-none text-sm" />
                   <input placeholder="Partner's name" value={form.partnerName} onChange={e => setForm({ ...form, partnerName: e.target.value })} className="border border-border px-4 py-3 bg-transparent focus:border-foreground outline-none text-sm" />
                   <input required type="email" placeholder="Email *" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="border border-border px-4 py-3 bg-transparent focus:border-foreground outline-none text-sm" />
-                  <input required placeholder="WhatsApp number *" value={form.whatsapp} onChange={e => setForm({ ...form, whatsapp: e.target.value })} className="border border-border px-4 py-3 bg-transparent focus:border-foreground outline-none text-sm" />
+                  <input required placeholder="Phone number *" type="tel" autoComplete="tel" value={form.whatsapp} onChange={e => setForm({ ...form, whatsapp: e.target.value })} className="border border-border px-4 py-3 bg-transparent focus:border-foreground outline-none text-sm" />
                   <div className="relative">
                     <input
                       ref={weddingDateInputRef}
@@ -490,12 +429,15 @@ const Weddings = () => {
                     onClick={() => void submitForm()}
                     className="bg-foreground text-background px-4 py-2.5 text-xs tracking-widest hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-2"
                   >
-                    {submitting ? "SENDING…" : "BOOK NOW"} <ArrowUpRight size={14} strokeWidth={1.5} />
+                    {submitting ? "SENDING…" : depositNow > 0 ? "PAY RETAINER & BOOK" : "BOOK NOW"} <ArrowUpRight size={14} strokeWidth={1.5} />
                   </button>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-3">
-                  A 70% non-refundable deposit secures your date. We'll confirm availability on WhatsApp.
-                </p>
+                {depositNow > 0 && <p className="text-xs mt-3">Retainer due now: <strong>{formatMoney(depositNow)}</strong> · balance due before your wedding</p>}
+                <label className="mt-3 flex items-start gap-2 text-[11px] text-muted-foreground cursor-pointer">
+                  <input type="checkbox" className="mt-0.5" checked={form.agree} onChange={(e) => setForm({ ...form, agree: e.target.checked })} />
+                  <span>I agree to the booking terms. Your date is secured once your contract is signed and your retainer is paid. Prices in CAD.</span>
+                </label>
+                {submitError && <p role="alert" className="text-xs text-destructive mt-2">{submitError}</p>}
               </div>
             </motion.div>
           </motion.div>

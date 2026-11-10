@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, ChevronRight } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FindStudio from "@/components/FindStudio";
-import { openWhatsApp } from "@/lib/whatsapp";
-import { logStudioSpaceToSheet, logStudioSpaceToSupabase, type StudioSpacePayload } from "@/lib/studioSpaceLog";
+import { createBooking } from "@/lib/bookingLog";
+import { useBusinessSettings } from "@/lib/content";
+import { depositFor } from "@/lib/pricing";
+import type { StudioSpacePayload } from "@/lib/studioSpaceLog";
 import { useStudioSpacePricing } from "@/lib/content";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -26,6 +25,8 @@ const StudioSpace = () => {
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const { settings: business } = useBusinessSettings();
   const [email, setEmail] = useState("");
   const [rentalDate, setRentalDate] = useState("");
   const [rentalTime, setRentalTime] = useState("10:00");
@@ -117,33 +118,22 @@ const StudioSpace = () => {
     source: "studio_space_form",
   });
 
-  const buildWhatsAppMessage = () => {
-    const extrasList = selectedExtraObjects.map((e) =>
-      e.max_qty ? `${e.name} x${qtyOf(e.id)} (${formatMoney(e.price)} each = ${formatMoney(lineTotal(e.id, e.price, e.max_qty))})` : `${e.name} (${formatMoney(e.price)})`,
-    );
-    const lines = [
-      "*NEW DMI STUDIO SPACE RENTAL*",
-      `*Name:* ${name}`,
-      `*WhatsApp:* ${whatsapp}`,
-      `*Email:* ${email}`,
-      `*Date:* ${rentalDate}`,
-      `*Time:* ${rentalTime}`,
-      `*Space:* ${chosenSpace?.name} - ${formatMoney(spaceTotal)} (${chosenSpace?.description})`,
-      `*Extras:* ${extrasList.length ? extrasList.join(", ") : "-"}`,
-    ];
-    if (notes.trim()) lines.push(`*Notes:* ${notes}`);
-    if (promo) lines.push(`*Coupon:* ${promo.code} (-${formatMoney(discount)})`);
-    lines.push(`*TOTAL: ${formatMoney(grandTotal)}*`);
-    return lines.join("\n");
-  };
-
+  const depositNow = chosenSpace && business.online_payments_enabled ? depositFor(grandTotal, business) : 0;
   const handleSubmit = async () => {
-    if (!canSubmit || submitting) return;
+    if (!canSubmit || submitting || !chosenSpace) return;
     setSubmitting(true);
+    setSubmitError("");
     const payload = buildPayload();
-    await logStudioSpaceToSheet(payload);
-    await logStudioSpaceToSupabase(payload);
-    openWhatsApp(buildWhatsAppMessage());
+    const res = await createBooking({
+      kind: "studio",
+      spaceId: chosenSpace.id,
+      extras: selectedExtraObjects.map((e) => ({ id: e.id, qty: e.max_qty ? qtyOf(e.id) : 1 })),
+      promoCode: promo?.code ?? "",
+      client: { full_name: payload.full_name, phone: payload.phone, email: payload.email, rental_date: payload.rental_date, rental_time: payload.rental_time, notes },
+      returnUrl: window.location.origin,
+    });
+    if (!res.ok) { setSubmitting(false); setSubmitError(res.code === "slot_taken" ? "Sorry, that time was just taken. Please pick another time." : res.error); return; }
+    if (res.checkoutUrl) { window.location.href = res.checkoutUrl; return; }
     setSubmitting(false);
     setSubmitted(true);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
@@ -152,7 +142,7 @@ const StudioSpace = () => {
   if (submitted) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <Header />
+        
         <section className="pt-32 pb-24 px-6 md:px-16 lg:px-20 text-center">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}>
             <div className="w-20 h-20 rounded-full bg-accent mx-auto flex items-center justify-center mb-8">
@@ -160,31 +150,24 @@ const StudioSpace = () => {
             </div>
             <h1 className="font-display text-5xl md:text-7xl font-bold mb-4">REQUEST SENT</h1>
             <p className="text-muted-foreground font-body text-lg max-w-md mx-auto mb-4">
-              Thanks {name}! We just opened WhatsApp with your rental details pre-filled — tap <span className="font-bold text-foreground">Send</span> in WhatsApp to confirm payment with our team. We've also emailed you a summary.
-            </p>
+              Thanks {name}! Your studio request is in and a confirmation is on its way to {email}. </p>
             <div className="mt-8 flex flex-col items-center gap-4">
               <div className="w-full max-w-[280px] border border-border px-8 py-6 mx-auto">
                 <p className="font-display text-2xl font-bold">{chosenSpace?.name}</p>
                 <p className="font-display text-3xl font-bold text-accent mt-2">{formatMoney(grandTotal)}</p>
                 <p className="text-sm text-muted-foreground font-body mt-1">{rentalDate} · {rentalTime}</p>
               </div>
-              <button
-                onClick={() => openWhatsApp(buildWhatsAppMessage())}
-                className="text-xs font-body tracking-widest underline text-muted-foreground hover:text-foreground"
-              >
-                DIDN'T OPEN? CLICK TO OPEN AGAIN
-              </button>
             </div>
           </motion.div>
         </section>
-        <Footer />
+        
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      
       <section className="pt-28 pb-24 px-6 md:px-16 lg:px-20">
         <div className="max-w-2xl mx-auto">
           <h1 className="font-display text-5xl md:text-7xl font-bold mb-2">RENT THE STUDIO</h1>
@@ -302,7 +285,7 @@ const StudioSpace = () => {
                     </div>
                     <div>
                       <label className={labelCls}>WHATSAPP NUMBER *</label>
-                      <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(403) 555-0123" className={inputCls} />
+                      <input type="tel" autoComplete="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(403) 555-0123" className={inputCls} />
                     </div>
                     <div>
                       <label className={labelCls}>EMAIL ADDRESS *</label>
@@ -389,16 +372,17 @@ const StudioSpace = () => {
                     <p className="text-xs text-center text-muted-foreground font-body -mt-4">Fill in all fields marked * to submit.</p>
                   )}
                   <p className="text-[11px] text-muted-foreground font-body text-center">
-                    This reserves your slot; we'll confirm availability and payment with you on WhatsApp.
+                    {depositNow > 0 ? `You'll pay a ${formatMoney(depositNow)} deposit by card to reserve your slot. Prices in CAD.` : "This reserves your slot; we'll confirm the details with you by email."}
                   </p>
+                  {submitError && <p role="alert" className="text-sm font-body text-destructive mt-2">{submitError}</p>}
                 </motion.div>
               )}
             </>
           )}
         </div>
       </section>
-      <FindStudio />
-      <Footer />
+      
+      
     </div>
   );
 };

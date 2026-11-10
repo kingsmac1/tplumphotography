@@ -150,8 +150,22 @@ function ToTop() {
 }
 
 /** Every public page: header + pop-out menu, page content, Instagram band, footer, back to top. */
-export function SiteLayout({ site, posts, children, igVariant, igClass }: { site: SiteContent; posts: IgPost[]; children: ReactNode; igVariant?: "default" | "about"; igClass?: string }) {
+export function SiteLayout({ site, posts, children, igVariant, igClass, app = false }: { site: SiteContent; posts: IgPost[]; children: ReactNode; igVariant?: "default" | "about"; igClass?: string; app?: boolean }) {
   const [menu, setMenu] = useState(false);
+  if (app) {
+    // Booking / rental / client pages: Tplum header + footer around a DMI-style app area (no public-page typography inside).
+    return (
+      <>
+        <div className="tp tp-solid">
+          <a href="#content" className="sr-only">Skip to content</a>
+          <Header site={site} onMenu={() => setMenu(true)} />
+          <MenuOverlay site={site} open={menu} onClose={() => setMenu(false)} />
+        </div>
+        <main id="content" className="app">{children}</main>
+        <div className="tp"><Footer site={site} /><ToTop /></div>
+      </>
+    );
+  }
   return (
     <div className="tp">
       <a href="#content" className="sr-only">Skip to content</a>

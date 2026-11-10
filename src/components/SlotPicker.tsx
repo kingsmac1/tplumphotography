@@ -17,7 +17,9 @@ import {
   slotState,
   slotsFor,
   type Availability,
+  setBookingRules,
 } from "@/lib/schedule";
+import { useBusinessSettings } from "@/lib/content";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -38,6 +40,8 @@ export default function SlotPicker({
   onChange: (date: string, time: string) => void;
   refreshKey?: number;
 }) {
+  const { loaded: rulesLoaded, settings } = useBusinessSettings();
+  if (rulesLoaded) setBookingRules(settings);
   const today = localToday();
   const last = addDays(today, BOOKING_HORIZON_DAYS);
   const [month, setMonth] = useState(monthKey(date || today));
@@ -214,7 +218,7 @@ export default function SlotPicker({
           )}
         </AnimatePresence>
         <p className="mt-5 text-xs font-body text-muted-foreground">
-          Times are Mountain Time (Edmonton). Once you book, the slot is held for you and no one else can take it.
+          Times are Mountain Time (Calgary/Edmonton). Once you book, the slot is held for you and no one else can take it.
         </p>
       </div>
     </div>

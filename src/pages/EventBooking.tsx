@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { openWhatsApp } from "@/lib/whatsapp";
-import { logEventBookingToSheet, logEventBookingToSupabase, type EventBookingPayload } from "@/lib/eventBookingLog";
+import { callFunction } from "@/lib/functions";
+import type { EventBookingPayload } from "@/lib/eventBookingLog";
 import { EVENT_TYPES, OTHER_EVENT_TYPE } from "@/data/eventTypes";
 
 const formatMoney = (amount: number) =>
@@ -17,6 +15,8 @@ const inputCls =
 const EventBooking = () => {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
   const [email, setEmail] = useState("");
   const [eventChoice, setEventChoice] = useState("");
   const [eventOther, setEventOther] = useState("");
@@ -51,30 +51,13 @@ const EventBooking = () => {
     source: "event_form",
   });
 
-  const buildWhatsAppMessage = () => {
-    const lines = [
-      "*NEW DMI EVENT BOOKING*",
-      `*Name:* ${name}`,
-      `*WhatsApp:* ${whatsapp}`,
-      `*Email:* ${email}`,
-      `*Event:* ${eventType}`,
-      `*Dates:* ${startDate}${endDate ? ` to ${endDate}` : ""}${startTime ? ` at ${startTime}` : ""}`,
-      `*Venue:* ${venue || "-"}`,
-      `*Guests:* ${guests || "-"}`,
-      `*Agreed amount:* ${formatMoney(amount)}`,
-    ];
-    if (notes.trim()) lines.push(`*Notes:* ${notes}`);
-    return lines.join("\n");
-  };
-
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
-    const payload = buildPayload();
-    await logEventBookingToSheet(payload);
-    await logEventBookingToSupabase(payload);
-    openWhatsApp(buildWhatsAppMessage());
+    setSubmitError("");
+    const res = await callFunction("form-submit", { form: "event", ...buildPayload(), website });
     setSubmitting(false);
+    if (!res.ok) { setSubmitError(res.error); return; }
     setSubmitted(true);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
   };
@@ -82,7 +65,7 @@ const EventBooking = () => {
   if (submitted) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <Header />
+        
         <section className="pt-32 pb-24 px-6 md:px-16 lg:px-20 text-center">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}>
             <div className="w-20 h-20 rounded-full bg-accent mx-auto flex items-center justify-center mb-8">
@@ -90,8 +73,7 @@ const EventBooking = () => {
             </div>
             <h1 className="font-display text-5xl md:text-7xl font-bold mb-4">REQUEST SENT</h1>
             <p className="text-muted-foreground font-body text-lg max-w-md mx-auto mb-4">
-              Thanks {name}! We just opened WhatsApp with your event details pre-filled — tap <span className="font-bold text-foreground">Send</span> so our team can confirm the booking with you. We've also emailed you a summary.
-            </p>
+              Thanks {name}! Your event request is in and a copy is on its way to {email}. We will be in touch shortly. </p>
             <div className="mt-8 flex flex-col items-center gap-4">
               <div className="w-full max-w-[280px] border border-border px-8 py-6 mx-auto">
                 <p className="font-display text-2xl font-bold">{eventType}</p>
@@ -100,28 +82,22 @@ const EventBooking = () => {
                   {startDate}{endDate ? ` to ${endDate}` : ""}{startTime ? ` · ${startTime}` : ""}
                 </p>
               </div>
-              <button
-                onClick={() => openWhatsApp(buildWhatsAppMessage())}
-                className="text-xs font-body tracking-widest underline text-muted-foreground hover:text-foreground"
-              >
-                DIDN'T OPEN? CLICK TO OPEN AGAIN
-              </button>
             </div>
           </motion.div>
         </section>
-        <Footer />
+        
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      
       <section className="pt-28 pb-24 px-6 md:px-16 lg:px-20">
         <div className="max-w-2xl mx-auto">
           <h1 className="font-display text-5xl md:text-7xl font-bold mb-2">BOOK AN EVENT</h1>
           <p className="text-muted-foreground font-body mb-10">
-            Tell us about your event and the dates you need. Our team will confirm the final arrangement with you on WhatsApp.
+            Tell us about your event and the dates you need. We will confirm the final arrangement with you by email or phone.
           </p>
 
           <div className="space-y-8">
@@ -134,7 +110,7 @@ const EventBooking = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>WHATSAPP NUMBER *</label>
-                  <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(403) 555-0123" className={inputCls} />
+                  <input type="tel" autoComplete="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(403) 555-0123" className={inputCls} />
                 </div>
                 <div>
                   <label className={labelCls}>EMAIL ADDRESS *</label>
@@ -194,7 +170,7 @@ const EventBooking = () => {
                   min={1}
                   value={agreedAmount}
                   onChange={(e) => setAgreedAmount(e.target.value)}
-                  placeholder="e.g. 150000"
+                  placeholder="e.g. 1500"
                   className={inputCls}
                 />
                 <p className="text-xs font-body text-muted-foreground mt-2">
@@ -227,13 +203,17 @@ const EventBooking = () => {
             >
               {submitting ? "SENDING…" : "SUBMIT EVENT REQUEST"}
             </button>
+            {submitError && <p role="alert" className="text-sm font-body text-destructive text-center">{submitError}</p>}
             {!canSubmit && (
               <p className="text-xs font-body text-muted-foreground text-center">Fill in the fields marked * to submit.</p>
             )}
+            <div aria-hidden="true" style={{ position: "absolute", left: -9999, width: 1, height: 1, overflow: "hidden" }}>
+              <label>Website<input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} /></label>
+            </div>
           </div>
         </div>
       </section>
-      <Footer />
+      
     </div>
   );
 };

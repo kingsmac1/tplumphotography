@@ -169,6 +169,10 @@ create table if not exists public.business_settings (
   booking_terms text not null default '[Booking terms — edit in Settings] A non-refundable retainer secures your date. The remaining balance is due before your session.',
   cancellation_policy text not null default '[Cancellation policy — edit in Settings]',
   online_payments_enabled boolean not null default true,
+  -- booking calendar: opening hours per weekday (0 = Sunday; null = closed) and how far ahead clients can book
+  opening_hours jsonb not null default '{"0":null,"1":["10:00","18:00"],"2":["10:00","18:00"],"3":["10:00","18:00"],"4":["10:00","18:00"],"5":["10:00","18:00"],"6":["09:00","17:00"]}'::jsonb,
+  booking_horizon_days integer not null default 365 check (booking_horizon_days between 7 and 730),
+  min_notice_hours integer not null default 24 check (min_notice_hours between 0 and 720),
   updated_at timestamptz not null default now()
 );
 insert into public.business_settings (id) values (1) on conflict (id) do nothing;

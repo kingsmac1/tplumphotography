@@ -101,6 +101,7 @@ export const useStudioSpacePricing = () => {
 export type BusinessSettings = {
   business_name: string; email: string; phone: string; deposit_mode: "percent" | "fixed" | "full"; deposit_percent: number; deposit_fixed: number;
   balance_due_days_before: number; booking_terms: string; cancellation_policy: string; online_payments_enabled: boolean;
+  opening_hours?: Record<string, [string, string] | null>; booking_horizon_days?: number; min_notice_hours?: number;
 };
 export const DEFAULT_BUSINESS: BusinessSettings = {
   business_name: "Tplum Photography", email: "info@tplumphotography.com", phone: "+14034935511", deposit_mode: "percent", deposit_percent: 30, deposit_fixed: 0,

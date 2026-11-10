@@ -1,28 +1,39 @@
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 
 /**
- * Shoot booking calendar. Every shoot is a fixed 1-hour slot; times are West
- * Africa Time (Lagos). The database refuses a website booking for a taken or
- * closed time, and dates or slots can be closed from Dashboard → Calendar.
+ * Shoot booking calendar (DMI). Every session is a fixed 1-hour slot; times are Mountain Time
+ * (America/Edmonton). Opening hours, how far ahead clients can book and the minimum notice are
+ * editable in Dashboard -> Settings -> Booking hours; dates or slots can be closed from Dashboard -> Calendar.
+ * The database refuses a website booking for a taken or closed time.
  */
 
 export const SESSION_MINUTES = 60;
 
 /** How far ahead clients can book. */
-export const BOOKING_HORIZON_DAYS = 180;
+export let BOOKING_HORIZON_DAYS = 365;
+/** Minimum notice before a session (hours). */
+export let MIN_NOTICE_HOURS = 24;
 
 export const TIME_ZONE = "America/Edmonton";
 
-/** Opening hours per weekday (0 = Sunday). The last slot starts an hour before closing. */
-const hours: Record<number, [open: string, close: string] | null> = {
-  0: ["12:00", "18:00"],
-  1: ["10:00", "19:00"],
-  2: ["10:00", "19:00"],
-  3: ["10:00", "19:00"],
-  4: ["10:00", "19:00"],
-  5: ["10:00", "19:00"],
-  6: ["10:00", "19:00"],
+export type OpeningHours = Record<number, [open: string, close: string] | null>;
+/** Opening hours per weekday (0 = Sunday). The last slot starts an hour before closing. Defaults until settings load. */
+let hours: OpeningHours = {
+  0: null,
+  1: ["10:00", "18:00"],
+  2: ["10:00", "18:00"],
+  3: ["10:00", "18:00"],
+  4: ["10:00", "18:00"],
+  5: ["10:00", "18:00"],
+  6: ["09:00", "17:00"],
 };
+/** Applies the studio's saved hours (business_settings.opening_hours) to the calendar. */
+export function setBookingRules(rules: { opening_hours?: Record<string, [string, string] | null> | null; booking_horizon_days?: number; min_notice_hours?: number }) {
+  if (rules.opening_hours) hours = Object.fromEntries(Object.entries(rules.opening_hours).map(([k, v]) => [Number(k), v])) as OpeningHours;
+  if (rules.booking_horizon_days) BOOKING_HORIZON_DAYS = rules.booking_horizon_days;
+  if (rules.min_notice_hours !== undefined) MIN_NOTICE_HOURS = rules.min_notice_hours;
+}
+export const getOpeningHours = () => hours;
 
 export const toMinutes = (t: string) => {
   const [h, m] = t.split(":").map(Number);
@@ -120,6 +131,11 @@ export function slotState(date: string, start: string, a: Availability): SlotSta
   const e = s + SESSION_MINUTES;
   const today = localToday();
   if (date < today || (date === today && s <= localNowMinutes())) return "past";
+  // minimum notice (e.g. 24 hours): too soon counts as past
+  if (MIN_NOTICE_HOURS > 0) {
+    const days = (Date.parse(`${date}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000;
+    if (days * 1440 + s - localNowMinutes() < MIN_NOTICE_HOURS * 60) return "past";
+  }
   const hit = (r: BusyRange) =>
     r.date === date && (r.start === null || overlaps(s, e, toMinutes(r.start), toMinutes(r.end ?? r.start)));
   if (a.blocked.some(hit)) return "blocked";
@@ -131,6 +147,7 @@ export const dayBlocked = (date: string, a: Availability) => a.blocked.some((r) 
 
 /** Taken and closed times between two dates (never who booked them). */
 export async function getAvailability(from: string, to: string): Promise<Availability> {
+  if (!isSupabaseConfigured) return { booked: [], blocked: [] };
   const { data, error } = await supabase.rpc("booking_availability", { p_from: from, p_to: to });
   if (error || !data) {
     if (error) console.error("Availability failed", error);

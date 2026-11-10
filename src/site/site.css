@@ -528,3 +528,9 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .ig-band .top { padding: 10px; min-height: 72px; }
 .tp .ig-band .follow p { margin-bottom: 25.6px; }
 @media (max-width: 767px) { .tp .ig-band .top { padding: 0 20px; min-height: 69px; } .tp .ig-band .follow p { margin-bottom: 22.4px; } }
+
+/* Solid black header for app pages (booking, studio rental, client areas) */
+.tp.tp-solid { background: #000; }
+.tp.tp-solid .site-header { margin-bottom: 0; height: auto; padding: 24px 50px; align-items: center; }
+@media (max-width: 1024px) { .tp.tp-solid .site-header { padding: 20px 30px; } }
+@media (max-width: 767px) { .tp.tp-solid .site-header { padding: 16px 20px; height: auto; margin-bottom: 0; } }

@@ -82,3 +82,9 @@ export const getPageContent = createServerFn({ method: "GET" })
 export function previewContent<K extends PageKey>(key: K, site: unknown, page: unknown) {
   return { site: mergeContent(SEED.site, site), page: mergeContent(SEED[key], page) as PageContentMap[K] };
 }
+
+/** Header/menu/footer content only (booking, rental, client-area pages). */
+export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
+  const docs = await fetchPublished();
+  return { site: mergeContent(SEED.site, docs.site) };
+});
