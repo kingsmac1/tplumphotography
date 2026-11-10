@@ -20,8 +20,8 @@ export default function Home({ c }: { c: HomeContent }) {
   return (
     <>
       <h1 className="sr-only">Tplum Photography</h1>
-      <HeroSlider slides={c.hero.slidesDesktop} className="desktop" />
-      <HeroSlider slides={c.hero.slidesMobile} className="mobile" />
+      <HeroSlider slides={c.hero.slidesDesktop} className="desktop" hiddenMedia="(max-width: 767px)" />
+      <HeroSlider slides={c.hero.slidesMobile} className="mobile" hiddenMedia="(min-width: 768px)" />
 
       <section className="intro">
         <div className="box">

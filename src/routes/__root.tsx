@@ -30,7 +30,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: FONTS },
-      { rel: "preload", href: "/fonts/Fulgate-SemiBold.ttf", as: "font", type: "font/ttf", crossOrigin: "anonymous" },
+      { rel: "preload", href: "/fonts/Fulgate-SemiBold.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon-32.png", sizes: "32x32" },
       { rel: "icon", href: "/favicon-192.png", sizes: "192x192" },

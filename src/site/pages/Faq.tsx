@@ -10,12 +10,12 @@ function Item({ q, a, id }: { q: string; a: string; id: string }) {
   const inner = useRef<HTMLDivElement>(null);
   return (
     <div className={`faq-item${open ? " open" : ""}`}>
-      <h4>
+      <h3>
         <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>
           <span>{q}</span>
           <IconAngleRight />
         </button>
-      </h4>
+      </h3>
       <div id={id} className="answer" role="region" style={{ height: open ? inner.current?.scrollHeight ?? "auto" : 0 }} hidden={!open && typeof window === "undefined" ? false : undefined}>
         <div ref={inner}><Rich html={a} /></div>
       </div>

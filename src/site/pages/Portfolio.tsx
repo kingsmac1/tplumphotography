@@ -1,10 +1,10 @@
 import type { PortfolioContent } from "@/cms/types";
-import { Reveal, bgUrl } from "../ui";
+import { BG_PHONE_WIDTH, Reveal, bgUrl, bgVars } from "../ui";
 import { Masonry } from "../widgets";
 
 export function PageHero({ heading, image, className }: { heading: string; image: Parameters<typeof bgUrl>[0]; className: string }) {
   return (
-    <section className={`page-hero ${className}`} style={{ backgroundImage: bgUrl(image) }}>
+    <section className={`page-hero ${className}`} style={{ ["--bg-l" as string]: bgUrl(image), ["--bg-s" as string]: bgUrl(image, BG_PHONE_WIDTH) }}>
       <Reveal as="h1" delay={150}>{heading}</Reveal>
     </section>
   );
@@ -12,7 +12,7 @@ export function PageHero({ heading, image, className }: { heading: string; image
 
 export function BookBand({ book }: { book: PortfolioContent["book"] }) {
   return (
-    <a className="book-band" href={book.href} target="_blank" rel="noopener" style={{ backgroundImage: bgUrl(book.image) }}>
+    <a className="book-band bgv" href={book.href} target="_blank" rel="noopener" style={bgVars(book.image)} aria-label={`${book.heading}: ${book.text}`}>
       <Reveal as="h2" delay={150}>{book.heading}</Reveal>
       <Reveal as="p">{book.text}</Reveal>
     </a>

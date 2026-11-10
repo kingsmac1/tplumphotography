@@ -28,12 +28,24 @@ export function Img({ image, sizes = "100vw", className, style, loading = "lazy"
 
 /** CSS background from a CMS image: picks a sensible width from the srcset. */
 export function bgUrl(image?: Partial<CmsImage> | null, want = 2400) {
+  const u = pickSrc(image, want);
+  return u ? `url("${u}")` : undefined;
+}
+
+/** The smallest file in the srcset at least `want` pixels wide (or the largest there is). */
+export function pickSrc(image?: Partial<CmsImage> | null, want = 2400): string | undefined {
   if (!image?.src) return undefined;
-  if (!image.srcset) return `url("${image.src}")`;
+  if (!image.srcset) return image.src;
   const cands = image.srcset.split(",").map((s) => s.trim().split(/\s+/)).map(([u, w]) => ({ u, w: parseInt(w) }));
   const pick = cands.filter((c) => c.w >= want).sort((a, b) => a.w - b.w)[0] ?? cands.sort((a, b) => b.w - a.w)[0];
-  return `url("${pick.u}")`;
+  return pick.u;
 }
+
+/** Phones get a ~960px-wide banner instead of the 2400px one. */
+export const BG_PHONE_WIDTH = 960;
+
+/** Inline style for a CSS background that switches to the phone-sized file on phones (needs class "bgv"). */
+export const bgVars = (image?: Partial<CmsImage> | null): CSSProperties => ({ ["--bg-l" as string]: bgUrl(image), ["--bg-s" as string]: bgUrl(image, BG_PHONE_WIDTH) });
 
 /** Sanitised rich text (only p, br, strong, em, a, lists). */
 export function Rich({ html, className, as: Tag = "div" }: { html: string; className?: string; as?: ElementType }) {

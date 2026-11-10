@@ -6,8 +6,8 @@
    Everything is scoped under .tp so the dashboard styles never mix in.
    ===================================================================== */
 
-@font-face { font-family: "Fulgate"; src: url("/fonts/Fulgate-SemiBold.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: swap; }
-@font-face { font-family: "Lato Regular"; src: url("/fonts/Lato-Bold.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fulgate"; src: url("/fonts/Fulgate-SemiBold.woff2") format("woff2"), url("/fonts/Fulgate-SemiBold.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: swap; }
+@font-face { font-family: "Lato Regular"; src: url("/fonts/Lato-Bold.woff2") format("woff2"), url("/fonts/Lato-Bold.ttf") format("truetype"); font-weight: normal; font-style: normal; font-display: swap; }
 
 .tp {
   --sys: -apple-system, "system-ui", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -512,7 +512,7 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .faq-list { margin-top: 20px; }
 .tp .faq-item { border-bottom: 1px solid #d4d4d4; }
 .tp .faq-item + .faq-item { margin-top: 10px; }
-.tp .faq-item h4 { margin: 0; }
+.tp .faq-item h3 { margin: 0; }
 .tp .faq-item button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px; text-align: left; background: none; border: 0; padding: 20px 15px 20px 20px; cursor: pointer; font-family: "Lato Regular", sans-serif; font-size: 15px; font-weight: 400; line-height: 1.2; color: #000; text-transform: uppercase; }
 .tp .faq-item button svg { width: 17px; height: 17px; flex: none; fill: currentColor; transition: transform .3s; }
 .tp .faq-item.open button svg { transform: rotate(90deg); }
@@ -576,3 +576,10 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 @media (max-width: 767px) { .tp form.tp-form { padding-top: 55px; } .tp .contact-main + .contact-info { margin-top: 10px; } }
 /* Phones: the original menu icon sits in a 12px box but draws at full 25px, spilling past the box edge. */
 @media (max-width: 767px) { .tp .menu-toggle { justify-content: flex-start; overflow: visible; } .tp .menu-toggle svg { flex: none; } }
+/* Page banners: full-size photo on larger screens, a phone-sized one on phones (see PageHero). */
+.tp .page-hero, .tp .bgv { background-image: var(--bg-l); }
+@media (max-width: 767px) { .tp .page-hero, .tp .bgv { background-image: var(--bg-s, var(--bg-l)); } }
+/* Slider dots: 24px tap targets (accessibility) with the same 23px spacing and dot position as the original. */
+.tp .hero .dots { bottom: 57px; }
+.tp .hero .dots li { margin-right: -1px; }
+.tp .hero .dots button { width: 24px; height: 24px; }

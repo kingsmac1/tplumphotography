@@ -7,10 +7,21 @@ import { IconClose, IconStar, SlideArrow, socialIcon } from "./icons";
 /* Hero slider: fade every 3 s, Ken Burns zoom, dots + round arrows,   */
 /* swipe/drag. Matches the Prime Slider settings of the original.      */
 /* ------------------------------------------------------------------ */
-export function HeroSlider({ slides, className, interval = 3000 }: { slides: Partial<CmsImage>[]; className: string; interval?: number }) {
+/** 1×1 transparent GIF: what the hidden slider's first slide "downloads" on screens where that slider isn't shown. */
+const BLANK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+/** `hiddenMedia`: the screens on which this slider is hidden by CSS, so its first photo is never fetched there. */
+export function HeroSlider({ slides, className, interval = 3000, hiddenMedia }: { slides: Partial<CmsImage>[]; className: string; interval?: number; hiddenMedia?: string }) {
   const [index, setIndex] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
   const count = slides.length;
+  // Only the first photo is in the server HTML; each next one loads just before it is shown (saves ~0.5 MB on first visit).
+  const [upTo, setUpTo] = useState(1);
+  useEffect(() => {
+    const t = setTimeout(() => setUpTo((u) => Math.max(u, 2)), 1500);
+    return () => clearTimeout(t);
+  }, []);
+  useEffect(() => { setUpTo((u) => Math.max(u, Math.min(count, index + 2))); }, [index, count]);
   const go = useCallback((n: number) => {
     setIndex((cur) => { setPrev(cur); return ((n % count) + count) % count; });
   }, [count]);
@@ -40,7 +51,14 @@ export function HeroSlider({ slides, className, interval = 3000 }: { slides: Par
         {slides.map((s, i) => (
           <div key={i} className={`slide${i === index ? " active" : ""}${i === prev ? " leaving" : ""}`} aria-roledescription="slide" aria-label={`${i + 1} of ${count}`} aria-hidden={i !== index}>
             <div className="kb">
-              <Img image={s} sizes="100vw" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : undefined} />
+              {i === 0 && hiddenMedia ? (
+                <picture>
+                  <source media={hiddenMedia} srcSet={BLANK} />
+                  <Img image={s} sizes="100vw" loading="eager" fetchPriority="high" />
+                </picture>
+              ) : i < upTo ? (
+                <Img image={s} sizes="100vw" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : undefined} />
+              ) : null}
             </div>
           </div>
         ))}
