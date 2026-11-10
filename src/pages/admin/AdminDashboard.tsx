@@ -15,7 +15,7 @@ import SettingsSection from "./SettingsSection";
 import InstagramPanel from "./InstagramPanel";
 import InquiriesSection from "./InquiriesSection";
 import { COMPOSE_EVENT } from "./contact";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import Overview from "./Overview";
 import { GalleryAdminProvider } from "@/features/gallery/admin/kit/data";
 // Website CMS (page-by-page editor) and contracts — loaded only when opened
@@ -112,6 +112,9 @@ const AdminDashboardInner = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // Phase A preview only: on the local dev server, before Supabase is connected, open the dashboard without a login
+      // so it can be looked around. Production builds never take this path.
+      if (import.meta.env.DEV && !isSupabaseConfigured) { setIsAuthenticated(true); return; }
       const { data } = await supabase.auth.getUser();
       const authed = !!data.user;
       setIsAuthenticated(authed);

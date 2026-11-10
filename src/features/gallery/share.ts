@@ -1,6 +1,6 @@
 /**
  * What a shared client-gallery link shows on WhatsApp and other apps. Runs on the server, because those apps only read the
- * HTML. The cover and title are only given for a valid private link; anything else gets the general DMI share image.
+ * HTML. The cover and title are only given for a valid private link; anything else gets the general Tplum share image.
  */
 type ViewResponse = { ok?: boolean; access?: string; gallery?: { title?: string }; cover?: { url?: string } | null }
 
