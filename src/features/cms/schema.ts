@@ -143,7 +143,7 @@ export function kindOf(key: string, seed: unknown): FieldKind {
   if (typeof seed === "string") {
     if (URL_KEYS.test(key)) return "url";
     if (RICH.test(seed)) return "rich";
-    return seed.length > 90 || key === "text" || key === "answer" || key === "caption" ? "textarea" : "text";
+    return seed.length > 90 || seed.includes("\n") || key === "text" || key === "answer" || key === "caption" ? "textarea" : "text";
   }
   if (Array.isArray(seed)) {
     const first = seed[0];

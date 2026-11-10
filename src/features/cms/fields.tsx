@@ -114,15 +114,19 @@ export function GroupField({ path, k, seed, value, onChange, ctx, bare }: FP & {
 /* simple values                                                       */
 /* ------------------------------------------------------------------ */
 
-function TextField({ path, k, value, onChange, multiline }: FP & { multiline?: boolean }) {
+function TextField({ path, k, seed, value, onChange, multiline }: FP & { multiline?: boolean }) {
   const v = typeof value === "string" ? value : "";
+  // Headings that the original site breaks over several lines ("Candid / Timeless / Moments") keep one line per row.
+  const lines = typeof seed === "string" && seed.includes("\n") && seed.length <= 90 ? seed.split("\n").length : 0;
   const tail = path.split(".").slice(-2).join(".");
   const limit = tail === "seo.title" || /seo\.(og|twitter)Title/.test(tail) ? 60 : tail.endsWith("escription") && path.includes("seo") ? 160 : 0;
   return (
     <label className="block">
       <Label path={path} k={k}>{limit > 0 && <span className={`text-xs ${v.length > limit ? "text-amber-700" : "text-muted-foreground"}`}>{v.length}/{limit}</span>}</Label>
       {multiline
-        ? <textarea className={`${inputCls} min-h-[88px]`} value={v} onChange={(e) => onChange(e.target.value)} />
+        ? lines
+          ? <><textarea className={inputCls} rows={Math.max(lines, v.split("\n").length)} value={v} onChange={(e) => onChange(e.target.value)} /><p className="text-xs text-muted-foreground mt-1">Each line here is a line on the page (press Enter for a new line).</p></>
+          : <textarea className={`${inputCls} min-h-[88px]`} value={v} onChange={(e) => onChange(e.target.value)} />
         : <input className={inputCls} value={v} onChange={(e) => onChange(e.target.value)} />}
     </label>
   );
