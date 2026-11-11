@@ -30,7 +30,7 @@ const AdminLogin = () => {
     }
 
     // Redirect to /admin on success
-    navigate("/admin");
+    navigate("/dashboard");
   };
 
   return (

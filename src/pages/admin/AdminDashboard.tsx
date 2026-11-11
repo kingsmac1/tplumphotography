@@ -118,7 +118,7 @@ const AdminDashboardInner = () => {
       const { data } = await supabase.auth.getUser();
       const authed = !!data.user;
       setIsAuthenticated(authed);
-      if (!authed) { navigate("/admin/login"); return; }
+      if (!authed) { navigate("/dashboard/login"); return; }
       // Staff-role accounts only have access to the check-in page; clients (no staff record) go to their own area.
       const { data: staff } = await supabase.from("staff").select("role").eq("id", data.user!.id).maybeSingle();
       if (!staff) { window.location.replace("/account"); return; }
@@ -133,7 +133,7 @@ const AdminDashboardInner = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
-    navigate("/admin/login");
+    navigate("/dashboard/login");
   };
 
   if (isAuthenticated === null) {

@@ -42,7 +42,7 @@ export function InvoicePrompt() {
             {ask.rows.map((b) => (
               <div key={b.id}>
                 <span><b>{b.name}</b> <span className="ad-muted">paid {money(b.paid)}</span></span>
-                <a className="ad-btn sm" href={`/admin${bookingInvoiceHref(ask.table, b.id, true)}`} target="_blank" rel="noreferrer">Send invoice</a>
+                <a className="ad-btn sm" href={`/dashboard${bookingInvoiceHref(ask.table, b.id, true)}`} target="_blank" rel="noreferrer">Send invoice</a>
               </div>
             ))}
           </div>

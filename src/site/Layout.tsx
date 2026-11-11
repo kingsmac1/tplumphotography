@@ -31,6 +31,7 @@ function Header({ site, onMenu }: { site: SiteContent; onMenu: () => void }) {
         <Img image={site.brand.logoLight} sizes="160px" loading="eager" alt={site.brand.siteName} />
       </a>
       <div className="right">
+        {site.header?.bookButton?.label && <a className="header-book" href={site.header.bookButton.href}>{site.header.bookButton.label}</a>}
         <Socials site={site} />
         <button type="button" className="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" onClick={onMenu}>
           <IconStream />

@@ -12,7 +12,10 @@ export default function About({ c }: { c: AboutContent }) {
           <div className="text">
             <Reveal as="h2" className="h-fulgate">{c.profile.heading}</Reveal>
             <Reveal><Rich html={c.profile.body} className="body" /></Reveal>
-            <Reveal className="cta"><Button href={c.profile.button.href} label={c.profile.button.label} /></Reveal>
+            <Reveal className="cta btn-row">
+              <Button href={c.profile.button.href} label={c.profile.button.label} />
+              {c.profile.bookButton?.label && <Button href={c.profile.bookButton.href} label={c.profile.bookButton.label} className="solid" />}
+            </Reveal>
           </div>
         </div>
       </section>

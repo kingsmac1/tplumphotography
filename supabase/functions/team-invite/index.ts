@@ -18,7 +18,7 @@ Deno.serve(handle(async (req, body) => {
   const { data: existing } = await db.from('profiles').select('id').eq('email', email).maybeSingle()
   let userId = existing?.id as string | undefined
   if (!userId) {
-    const { data, error } = await db.auth.admin.inviteUserByEmail(email, { data: { full_name: name }, redirectTo: `${site}/admin/reset-password/` })
+    const { data, error } = await db.auth.admin.inviteUserByEmail(email, { data: { full_name: name }, redirectTo: `${site}/account/` })
     if (error) throw new HttpError(error.message)
     userId = data.user?.id
   }

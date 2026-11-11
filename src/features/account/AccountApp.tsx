@@ -187,7 +187,7 @@ function Account({ session, banner }: { session: Session; banner?: string }) {
             <p className="ca-muted">Signed in as {email}</p>
           </div>
           <div className="ca-top-actions">
-            {isAdmin && <a className="cg-btn line" href="/admin">Studio dashboard</a>}
+            {isAdmin && <a className="cg-btn line" href="/dashboard">Studio dashboard</a>}
             {isStaff && <a className="cg-btn line" href="/checkin">Staff dashboard</a>}
             <button className="cg-btn line" onClick={() => supabase!.auth.signOut()}>
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3M10 17l-5-5 5-5M5 12h11" /></svg>

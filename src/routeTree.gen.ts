@@ -12,24 +12,25 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountRouteImport } from './routes/account'
-import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as BookRouteImport } from './routes/book'
 import { Route as CheckinRouteImport } from './routes/checkin'
 import { Route as CmsPreviewRouteImport } from './routes/cms-preview'
 import { Route as ComingSoonRouteImport } from './routes/coming-soon'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as StudioSpaceRouteImport } from './routes/studio-space'
 import { Route as TheTplumSignatureRouteImport } from './routes/the-tplum-signature'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as BookingIndexRouteImport } from './routes/booking/index'
 import { Route as BookingConfirmedRouteImport } from './routes/booking/confirmed'
 import { Route as BookingWeddingRouteImport } from './routes/booking/wedding'
 import { Route as ClientGalleryCoverGalleryIdRouteImport } from './routes/client-gallery-cover/$galleryId'
 import { Route as ClientGalleryGalleryIdRouteImport } from './routes/client-gallery/$galleryId'
 import { Route as ContractTokenRouteImport } from './routes/contract/$token'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardLoginRouteImport } from './routes/dashboard/login'
 import { Route as InvoiceTokenRouteImport } from './routes/invoice/$token'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,9 +48,9 @@ const AccountRoute = AccountRouteImport.update({
   path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRouteRoute = AdminRouteRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckinRoute = CheckinRouteImport.update({
@@ -70,6 +71,11 @@ const ComingSoonRoute = ComingSoonRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsRoute = EventsRouteImport.update({
@@ -96,16 +102,6 @@ const TheTplumSignatureRoute = TheTplumSignatureRouteImport.update({
   id: '/the-tplum-signature',
   path: '/the-tplum-signature',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRouteRoute,
 } as any)
 const BookingIndexRoute = BookingIndexRouteImport.update({
   id: '/booking/',
@@ -138,6 +134,16 @@ const ContractTokenRoute = ContractTokenRouteImport.update({
   path: '/contract/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardLoginRoute = DashboardLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const InvoiceTokenRoute = InvoiceTokenRouteImport.update({
   id: '/invoice/$token',
   path: '/invoice/$token',
@@ -146,9 +152,10 @@ const InvoiceTokenRoute = InvoiceTokenRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
+  '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/cms-preview': typeof CmsPreviewRoute
   '/coming-soon': typeof ComingSoonRoute
@@ -158,20 +165,21 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/studio-space': typeof StudioSpaceRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
-  '/admin/login': typeof AdminLoginRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/client-gallery-cover/$galleryId': typeof ClientGalleryCoverGalleryIdRoute
   '/client-gallery/$galleryId': typeof ClientGalleryGalleryIdRoute
   '/contract/$token': typeof ContractTokenRoute
+  '/dashboard/login': typeof DashboardLoginRoute
   '/invoice/$token': typeof InvoiceTokenRoute
-  '/admin/': typeof AdminIndexRoute
   '/booking/': typeof BookingIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
+  '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/cms-preview': typeof CmsPreviewRoute
   '/coming-soon': typeof ComingSoonRoute
@@ -181,22 +189,23 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/studio-space': typeof StudioSpaceRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
-  '/admin/login': typeof AdminLoginRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/client-gallery-cover/$galleryId': typeof ClientGalleryCoverGalleryIdRoute
   '/client-gallery/$galleryId': typeof ClientGalleryGalleryIdRoute
   '/contract/$token': typeof ContractTokenRoute
+  '/dashboard/login': typeof DashboardLoginRoute
   '/invoice/$token': typeof InvoiceTokenRoute
-  '/admin': typeof AdminIndexRoute
   '/booking': typeof BookingIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
+  '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/cms-preview': typeof CmsPreviewRoute
   '/coming-soon': typeof ComingSoonRoute
@@ -206,23 +215,24 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/studio-space': typeof StudioSpaceRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
-  '/admin/login': typeof AdminLoginRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/client-gallery-cover/$galleryId': typeof ClientGalleryCoverGalleryIdRoute
   '/client-gallery/$galleryId': typeof ClientGalleryGalleryIdRoute
   '/contract/$token': typeof ContractTokenRoute
+  '/dashboard/login': typeof DashboardLoginRoute
   '/invoice/$token': typeof InvoiceTokenRoute
-  '/admin/': typeof AdminIndexRoute
   '/booking/': typeof BookingIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
+    | '/dashboard'
     | '/about'
     | '/account'
+    | '/book'
     | '/checkin'
     | '/cms-preview'
     | '/coming-soon'
@@ -232,20 +242,21 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/studio-space'
     | '/the-tplum-signature'
-    | '/admin/login'
     | '/booking/confirmed'
     | '/booking/wedding'
     | '/client-gallery-cover/$galleryId'
     | '/client-gallery/$galleryId'
     | '/contract/$token'
+    | '/dashboard/login'
     | '/invoice/$token'
-    | '/admin/'
     | '/booking/'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/account'
+    | '/book'
     | '/checkin'
     | '/cms-preview'
     | '/coming-soon'
@@ -255,21 +266,22 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/studio-space'
     | '/the-tplum-signature'
-    | '/admin/login'
     | '/booking/confirmed'
     | '/booking/wedding'
     | '/client-gallery-cover/$galleryId'
     | '/client-gallery/$galleryId'
     | '/contract/$token'
+    | '/dashboard/login'
     | '/invoice/$token'
-    | '/admin'
     | '/booking'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
-    | '/admin'
+    | '/dashboard'
     | '/about'
     | '/account'
+    | '/book'
     | '/checkin'
     | '/cms-preview'
     | '/coming-soon'
@@ -279,22 +291,23 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/studio-space'
     | '/the-tplum-signature'
-    | '/admin/login'
     | '/booking/confirmed'
     | '/booking/wedding'
     | '/client-gallery-cover/$galleryId'
     | '/client-gallery/$galleryId'
     | '/contract/$token'
+    | '/dashboard/login'
     | '/invoice/$token'
-    | '/admin/'
     | '/booking/'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRoute
+  BookRoute: typeof BookRoute
   CheckinRoute: typeof CheckinRoute
   CmsPreviewRoute: typeof CmsPreviewRoute
   ComingSoonRoute: typeof ComingSoonRoute
@@ -336,11 +349,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteRouteImport
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkin': {
@@ -369,6 +382,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events': {
@@ -405,20 +425,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/the-tplum-signature'
       preLoaderRoute: typeof TheTplumSignatureRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRouteRoute
     }
     '/booking/': {
       id: '/booking/'
@@ -462,6 +468,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContractTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/login': {
+      id: '/dashboard/login'
+      path: '/login'
+      fullPath: '/dashboard/login'
+      preLoaderRoute: typeof DashboardLoginRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/invoice/$token': {
       id: '/invoice/$token'
       path: '/invoice/$token'
@@ -472,25 +492,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteRouteChildren {
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminIndexRoute: typeof AdminIndexRoute
+interface DashboardRouteRouteChildren {
+  DashboardLoginRoute: typeof DashboardLoginRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
-const AdminRouteRouteChildren: AdminRouteRouteChildren = {
-  AdminLoginRoute: AdminLoginRoute,
-  AdminIndexRoute: AdminIndexRoute,
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardLoginRoute: DashboardLoginRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 
-const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
-  AdminRouteRouteChildren,
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRouteRoute: AdminRouteRouteWithChildren,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AccountRoute: AccountRoute,
+  BookRoute: BookRoute,
   CheckinRoute: CheckinRoute,
   CmsPreviewRoute: CmsPreviewRoute,
   ComingSoonRoute: ComingSoonRoute,

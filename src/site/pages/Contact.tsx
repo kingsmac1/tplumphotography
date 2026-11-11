@@ -1,5 +1,5 @@
 import type { ContactContent, SiteContent } from "@/cms/types";
-import { Reveal, Rich } from "../ui";
+import { Button, Reveal, Rich } from "../ui";
 import { IconMailBulk, IconPhoneAlt } from "../icons";
 import ContactForm from "../ContactForm";
 import { PageHero } from "./Portfolio";
@@ -23,6 +23,7 @@ export default function Contact({ c, site }: { c: ContactContent; site: SiteCont
             <Reveal as="h2">{c.intro.heading}</Reveal>
             <div className="divider" aria-hidden="true"><span /></div>
             <Reveal><Rich html={c.intro.body} className="bullets" /></Reveal>
+            {c.intro.bookButton?.label && <Reveal className="contact-book"><Button href={c.intro.bookButton.href} label={c.intro.bookButton.label} className="solid" /></Reveal>}
             <div className="divider" aria-hidden="true"><span /></div>
           </div>
           <ContactForm form={c.form} />

@@ -9,7 +9,7 @@ function Login() {
   return mounted ? <AdminLogin /> : <div className="min-h-screen" />;
 }
 
-export const Route = createFileRoute("/admin/login")({
+export const Route = createFileRoute("/dashboard/login")({
   component: Login,
   head: () => privateHead("Sign in · Tplum Photography"),
 });

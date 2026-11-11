@@ -12,9 +12,10 @@ export type ContactContent = typeof seed.contact;
 export type SignatureContent = (typeof seed)["the-tplum-signature"];
 export type FaqContent = typeof seed.faq;
 export type ComingSoonContent = (typeof seed)["coming-soon"];
+export type BookContent = typeof seed.book;
 export type SeoContent = HomeContent["seo"];
 
-export type PageKey = "home" | "portfolio" | "about" | "contact" | "the-tplum-signature" | "faq" | "coming-soon";
+export type PageKey = "home" | "portfolio" | "about" | "contact" | "the-tplum-signature" | "faq" | "coming-soon" | "book";
 export type DocKey = PageKey | "site";
 
 export type PageContentMap = {
@@ -26,6 +27,7 @@ export type PageContentMap = {
   "the-tplum-signature": SignatureContent;
   faq: FaqContent;
   "coming-soon": ComingSoonContent;
+  book: BookContent;
 };
 
 export const SEED = seed as unknown as PageContentMap;

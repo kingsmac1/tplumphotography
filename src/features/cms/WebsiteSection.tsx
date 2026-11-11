@@ -222,7 +222,7 @@ function Editor({ def, onBack }: { def: PageDef; onBack: () => void }) {
   if (err && !content) return <div><BackBar onBack={onBack} title={def.label} /><p className="text-sm text-destructive mt-6">Couldn't load this page: {err}</p></div>;
   if (!content || !doc) return <div><BackBar onBack={onBack} title={def.label} /><p className="text-sm text-muted-foreground mt-6">Loading…</p></div>;
 
-  const status = save === "saving" ? "Saving draft…" : save === "error" ? "Couldn't save. Check your connection." : unpublished ? `Draft saved ${savedAt ? when(savedAt) : ""} · not live yet` : doc.publishedAt ? `Live · published ${when(doc.publishedAt)}` : "Live · original WordPress content";
+  const status = save === "saving" ? "Saving draft…" : save === "error" ? "Couldn't save. Check your connection." : unpublished ? `Draft saved ${savedAt ? when(savedAt) : ""} · not live yet` : doc.publishedAt ? `Live · published ${when(doc.publishedAt)}` : "Live · original content";
   const ctx = { folder: `cms/${def.doc}` };
 
   return (

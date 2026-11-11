@@ -88,7 +88,10 @@ export default function Home({ c }: { c: HomeContent }) {
         <div className="box">
           <div className="inner">
             <Reveal as="h2" className="h-fulgate">{c.cta.heading}</Reveal>
-            <Reveal><Button href={c.cta.button.href} label={c.cta.button.label} light /></Reveal>
+            <Reveal className="btn-row">
+              <Button href={c.cta.button.href} label={c.cta.button.label} light />
+              {c.cta.bookButton?.label && <Button href={c.cta.bookButton.href} label={c.cta.bookButton.label} light className="solid" />}
+            </Reveal>
           </div>
         </div>
       </section>

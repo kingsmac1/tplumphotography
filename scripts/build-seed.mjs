@@ -236,3 +236,5 @@ const resolve = (v) => {
 };
 fs.writeFileSync('src/cms/seed.json', JSON.stringify(resolve(content), null, 1));
 console.log('seed written; images:', pending.length);
+// Content added after the WordPress copy (booking page, "Book now" buttons).
+await import('./seed-additions.mjs');

@@ -37,7 +37,7 @@ If the build is interrupted, read this file first and continue from the next unc
 
 ### A3: dashboard (from DMI)
 - [x] Every section opens without errors: Overview, Bookings, Enquiries, Calendar, Clients, Deliveries, Client Galleries, Invoices, Contracts, Finance, Staff Check-in, Team & Accounts, Website (CMS), Instagram Feed, Prices & Packages, Promos, Emails & Messaging, Settings
-- [x] Routes: `/admin/`, `/admin/login/`, `/account/`, `/checkin/`, `/client-gallery/<id>/`, `/invoice/<token>/`, `/contract/<token>/`, `/cms-preview/`
+- [x] Routes: `/dashboard/`, `/dashboard/login/` (moved from /admin at the client's request; /admin no longer exists), `/account/`, `/checkin/`, `/client-gallery/<id>/`, `/invoice/<token>/`, `/contract/<token>/`, `/cms-preview/`
 - [x] Booking flows render at 1440/390 with CAD prices: sessions `/booking/`, weddings `/booking/wedding/`, studio rental `/studio-space/`, events `/events/`
 - [x] **Booking compared with DMI** (code diff of the flow, slot picker, schedule and dashboard calendar): same steps, time-slot logic and calendar (`CalendarSection.tsx` 12 lines changed, `SlotPicker.tsx` 10). Intended differences only: DMI's location picker (Lagos/Abuja/Uyo) removed; NGN → CAD; WhatsApp + Google Sheet hand-off → Stripe deposit + emails; phone instead of WhatsApp number; terms checkbox; Tplum service types
 - [x] Invoices: TPL-0001 numbering, line items, discounts, tax off by default (editable name/rate/number), statuses, PDF, email, Stripe pay, payments; "Create invoice" on bookings; client invoice page
@@ -120,10 +120,17 @@ If the build is interrupted, read this file first and continue from the next unc
 - FAQ questions use `<h3>` instead of `<h4>` (correct heading order for screen readers; looks identical)
 - The "Click here to book" band has an accessible label; slider dots have 24px tap targets (look identical)
 
+## Additions requested by the client (2026-11-11)
+- [x] **Booking page `/book/`** (CMS page "Book"): banner, introduction, four booking options (Weddings → `/booking/wedding/`, Portrait & Family Sessions → `/booking/`, Studio Rental → `/studio-space/`, Events → `/events/`), and a "Not sure which to choose?" band → Contact. Every word, image and link is editable; options can be added, removed and reordered
+- [x] **Book Now buttons**: header (every page), pop-out menu, Home call to action, About profile, Contact intro; the "CLICK HERE TO BOOK" bands on Portfolio and The Tplum Signature now open `/book/` instead of `/contact/`. Labels and links are editable in the CMS (Header & pop-out menu, and each page)
+- [x] The content is in `scripts/seed-additions.mjs`, which `build-seed.mjs` re-applies so a fresh WordPress capture keeps it
+- [x] **Home call-to-action photo** now covers the whole section while it scrolls (the original left a grey strip at the top)
+- [x] **Dashboard address** is `/dashboard/` (login `/dashboard/login/`); all links, emails and the team invite updated. The team invite now lands on `/account/`, where new staff set their password
+
 ## Needs your decision
-1. **Booking pages aren't linked from the public site.** The WordPress menu has no booking pages, so `/booking/`, `/booking/wedding/`, `/studio-space/` and `/events/` are only reachable by link. Add them to the menu or buttons (possible in the CMS), or keep them link-only?
+1. ~~Booking pages unlinked~~: resolved, they are linked from the new `/book/` page and the Book Now buttons
 2. **About page footer icons**: on the original, Facebook, Twitter and YouTube icons have no links. Kept as-is. Link them, or show Instagram/Facebook as on the other pages?
-3. **Studio rental and events**: ported from DMI as the brief asked. Does Tplum rent out a studio? If not, they can simply stay unlinked.
+3. **Studio rental and events** are shown as options on `/book/`. If Tplum doesn't offer one of them, remove that card in Dashboard → Website → Book
 4. **Instagram token** is optional. Without it, the site keeps the 8 captured posts.
 
 ## Environment notes

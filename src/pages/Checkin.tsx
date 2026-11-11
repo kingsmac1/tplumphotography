@@ -221,7 +221,7 @@ const Checkin = () => {
           <img src={brandLogo} alt="Tplum Photography" className="h-10 w-auto" />
           <div className="flex items-center gap-2">
           {staff.role === "admin" && (
-            <a href="/admin" className="inline-flex items-center px-4 py-2 text-sm font-body border border-border hover:bg-muted/50 rounded-md">ADMIN DASHBOARD</a>
+            <a href="/dashboard" className="inline-flex items-center px-4 py-2 text-sm font-body border border-border hover:bg-muted/50 rounded-md">ADMIN DASHBOARD</a>
           )}
           <button onClick={() => void handleLogout()} className="inline-flex items-center gap-2 px-4 py-2 text-sm font-body border border-border hover:bg-muted/50 rounded-md">
             <LogOut size={16} /> LOGOUT

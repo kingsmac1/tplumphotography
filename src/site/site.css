@@ -293,8 +293,8 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 }
 
 /* CTA with photo */
-.tp .cta-band { position: relative; overflow: hidden; min-height: 700px; padding: 120px 50px 80px; display: flex; }
-.tp .cta-band .bg { position: absolute; left: 0; right: 0; top: 0; height: 164%; background-size: cover; background-position: -74px 290px; background-repeat: no-repeat; will-change: transform; transform: translate3d(0, -5.2%, 0); }
+.tp .cta-band { position: relative; overflow: hidden; background: #000; min-height: 700px; padding: 120px 50px 80px; display: flex; }
+.tp .cta-band .bg { position: absolute; left: 0; right: 0; top: 0; height: 164%; background-size: cover; background-position: center 35%; background-repeat: no-repeat; will-change: transform; transform: translate3d(0, -5.2%, 0); }
 .tp .cta-band::before { content: ""; position: absolute; inset: 0; background: #000; opacity: .5; z-index: 1; }
 .tp .cta-band .box { z-index: 2; }
 .tp .cta-band .box { position: relative; display: flex; }
@@ -302,11 +302,11 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .cta-band h2 { color: #fff; margin-top: 30px; }
 @media (max-width: 1024px) {
   .tp .cta-band { padding: 80px 30px; }
-  .tp .cta-band .bg { background-position: -496px 389px; }
+  .tp .cta-band .bg { background-position: center 35%; }
 }
 @media (max-width: 767px) {
   .tp .cta-band { min-height: 50vh; padding: 50px 20px 80px; }
-  .tp .cta-band .bg { background-size: 477px auto; background-position: -15px 240px; }
+  .tp .cta-band .bg { background-size: cover; background-position: center 35%; }
   .tp .cta-band .inner { width: 100%; padding: 0; }
   .tp .cta-band h2 { margin-top: 240px; }
 }
@@ -583,3 +583,52 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .hero .dots { bottom: 57px; }
 .tp .hero .dots li { margin-right: -1px; }
 .tp .hero .dots button { width: 24px; height: 24px; }
+
+/* ---------- Booking calls to action (added at the client's request; not on the WordPress site) ---------- */
+.tp .btn.solid { background: #000; color: #fff; border-color: #000; }
+.tp .btn.light.solid { background: #fff; color: #000; border-color: #fff; }
+.tp .btn-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.tp .header-book {
+  display: inline-flex; align-items: center; white-space: nowrap; margin-right: 18px; padding: 9px 18px;
+  font-family: var(--dm); font-size: 13px; letter-spacing: .1em; line-height: 1; color: #fff;
+  border: 1px solid #fff; border-radius: 30px; transition: background-color .3s, color .3s;
+}
+.tp .header-book:hover, .tp .header-book:focus-visible { background: #fff; color: #000; }
+.tp .site-header .right { width: auto; min-width: 228px; }
+.tp .contact-book { margin: 16px 0 6px; }
+@media (max-width: 767px) {
+  .tp .site-header .right { min-width: 0; width: auto; }
+  .tp .header-book { margin-right: 12px; padding: 7px 11px; font-size: 11px; letter-spacing: .06em; }
+  .tp .site-header .socials { margin-right: 14px; }
+}
+@media (max-width: 380px) { .tp .site-header .socials { display: none; } }
+
+/* ---------- /book/ ---------- */
+.tp .hero-book { background-size: cover; background-position: center 40%; }
+.tp .book-main { margin-top: 120px; padding: 10px 10px 0; }
+.tp .book-main .sec-head { padding: 10px; display: flex; flex-direction: column; gap: 20px; }
+.tp .book-main .lead { font-family: var(--lato); font-size: 16px; line-height: 1.65; color: #000; max-width: 640px; }
+.tp .book-main .lead p:last-child { margin-bottom: 0; }
+.tp .book-options { list-style: none; margin: 30px 0 0; padding: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+.tp .book-card { height: 100%; display: flex; flex-direction: column; }
+.tp .book-card .photo { display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #111; }
+.tp .book-card .photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.tp .book-card:hover .photo img { transform: scale(1.04); }
+.tp .book-card .text { display: flex; flex-direction: column; gap: 12px; flex: 1; padding-top: 20px; }
+.tp .book-card h3 { font-family: var(--fulgate); font-size: 25px; font-weight: 800; line-height: 1.3; color: #000; }
+.tp .book-card p { font-family: "Inter", sans-serif; font-size: 15px; line-height: 1.65; color: #282828; margin: 0; flex: 1; }
+.tp .book-card .btn { align-self: flex-start; margin-top: 8px; background: #000; color: #fff; border-color: #000; }
+.tp .book-help { margin-top: 120px; background: #000; color: #fff; padding: 100px 20px; text-align: center; }
+.tp .book-help .box { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.tp .book-help h2 { color: #fff; font-size: 50px; line-height: 55px; }
+.tp .book-help p { font-family: var(--lato); font-weight: 300; font-size: 16px; line-height: 1.65; margin: 0 0 10px; max-width: 520px; }
+@media (max-width: 1024px) { .tp .book-options { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 767px) {
+  .tp .book-main { margin-top: 80px; }
+  .tp .book-main .sec-head { gap: 0; }
+  .tp .book-options { grid-template-columns: 1fr; gap: 40px; padding: 10px 0; }
+  .tp .book-help { margin-top: 80px; padding: 70px 20px; }
+  .tp .book-help h2 { font-size: 31px; line-height: 1.3; }
+}
+.tp .book-options > li { display: flex; }
+.tp .book-options > li > .book-card { flex: 1; }

@@ -24,6 +24,12 @@
    },
    "siteName": "Tplum Photography"
   },
+  "header": {
+   "bookButton": {
+    "label": "BOOK NOW",
+    "href": "/book/"
+   }
+  },
   "contact": {
    "email": "INFO@TPLUMPHOTOGRAPHY.COM",
    "phone": "+14034935511",
@@ -49,6 +55,10 @@
     {
      "label": "Contact",
      "href": "/contact/"
+    },
+    {
+     "label": "Book Now",
+     "href": "/book/"
     },
     {
      "label": "The Tplum Signature",
@@ -575,6 +585,10 @@
     "label": "CONTACT US",
     "href": "/contact/"
    },
+   "bookButton": {
+    "label": "BOOK NOW",
+    "href": "/book/"
+   },
    "image": {
     "src": "/media/dsc-5981-scaled-2400.webp",
     "srcset": "/media/dsc-5981-scaled-480.webp 480w, /media/dsc-5981-scaled-960.webp 960w, /media/dsc-5981-scaled-1600.webp 1600w, /media/dsc-5981-scaled-2400.webp 2400w",
@@ -975,7 +989,7 @@
   "book": {
    "heading": "CLICK HERE TO BOOK",
    "text": "Destination weddings | Available to travel",
-   "href": "/contact/",
+   "href": "/book/",
    "image": {
     "src": "/media/20-copy-jpg-1-scaled-2075.webp",
     "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
@@ -1025,6 +1039,10 @@
    "button": {
     "label": "Get in Touch",
     "href": "/contact/"
+   },
+   "bookButton": {
+    "label": "Book Now",
+    "href": "/book/"
    }
   }
  },
@@ -1057,7 +1075,11 @@
   },
   "intro": {
    "heading": "Contact Session!",
-   "body": "<ul><li>Kindly allow 24–48 hours for a reply. If you don’t see an email within that time, please check your spam or junk folder.</li><li>After connecting, we’ll send over our pricing and full details, and would love to arrange a Phone call, Zoom or Google Meet call to talk through your vision.</li><li>We can’t wait to connect and capture your meaningful moments.</li></ul>"
+   "body": "<ul><li>Kindly allow 24–48 hours for a reply. If you don’t see an email within that time, please check your spam or junk folder.</li><li>After connecting, we’ll send over our pricing and full details, and would love to arrange a Phone call, Zoom or Google Meet call to talk through your vision.</li><li>We can’t wait to connect and capture your meaningful moments.</li></ul>",
+   "bookButton": {
+    "label": "Book Now",
+    "href": "/book/"
+   }
   },
   "form": {
    "labels": {
@@ -1176,7 +1198,7 @@
   "book": {
    "heading": "CLICK HERE TO BOOK",
    "text": "Destination weddings | Available to travel",
-   "href": "/contact/",
+   "href": "/book/",
    "image": {
     "src": "/media/20-copy-jpg-1-scaled-2075.webp",
     "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
@@ -1303,5 +1325,107 @@
   },
   "heading": "WE ARE BUILDING\nSOMETHING GREAT",
   "body": "<p>Our website is currently under construction as we work on creating a better digital experience for you.<br>We’ll be launching soon with exciting features, valuable content, and innovative solutions.</p>"
+ },
+ "book": {
+  "seo": {
+   "title": "Book → Tplum Photography",
+   "description": "Book your wedding, portrait or family session with Tplum Photography, Calgary | Edmonton | Toronto wedding & portrait photographer. Available to travel.",
+   "ogTitle": "Book → Tplum Photography",
+   "ogDescription": "Book your wedding, portrait or family session with Tplum Photography.",
+   "ogType": "article",
+   "twitterTitle": "Book → Tplum Photography",
+   "twitterDescription": "Book your wedding, portrait or family session with Tplum Photography.",
+   "shareImage": {
+    "src": "/media/cropped-tplum-logo-dark-1000.webp",
+    "srcset": "/media/cropped-tplum-logo-dark-480.webp 480w, /media/cropped-tplum-logo-dark-960.webp 960w, /media/cropped-tplum-logo-dark-1000.webp 1000w",
+    "width": 1000,
+    "height": 552,
+    "alt": ""
+   }
+  },
+  "hero": {
+   "heading": "Book Your Session",
+   "image": {
+    "src": "/media/dsc-0235-copy-2-924.webp",
+    "srcset": "/media/dsc-0235-copy-2-480.webp 480w, /media/dsc-0235-copy-2-924.webp 924w",
+    "width": 924,
+    "height": 1150,
+    "alt": "Bride and groom by the lake"
+   }
+  },
+  "intro": {
+   "heading": "How would you like to work with us?",
+   "body": "<p>Choose the kind of shoot you are planning to see packages, prices and available dates. You can reserve your date online in a few minutes.</p>"
+  },
+  "options": [
+   {
+    "title": "Weddings",
+    "text": "Wedding day coverage, elopements and vow renewals in Calgary, Edmonton, Toronto and beyond.",
+    "image": {
+     "src": "/media/3-1-509.webp",
+     "srcset": "/media/3-1-480.webp 480w, /media/3-1-509.webp 509w",
+     "width": 509,
+     "height": 593,
+     "alt": "Bride and groom smiling"
+    },
+    "button": {
+     "label": "Book Now",
+     "href": "/booking/wedding/"
+    }
+   },
+   {
+    "title": "Portrait & Family Sessions",
+    "text": "Portraits, couples, engagement, maternity and family sessions, in the studio or on location.",
+    "image": {
+     "src": "/media/10-2-528.webp",
+     "srcset": "/media/10-2-480.webp 480w, /media/10-2-528.webp 528w",
+     "width": 528,
+     "height": 643,
+     "alt": "Couple at an engagement picnic"
+    },
+    "button": {
+     "label": "Book Now",
+     "href": "/booking/"
+    }
+   },
+   {
+    "title": "Studio Rental",
+    "text": "Rent the studio by the hour for your own photo or video shoot.",
+    "image": {
+     "src": "/media/dsc-9197-copy-1132.webp",
+     "srcset": "/media/dsc-9197-copy-480.webp 480w, /media/dsc-9197-copy-960.webp 960w, /media/dsc-9197-copy-1132.webp 1132w",
+     "width": 1132,
+     "height": 1326,
+     "alt": "Portrait in the studio"
+    },
+    "button": {
+     "label": "Book Now",
+     "href": "/studio-space/"
+    }
+   },
+   {
+    "title": "Events",
+    "text": "Birthdays, corporate events and celebrations, quoted for your day.",
+    "image": {
+     "src": "/media/dsc-1931-541.webp",
+     "srcset": "/media/dsc-1931-480.webp 480w, /media/dsc-1931-541.webp 541w",
+     "width": 541,
+     "height": 708,
+     "alt": "Guests celebrating at an event"
+    },
+    "button": {
+     "label": "Book Now",
+     "href": "/events/"
+    }
+   }
+  ],
+  "help": {
+   "heading": "Not sure which to choose?",
+   "text": "Tell us about your plans and we will help you pick the right package.",
+   "button": {
+    "label": "Get in Touch",
+    "href": "/contact/"
+   }
+  }
  }
 }
