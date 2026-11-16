@@ -42,8 +42,13 @@ interface Props { onAdd: () => void; }
 
 const ALL = "";
 
+const evDay = (iso: string) => {
+  const d = new Date(`${iso}T12:00:00`);
+  return d.toLocaleDateString("en-CA", { day: "numeric", month: "short", ...(d.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}) });
+};
+/** "Dec 16" or "Dec 16 – Dec 18" (the year only when it isn't this year) */
 const eventDates = (r: EventBooking) =>
-  r.event_start_date ? `${r.event_start_date}${r.event_end_date && r.event_end_date !== r.event_start_date ? ` → ${r.event_end_date}` : ""}` : "—";
+  r.event_start_date ? `${evDay(r.event_start_date)}${r.event_end_date && r.event_end_date !== r.event_start_date ? ` – ${evDay(r.event_end_date)}` : ""}` : "—";
 
 const EventBookingTable = ({ onAdd }: Props) => {
   const [rows, setRows] = useState<EventBooking[]>([]);
@@ -187,30 +192,24 @@ const EventBookingTable = ({ onAdd }: Props) => {
       <div className="px-4 pt-4 pb-2">
         <h2 className="font-display text-xl font-bold tracking-wide">Event Bookings</h2>
       </div>
-      <div className="overflow-x-auto">
-        <Table className="min-w-[1200px]" fitViewport>
+      <div>
+        <Table fitViewport containerClassName="md:overflow-x-hidden" className="md:table-fixed md:[&_td]:px-2.5 md:[&_th]:px-2.5">
           <TableHeader>
             <TableRow>
               <TableHead className={stickyCheckHead}>
                 <Checkbox checked={allSelected ? true : selectedIds.length > 0 ? "indeterminate" : false} onCheckedChange={(v) => sel.setMany(filteredIds, v === true)} aria-label="Select all event bookings" />
               </TableHead>
               <TableHead className={stickySnHead}>S/N</TableHead>
-              <TableHead>Requested</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>WhatsApp</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Client</TableHead>
               <TableHead>Event</TableHead>
-              <TableHead>Dates</TableHead>
-              <TableHead>Venue</TableHead>
-              <TableHead>Guests</TableHead>
-              <TableHead>Agreed Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="md:w-[150px]">Dates</TableHead>
+              <TableHead className="md:w-[156px]">Amount &amp; payment</TableHead>
+              <TableHead className="md:w-[164px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
-              <TableRow><TableCell colSpan={13} className="text-center py-8 text-muted-foreground">No event bookings found</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No event bookings found</TableCell></TableRow>
             ) : (
               filtered.slice(0, visibleCount).map((r, i) => (
                 <TableRow key={r.id} onClick={() => setSelected(r)} className={`cursor-pointer ${sel.ids.has(r.id) ? "bg-muted/60" : ""}`}>
@@ -218,31 +217,33 @@ const EventBookingTable = ({ onAdd }: Props) => {
                     <Checkbox checked={sel.ids.has(r.id)} onCheckedChange={() => sel.toggle(r.id)} aria-label={`Select booking for ${r.full_name || "client"}`} />
                   </TableCell>
                   <TableCell className={stickySnCell(sel.ids.has(r.id))}>{i + 1}</TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">{r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}</TableCell>
-                  <TableCell className="font-medium whitespace-nowrap">{r.full_name || "—"}</TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">{r.phone || "—"}</TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">{r.email || "—"}</TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">{r.event_type || "—"}</TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">
-                    {eventDates(r)}
-                    {(() => { const d = deliveryOf(r); return d.state !== "untracked" && d.state !== "upcoming" ? <><br /><DeliveryBadge d={d} className="mt-1" /></> : null; })()}
+                  <TableCell className="max-w-[220px] md:max-w-none">
+                    <p className="font-medium truncate">{r.full_name || "—"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{r.phone || r.email || "—"}</p>
                   </TableCell>
-                  <TableCell className="text-sm whitespace-nowrap max-w-[200px] truncate">{r.venue || "—"}</TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">{r.expected_guests ?? "—"}</TableCell>
-                  <TableCell className="font-medium whitespace-nowrap">{formatMoney(r.agreed_amount)}</TableCell>
+                  <TableCell className="max-w-[220px] md:max-w-none">
+                    <p className="text-sm truncate">{r.event_type || "—"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{[r.venue, r.expected_guests ? `${r.expected_guests} guests` : ""].filter(Boolean).join(" · ") || "—"}</p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm truncate">{eventDates(r)}</p>
+                    <p className="text-xs text-muted-foreground truncate">{r.event_time ? `${r.event_time} · ` : ""}Requested {r.created_at ? new Date(r.created_at).toLocaleDateString("en-CA", { day: "numeric", month: "short" }) : "—"}</p>
+                    {(() => { const d = deliveryOf(r); return d.state !== "untracked" && d.state !== "upcoming" ? <DeliveryBadge d={d} wrap className="mt-1 max-w-full align-top" /> : null; })()}
+                  </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
+                    <p className="text-sm font-medium mb-1 whitespace-nowrap">{formatMoney(r.agreed_amount)}</p>
                     <PaymentCell status={r.payment_status} total={r.agreed_amount} amountPaid={r.amount_paid} onSave={(patch) => updatePayment(r.id, patch)} />
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()} className="whitespace-nowrap">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5">
                       <ContactActions name={r.full_name} phone={r.phone} email={r.email} />
-                      <a href={bookingInvoiceHref("event_bookings", r.id)} aria-label="Generate invoice" title="Generate invoice" className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors">
+                      <a href={bookingInvoiceHref("event_bookings", r.id)} aria-label="Generate invoice" title="Generate invoice" className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors">
                         <FileText size={14} />
                       </a>
-                      <button onClick={() => setEditing(r)} aria-label="Edit booking" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-body font-medium border border-border text-foreground hover:bg-muted/50 rounded transition-colors">
-                        <Pencil size={13} /> Edit
+                      <button onClick={() => setEditing(r)} aria-label="Edit booking" title="Edit booking" className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors">
+                        <Pencil size={14} />
                       </button>
-                      <button onClick={() => setDeleting(r)} aria-label="Delete booking" className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors">
+                      <button onClick={() => setDeleting(r)} aria-label="Delete booking" className="p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors">
                         <Trash2 size={14} />
                       </button>
                     </div>

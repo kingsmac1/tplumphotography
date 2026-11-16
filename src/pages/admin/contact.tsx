@@ -39,7 +39,7 @@ export const takeEmailPrefill = (): string => {
 
 type Props = { name?: string | null; phone?: string | null; email?: string | null };
 
-const btn = "p-1.5 rounded transition-colors";
+const btn = "p-1 rounded transition-colors";
 
 /** Call, text and email buttons for a table row: one click to contact the person. */
 export const ContactActions = ({ name, phone, email }: Props) => {

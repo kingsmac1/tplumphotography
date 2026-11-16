@@ -9,6 +9,7 @@
 :root .m-preloader img { height: 56px; width: auto; opacity: .9; animation: m-breathe 1.6s ease-in-out infinite; }
 @keyframes m-breathe { 50% { opacity: .3; } }
 :root.pl-ready .m-preloader { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .6s ease, visibility 0s linear .6s; }
+:root.pl-skip .m-preloader { display: none; }
 
 /* ---------- shared values ---------- */
 :root main.app { padding-top: var(--m-header-h); }

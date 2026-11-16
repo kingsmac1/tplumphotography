@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Pencil, Trash2, X, GalleryHorizontalEnd, FileText } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, X, GalleryHorizontalEnd, FileText, ChevronRight } from "lucide-react";
 import { bookingInvoiceHref } from "@/features/invoices/events";
 import { byBooking, useGalleryIndex } from "@/features/gallery/admin/useGalleryIndex";
 import { bookingGalleryStage, GALLERY_STAGE_FILTERS } from "@/features/gallery/status";
@@ -65,8 +65,34 @@ const STAGE_TONE: Record<string, string> = {
   green: "bg-green-100 text-green-800",
 };
 
-const shortDay = (d?: string | null) =>
-  d ? new Date(d.length === 10 ? `${d}T12:00:00` : d).toLocaleDateString("en-CA", { day: "numeric", month: "short", year: "numeric" }) : "";
+/**
+ * The way into a booking's client gallery (proofs → client selection → finals), as on DMI.
+ * No gallery yet: "Add gallery" (the Gallery Manager creates it). Otherwise the stage, as a button that opens it.
+ */
+function GalleryAccess({ id, stage, large = false }: { id: string; stage: { key: string; label: string; tone: string }; large?: boolean }) {
+  const none = stage.key === "none";
+  return (
+    <a
+      href={`#galleries/${id}`}
+      onClick={(e) => e.stopPropagation()}
+      title={none ? "Create a client gallery for this booking" : "Open this booking's client gallery"}
+      className={`group inline-flex max-w-full items-center gap-1.5 rounded-full font-body font-bold transition-colors ${large ? "px-4 py-2 text-xs" : "px-2.5 py-1 text-[11px]"} ${
+        none ? "border border-foreground text-foreground hover:bg-foreground hover:text-background" : `${STAGE_TONE[stage.tone] ?? STAGE_TONE.grey} hover:ring-2 hover:ring-foreground/20`
+      }`}
+    >
+      {none ? <Plus size={large ? 14 : 12} className="shrink-0" /> : <GalleryHorizontalEnd size={large ? 14 : 12} className="shrink-0" />}
+      <span className="truncate">{none ? (large ? "Add gallery" : "Add") : stage.label}</span>
+      {!none && <ChevronRight size={large ? 14 : 12} className="shrink-0 opacity-60 group-hover:translate-x-0.5 transition-transform" />}
+    </a>
+  );
+}
+
+// the year only when it isn't this year, so the date fits the Session column
+const shortDay = (d?: string | null) => {
+  if (!d) return "";
+  const dt = new Date(d.length === 10 ? `${d}T12:00:00` : d);
+  return dt.toLocaleDateString("en-CA", { day: "numeric", month: "short", ...(dt.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}) });
+};
 const shortTime = (t?: string | null) => {
   if (!t) return "";
   const [h, m] = t.split(":").map(Number);
@@ -335,7 +361,7 @@ const BookingTable = ({ onAdd, restrictSource, title = "Bookings" }: BookingTabl
       </div>
       {/* Only what's needed to scan the list fits the width; every other field is in the booking detail (click a row). */}
       <div>
-        <Table fitViewport className="md:table-fixed">
+        <Table fitViewport containerClassName="md:overflow-x-hidden" className="md:table-fixed md:[&_td]:px-2.5 md:[&_th]:px-2.5">
           <TableHeader>
             <TableRow>
               <TableHead className={stickyCheckHead}>
@@ -346,19 +372,18 @@ const BookingTable = ({ onAdd, restrictSource, title = "Bookings" }: BookingTabl
                 />
               </TableHead>
               <TableHead className={stickySnHead}>S/N</TableHead>
-              <TableHead className="md:w-[21%]">Client</TableHead>
-              <TableHead className="md:w-[19%]">Shoot</TableHead>
-              <TableHead className="md:w-[12%]">Session</TableHead>
-              <TableHead className="md:w-[10%] text-right">Total</TableHead>
-              <TableHead className="md:w-[150px]">Payment</TableHead>
-              <TableHead className="md:w-[17%]">Gallery</TableHead>
+              <TableHead>Client</TableHead>
+              <TableHead>Shoot</TableHead>
+              <TableHead className="md:w-[112px]">Session</TableHead>
+              <TableHead className="md:w-[156px]">Total &amp; payment</TableHead>
+              <TableHead className="md:w-[118px]">Gallery</TableHead>
               <TableHead className="md:w-[164px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredBookings.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">No bookings found</TableCell>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No bookings found</TableCell>
               </TableRow>
             ) : (
               filteredBookings.slice(0, visibleCount).map((b, i) => {
@@ -383,39 +408,30 @@ const BookingTable = ({ onAdd, restrictSource, title = "Bookings" }: BookingTabl
                     <p className="text-xs text-muted-foreground truncate">{shortTime(b.shoot_time) || `Booked ${shortDay(b.created_at)}`}</p>
                     {delivery.state !== "untracked" && delivery.state !== "upcoming" && <DeliveryBadge d={delivery} wrap className="mt-1 max-w-full align-top" />}
                   </TableCell>
-                  <TableCell className="text-right font-medium whitespace-nowrap md:truncate">{formatMoney(b.grand_total)}</TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
+                    <p className="text-sm font-medium mb-1 whitespace-nowrap">{formatMoney(b.grand_total)}</p>
                     <PaymentCell status={b.payment_status} total={b.grand_total} amountPaid={b.amount_paid} onSave={(patch) => updatePayment(b.id, patch)} />
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
-                    <a
-                      href={`#galleries/${b.id}`}
-                      title="Open the client gallery for this booking"
-                      className="inline-flex max-w-full items-center gap-1.5 group"
-                    >
-                      <GalleryHorizontalEnd size={14} className="shrink-0 text-muted-foreground group-hover:text-foreground" />
-                      <span className={`whitespace-nowrap md:whitespace-normal md:leading-tight px-2 py-0.5 text-[11px] font-body font-semibold rounded-full md:rounded-lg ${STAGE_TONE[stage.tone] ?? STAGE_TONE.grey}`}>
-                        {stage.label}
-                      </span>
-                    </a>
+                    <GalleryAccess id={b.id} stage={stage} />
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()} className="whitespace-nowrap">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5">
                       <ContactActions name={b.full_name} phone={b.phone} email={b.email} />
-                      <a href={bookingInvoiceHref("bookings", b.id)} aria-label="Generate invoice" title="Generate invoice" className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors">
+                      <a href={bookingInvoiceHref("bookings", b.id)} aria-label="Generate invoice" title="Generate invoice" className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors">
                         <FileText size={14} />
                       </a>
                       <button
                         onClick={() => setEditing(b)}
                         aria-label="Edit booking"
-                        className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors"
+                        className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors"
                       >
                         <Pencil size={14} />
                       </button>
                       <button
                         onClick={() => setDeleting(b)}
                         aria-label="Delete booking"
-                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                        className="p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -448,7 +464,16 @@ const BookingTable = ({ onAdd, restrictSource, title = "Bookings" }: BookingTabl
           fields={detailFields}
           onClose={() => setSelected(null)}
           invoiceHref={bookingInvoiceHref("bookings", selectedLive.id)}
-          top={<DeliveryPanel table="bookings" id={selectedLive.id} name={selectedLive.full_name} d={deliveryOf(selectedLive)} onChanged={() => { fetchBookings(); void refreshDeliveries(); }} />}
+          top={<>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-muted/60 px-4 py-3">
+              <div>
+                <p className="text-xs font-body font-bold tracking-widest text-muted-foreground">CLIENT GALLERY</p>
+                <p className="text-sm font-body mt-0.5">{stageOf(selectedLive.id).key === "none" ? "No gallery yet. Create one to send previews, collect the client's picks and deliver the finals." : stageOf(selectedLive.id).label}</p>
+              </div>
+              <GalleryAccess id={selectedLive.id} stage={stageOf(selectedLive.id)} large />
+            </div>
+            <DeliveryPanel table="bookings" id={selectedLive.id} name={selectedLive.full_name} d={deliveryOf(selectedLive)} onChanged={() => { fetchBookings(); void refreshDeliveries(); }} />
+          </>}
         >
           <InspirationGallery bookingId={selectedLive.id} />
         </DetailModal>

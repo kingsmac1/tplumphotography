@@ -73,7 +73,7 @@ export const PaymentCell = ({ status, total, amountPaid, onSave }: CellProps) =>
         value={current}
         onChange={(v) => (v === "Part Payment" ? setAsking(true) : void onSave(paymentPatch(v)))}
         options={PAYMENT_STATUSES.map((p) => ({ value: p, label: p }))}
-        className="min-w-[130px]"
+        className="min-w-[124px] [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-xs [&>button>span]:whitespace-nowrap"
       />
       {current === "Part Payment" && (
         <button type="button" onClick={() => setAsking(true)} className="block mt-1 text-[11px] font-body text-muted-foreground hover:text-foreground underline-offset-2 hover:underline text-left whitespace-nowrap">
