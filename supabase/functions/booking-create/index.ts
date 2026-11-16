@@ -80,6 +80,9 @@ Deno.serve(handle(async (req, body) => {
       ])
       const svc = (services ?? []).find((s) => s.service_id === body.serviceId && (!body.setting || s.setting === body.setting))
       if (!svc) throw new HttpError('That package is no longer available. Please refresh the page.')
+      // Tplum Kiddies packages only offer kiddies add-ons; portrait packages only portrait ones ("all" = both)
+      const kiddies = svc.setting === 'kiddies'
+      const offered = (extras ?? []).filter((e) => (e.category ?? 'portrait') === 'all' || (e.category ?? 'portrait') === (kiddies ? 'kiddies' : 'portrait'))
       // opening hours + minimum notice (same rules as the calendar on the page)
       const hours = (settings.opening_hours ?? {})[String(weekday(date))] as [string, string] | null
       const daysAhead = (Date.parse(`${date}T00:00:00Z`) - Date.parse(`${todayLocal()}T00:00:00Z`)) / 86400000
@@ -90,7 +93,7 @@ Deno.serve(handle(async (req, body) => {
       const sq = quoteSession(
         { serviceId: svc.service_id, outfits: Number(body.outfits) || 1, extras: Array.isArray(body.extras) ? body.extras.slice(0, 20) : [], promoPercent, tax },
         (services ?? []).filter((s) => s.service_id === svc.service_id).map((s) => ({ id: s.service_id, name: s.name, price: Number(s.price), pricing_mode: s.pricing_mode, duration_minutes: Number(s.duration_minutes) || 60 })),
-        (extras ?? []).map((e) => ({ name: e.name, price: Number(e.price), max_qty: e.max_qty, follows_package: e.follows_package, extra_minutes: Number(e.extra_minutes) || 0 })),
+        offered.map((e) => ({ name: e.name, price: Number(e.price), max_qty: e.max_qty, follows_package: e.follows_package, extra_minutes: Number(e.extra_minutes) || 0 })),
       )
       quote = sq
       // the session's real length: package minutes + any "Extra 30 Minutes"; it must fit inside opening hours
@@ -103,13 +106,14 @@ Deno.serve(handle(async (req, body) => {
         full_name: name, email, phone, gender: clip(c.gender, 40), shoot_type: clip(c.shoot_type, 60), shoot_date: date, shoot_time: time,
         duration_minutes: duration, date_of_birth: DATE_RE.test(clip(c.date_of_birth, 10)) ? clip(c.date_of_birth, 10) : null,
         social_handles: clip(c.social_handles, 500), inspiration_links: clip(c.inspiration_links, 3000), location: '',
-        shoot_setting: svc.setting === 'outdoor' ? 'On location' : 'Studio', selected_service: svc.name, service_price: Number(svc.price),
+        notes: clip(c.notes, 2000) || null,
+        shoot_setting: kiddies ? 'Tplum Kiddies' : svc.setting === 'outdoor' ? 'On location' : 'Studio', selected_service: svc.name, service_price: Number(svc.price),
         service_pricing_mode: svc.pricing_mode, outfits: quote.lines[0].qty, selected_extras: extrasLine,
         extras_detail: quote.lines.slice(1), service_total: quote.serviceTotal, extras_total: quote.extrasTotal,
         discount_total: quote.discount, promo_code: promoPercent ? promoCode.toUpperCase() : null, grand_total: quote.total,
         tax_total: quote.tax, tax_name: quote.taxName,
         service_summary: [svc.name, promoPercent ? `Coupon ${promoCode.toUpperCase()} (${promoPercent}% off)` : ''].filter(Boolean).join(' | '),
-        source: 'booking_form',
+        source: kiddies ? 'kiddies_form' : 'booking_form',
       }
     } else if (kind === 'wedding') {
       const c = (body.client ?? {}) as Record<string, unknown>

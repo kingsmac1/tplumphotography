@@ -289,8 +289,15 @@ function bookingLines(table: BookingTable, b: Row): { items: InvoiceItem[]; disc
   return { items: [{ title, description: [description, extra && `Extras: ${extra}`].filter(Boolean).join('\n'), qty: '1', rate: total ? plain(total) : '', amount: total ? plain(total) : '' }], discount: 0 }
 }
 
-/** Fills the client, the items and the payments from a booking. Keeps the business fields of `base`. */
-export function invoiceFromBooking(base: InvoiceDoc, table: BookingTable, b: Row): InvoiceDoc {
+export const KIDDIES_TERMS_TITLE = 'Tplum Kiddies: Terms & Conditions'
+/** a Tplum Kiddies booking (website or entered by hand with the Kiddies setting) */
+export const isKiddiesBooking = (b: Row | null | undefined) => !!b && (s(b.source) === 'kiddies_form' || /kiddies/i.test(s(b.shoot_setting)))
+
+/**
+ * Fills the client, the items and the payments from a booking. Keeps the business fields of `base`.
+ * A Tplum Kiddies booking prints the kiddies terms (Settings) on the terms page instead of the usual ones.
+ */
+export function invoiceFromBooking(base: InvoiceDoc, table: BookingTable, b: Row, opts: { kiddiesTerms?: string } = {}): InvoiceDoc {
   const { items, discount, discountLabel } = bookingLines(table, b)
   // A booking charged sales tax (e.g. GST 5% on website bookings): the invoice charges the same, so the totals match.
   const taxPaid = num(b.tax_total)
@@ -307,5 +314,6 @@ export function invoiceFromBooking(base: InvoiceDoc, table: BookingTable, b: Row
     discount: discount > 0 ? plain(discount) : '',
     ...(taxRate > 0 ? { taxEnabled: true, taxName: s(b.tax_name) || base.taxName || 'GST', taxRate: plain(taxRate) } : {}),
     payments: paymentsFromBooking(table, b),
+    ...(table === 'bookings' && isKiddiesBooking(b) && opts.kiddiesTerms?.trim() ? { termsTitle: KIDDIES_TERMS_TITLE, termsText: opts.kiddiesTerms.trim() } : {}),
   }
 }

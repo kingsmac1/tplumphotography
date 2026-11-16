@@ -8,6 +8,13 @@ const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-"
 const settingOptions = [
   { value: "indoor", label: "Studio (indoor)" },
   { value: "outdoor", label: "On location (outdoor)" },
+  { value: "kiddies", label: "Tplum Kiddies" },
+];
+const settingLabel = (v: unknown) => (v === "outdoor" ? "On location" : v === "kiddies" ? "Tplum Kiddies" : "Studio");
+const categoryOptions = [
+  { value: "portrait", label: "Portrait sessions" },
+  { value: "kiddies", label: "Tplum Kiddies" },
+  { value: "all", label: "Both" },
 ];
 
 const statusBadge = (on: boolean) => (
@@ -27,7 +34,7 @@ const bookingPrices: EntityConfig = {
   filters: [
     { key: "setting", label: "Setting", options: settingOptions },
   ],
-  intro: "The session packages clients choose from on the Booking page. Change a price in its box; it updates on the website straight away. Prices marked “Sample: edit me” are placeholders.",
+  intro: "The session packages clients choose from on the Booking page (Studio / On location) and the Tplum Kiddies page (setting “Tplum Kiddies”). Change a price in its box; it updates on the website straight away. Prices marked “Sample: edit me” are placeholders.",
   newDefaults: { setting: "indoor", service_id: "", name: "", description: "", price: 0, pricing_mode: "bundle", duration_minutes: 60, sort_order: 0, active: true },
   beforeSave: (p) => { if (!p.service_id) p.service_id = slugify(String(p.name)); clearSample(p); },
   fields: [
@@ -40,7 +47,7 @@ const bookingPrices: EntityConfig = {
     { key: "active", label: "Shown on the Booking page", type: "bool" },
   ],
   columns: [
-    { label: "Setting", render: (r) => (r.setting === "outdoor" ? "On location" : "Studio") },
+    { label: "Setting", render: (r) => settingLabel(r.setting) },
     { label: "Package", render: (r) => <span className="font-medium">{r.name}{sampleBadge(r)}</span> },
     { label: "Description", render: (r) => r.description || "—" },
     { label: "Price ($)", render: () => null, inline: { key: "price" } },
@@ -53,9 +60,11 @@ const bookingExtras: EntityConfig = {
   orderBy: { column: "sort_order", ascending: true }, reorderKey: "sort_order",
   toggle: { key: "active", on: "TURN ON", off: "TURN OFF" },
   intro: "Add-ons shown on the Booking page. “Same as package” extras (like Extra Outfit) cost whatever package the client picked.",
-  newDefaults: { name: "", description: "", price: 0, max_qty: null, follows_package: false, extra_minutes: 0, sort_order: 0, active: true },
+  newDefaults: { name: "", description: "", price: 0, max_qty: null, follows_package: false, extra_minutes: 0, category: "portrait", sort_order: 0, active: true },
+  filters: [{ key: "category", label: "Offered with", options: categoryOptions }],
   fields: [
     { key: "name", label: "Extra name", type: "text", required: true, half: true },
+    { key: "category", label: "Offered with", type: "select", options: categoryOptions, half: true },
     { key: "description", label: "Short description", type: "text" },
     { key: "price", label: "Price ($)", type: "number", half: true, help: "Ignored when “same price as the package” is ticked." },
     { key: "max_qty", label: "Maximum quantity", type: "number", nullable: true, half: true, help: "Leave empty for a simple tick box. A number lets the client choose how many, up to that number." },
@@ -65,6 +74,7 @@ const bookingExtras: EntityConfig = {
   ],
   columns: [
     { label: "Extra", render: (r) => <span className="font-medium">{r.name}{sampleBadge(r)}</span> },
+    { label: "Offered with", render: (r) => categoryOptions.find((o) => o.value === (r.category ?? "portrait"))?.label ?? "Portrait sessions" },
     { label: "Description", render: (r) => r.description || "—" },
     { label: "Price ($)", render: () => null, inline: { key: "price" } },
     { label: "Notes", render: (r) => [r.follows_package ? "same as package" : "", r.max_qty ? `up to ${r.max_qty}` : "", Number(r.extra_minutes) ? `+${r.extra_minutes} min each` : ""].filter(Boolean).join(" · ") || "—" },

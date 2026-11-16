@@ -3,7 +3,9 @@ import { ArrowLeft, Copy, FileSignature, Loader2, Plus, Printer, Search, Send, T
 import { supabase } from "@/lib/supabaseClient";
 import { formatMoney } from "@/pages/admin/formOptions";
 import { depositFor } from "@/lib/pricing";
-import SignaturePad, { ContractText, fillPlaceholders } from "./SignaturePad";
+import SignaturePad, { fillPlaceholders } from "./SignaturePad";
+import { ContractPaper, SignatureBlocks } from "./ContractPaper";
+import { DEFAULT_WEDDING_PACKAGES } from "@/data/weddingDefaults";
 
 /**
  * Contracts & e-signing (new for Tplum; DMI has none). Hash routes:
@@ -26,27 +28,104 @@ const input = "w-full border border-border bg-background px-3 py-2.5 text-sm out
 const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleString("en-CA", { timeZone: "America/Edmonton", dateStyle: "medium", timeStyle: "short" }) : "—");
 const pathFromHash = () => (typeof window === "undefined" ? [] : /^#contracts\/(.+)/.exec(window.location.hash)?.[1].split("/").filter(Boolean) ?? []);
 
-export const PLACEHOLDERS = ["client_name", "client_email", "client_phone", "event_date", "event_time", "venue", "package", "extras", "total", "deposit", "balance", "balance_due_date", "business_name", "today"];
+export const PLACEHOLDERS = [
+  "client_name", "client_email", "client_phone", "event_date", "event_time", "venue", "package", "package_details", "extras",
+  "coverage", "tax_label", "tax", "total", "retainer", "second_payment", "second_payment_due", "final_payment", "final_payment_due",
+  "deposit", "balance", "balance_due_date", "kiddies_balance", "kiddies_terms", "business_name", "today",
+];
 
-async function bookingValues(table: string, id: string): Promise<{ values: Record<string, string>; name: string; email: string; title: string }> {
-  const { data: b } = await supabase.from(table).select("*").eq("id", id).maybeSingle();
+type Kind = "wedding" | "kiddies" | "other";
+const longDay = (iso: string) => (iso ? new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-CA", { dateStyle: "long", timeZone: "UTC" }) : "");
+const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
+const round2 = (n: number) => Math.round(n * 100) / 100;
+/** "60 Mins Studio Session · Up to 2 Outfits" or a wedding package's list → "- " bullet lines */
+const bullets = (items: string[]) => items.map((x) => x.trim()).filter(Boolean).map((x) => `- ${x}`).join("\n");
+
+/** Values every contract can use, with or without a booking (business name, today, the kiddies terms). */
+async function baseValues(): Promise<{ values: Record<string, string>; settings: Record<string, unknown> | null }> {
   const { data: s } = await supabase.from("business_settings").select("*").eq("id", 1).maybeSingle();
-  if (!b) return { values: {}, name: "", email: "", title: "Photography Agreement" };
-  const total = Number(table === "event_bookings" ? b.agreed_amount : b.grand_total) || 0;
-  const deposit = s ? depositFor(total, { deposit_mode: s.deposit_mode, deposit_percent: Number(s.deposit_percent), deposit_fixed: Number(s.deposit_fixed) }) : 0;
-  const date = String(b.shoot_date ?? b.rental_date ?? b.event_start_date ?? "");
-  const due = date && s ? new Date(Date.parse(`${date}T12:00:00Z`) - Number(s.balance_due_days_before ?? 14) * 86400000).toISOString().slice(0, 10) : "";
-  const wedding = b.source === "wedding_form" || /wedding/i.test(String(b.shoot_type ?? ""));
   return {
-    name: b.full_name ?? "", email: String(b.email ?? "").toLowerCase(), title: wedding ? "Wedding Photography Agreement" : "Photography Agreement",
+    settings: s,
     values: {
-      client_name: b.full_name ?? "", client_email: b.email ?? "", client_phone: b.phone ?? "", event_date: date ? new Date(`${date}T12:00:00Z`).toLocaleDateString("en-CA", { dateStyle: "long", timeZone: "UTC" }) : "",
-      event_time: String(b.shoot_time ?? b.rental_time ?? b.event_time ?? "").slice(0, 5), venue: b.location || b.venue || b.shoot_setting || "",
-      package: b.selected_service || b.space_name || b.event_type || "", extras: b.selected_extras || "None", total: formatMoney(total), deposit: formatMoney(deposit),
-      balance: formatMoney(Math.max(0, total - deposit)), balance_due_date: due, business_name: s?.business_name ?? "Tplum Photography",
+      business_name: String(s?.business_name ?? "Tplum Photography"),
       today: new Date().toLocaleDateString("en-CA", { dateStyle: "long", timeZone: "America/Edmonton" }),
+      kiddies_terms: String(s?.kiddies_terms ?? ""),
     },
   };
+}
+
+async function bookingValues(table: string, id: string): Promise<{ values: Record<string, string>; name: string; email: string; title: string; kind: Kind }> {
+  const [{ data: b }, base] = await Promise.all([supabase.from(table).select("*").eq("id", id).maybeSingle(), baseValues()]);
+  const s = base.settings as Record<string, any> | null;
+  if (!b) return { values: base.values, name: "", email: "", title: "Photography Agreement", kind: "other" };
+  const kind: Kind = b.source === "wedding_form" || /wedding/i.test(String(b.shoot_type ?? "")) ? "wedding" : /kiddies/i.test(String(b.shoot_setting ?? "")) ? "kiddies" : "other";
+  // Fees: the booking's price before tax, plus GST. Website session bookings already carry their tax; weddings and
+  // events don't, so the contract adds the tax from Settings (as on Tplum's paper contract: $2,500 + 5% GST = $2,625).
+  const gross = Number(table === "event_bookings" ? b.agreed_amount : b.grand_total) || 0;
+  const bookedTax = Number(b.tax_total) || 0;
+  const coverage = round2(gross - bookedTax);
+  const rate = s?.booking_tax_enabled ? Number(s.booking_tax_rate) || 0 : 0;
+  const taxName = String(b.tax_name || s?.booking_tax_name || "GST");
+  const tax = bookedTax > 0 ? bookedTax : round2((coverage * rate) / 100);
+  const taxRate = bookedTax > 0 && coverage > 0 ? round2((bookedTax / coverage) * 100) : rate;
+  const total = round2(coverage + tax);
+  const deposit = s ? depositFor(total, { deposit_mode: s.deposit_mode, deposit_percent: Number(s.deposit_percent), deposit_fixed: Number(s.deposit_fixed) }) : 0;
+  // Payment schedule from the wedding contract: 20% retainer, 30% second payment, 50% final payment.
+  const retainer = round2(total * 0.2);
+  const second = round2(total * 0.3);
+  const final = round2(total - retainer - second);
+  const date = String(b.shoot_date ?? b.rental_date ?? b.event_start_date ?? "");
+  const eventMs = date ? Date.parse(`${date}T12:00:00Z`) : 0;
+  const finalDue = eventMs ? isoDay(eventMs - Number(s?.balance_due_days_before ?? 14) * 86400000) : "";
+  const secondDue = eventMs ? isoDay(Date.now() + Math.max(0, (Date.parse(`${finalDue}T12:00:00Z`) - Date.now()) / 2)) : "";
+  const pkgName = String(b.selected_service || b.space_name || b.event_type || "");
+  let details: string[] = [];
+  if (kind === "wedding") {
+    const { data: wp } = await supabase.from("wedding_packages").select("name, includes");
+    const found = ((wp as { name: string; includes: string[] }[] | null) ?? []).find((p) => p.name === pkgName) ?? DEFAULT_WEDDING_PACKAGES.find((p) => p.name === pkgName);
+    details = found?.includes ?? [];
+  } else if (table === "bookings" && pkgName) {
+    const { data: bp } = await supabase.from("booking_prices").select("name, description").eq("name", pkgName).limit(1);
+    details = String((bp as { description: string }[] | null)?.[0]?.description ?? "").split(/\s*·\s*/);
+  }
+  if (b.selected_extras) details.push(`Add-ons: ${String(b.selected_extras).replace(/\s*\|\s*/g, ", ")}`);
+  return {
+    kind,
+    name: b.full_name ?? "", email: String(b.email ?? "").toLowerCase(),
+    title: kind === "wedding" ? "Wedding Photography Contract" : kind === "kiddies" ? "Tplum Kiddies Session Agreement" : "Photography Agreement",
+    values: {
+      ...base.values,
+      client_name: b.full_name ?? "", client_email: b.email ?? "", client_phone: b.phone ?? "", event_date: longDay(date),
+      event_time: String(b.shoot_time ?? b.rental_time ?? b.event_time ?? "").slice(0, 5), venue: b.location || b.venue || b.shoot_setting || "",
+      package: pkgName, package_details: bullets(details.length ? details : [pkgName]), extras: b.selected_extras || "None",
+      coverage: formatMoney(coverage), tax_label: `${taxRate}% ${taxName}`, tax: formatMoney(tax), total: formatMoney(total),
+      retainer: formatMoney(retainer), second_payment: formatMoney(second), final_payment: formatMoney(final),
+      second_payment_due: longDay(secondDue), final_payment_due: longDay(finalDue),
+      deposit: formatMoney(deposit), balance: formatMoney(Math.max(0, total - deposit)), balance_due_date: longDay(finalDue),
+      kiddies_balance: formatMoney(Math.max(0, total - 150)),
+    },
+  };
+}
+
+/** Write / Preview tabs over a contract text box: the preview is the client's exact sheet. */
+function TextWithPreview({ title, value, onChange, rows = 24, label }: { title: string; value: string; onChange: (v: string) => void; rows?: number; label: string }) {
+  const [view, setView] = useState<"write" | "preview">("write");
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm">{label}</span>
+        <div className="inline-flex border border-border" role="tablist">
+          {(["write", "preview"] as const).map((v) => (
+            <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => setView(v)} className={`px-4 py-1.5 text-xs ${view === v ? "bg-foreground text-background" : ""}`}>{v === "write" ? "Write" : "Preview"}</button>
+          ))}
+        </div>
+      </div>
+      {view === "write"
+        ? <textarea className={`${input} font-mono`} rows={rows} value={value} onChange={(e) => onChange(e.target.value)} aria-label={label} />
+        : <div className="p-3 md:p-6" style={{ background: "#f1ede6" }}><ContractPaper title={title} body={value} /></div>}
+      <p className="text-xs text-muted-foreground">Format: <code>Label:: value</code> lines make the details panel · <code>## </code> section · <code>### </code> sub-heading · <code>- </code> bullet · <code>**bold**</code> · blank line = new paragraph.</p>
+    </div>
+  );
 }
 
 export default function ContractsSection() {
@@ -127,8 +206,8 @@ function Templates() {
   if (edit) return (
     <div className="space-y-3 max-w-4xl">
       <input className={input} value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} placeholder="Template name" aria-label="Template name" />
-      <p className="text-xs text-muted-foreground">Placeholders filled from the booking: {PLACEHOLDERS.map((p) => `{{${p}}}`).join(" ")}. A blank line starts a new paragraph; a short line starting with “1.” becomes a heading.</p>
-      <textarea className={`${input} font-mono`} rows={26} value={edit.body} onChange={(e) => setEdit({ ...edit, body: e.target.value })} aria-label="Template text" />
+      <p className="text-xs text-muted-foreground">Placeholders filled from the booking: {PLACEHOLDERS.map((p) => `{{${p}}}`).join(" ")}</p>
+      <TextWithPreview title={edit.name || "Contract"} label="Template text" rows={26} value={edit.body} onChange={(v) => setEdit({ ...edit, body: v })} />
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.active} onChange={(e) => setEdit({ ...edit, active: e.target.checked })} /> Available when creating contracts</label>
       <div className="flex gap-2"><button className={primary} onClick={() => void save()}>Save template</button><button className={btn} onClick={() => setEdit(null)}>Cancel</button></div>
       {msg && <p className="text-sm">{msg}</p>}
@@ -162,13 +241,16 @@ function NewContract({ table, bookingId }: { table?: string; bookingId?: string 
       const { data } = await supabase.from("contract_templates").select("*").eq("active", true).order("created_at");
       const list = (data as Template[]) ?? [];
       setTemplates(list);
-      let v: Record<string, string> = {};
+      let v: Record<string, string> = (await baseValues()).values;
       let f = { ...form };
+      let kind: Kind = "other";
       if (table && bookingId) {
         const b = await bookingValues(table, bookingId);
-        v = b.values; f = { ...f, title: b.title, client_name: b.name, client_email: b.email };
+        v = b.values; kind = b.kind; f = { ...f, title: b.title, client_name: b.name, client_email: b.email };
       }
-      const first = list.find((t) => /wedding/i.test(t.name) === /wedding/i.test(f.title)) ?? list[0];
+      const kindOf = (n: string): Kind => (/wedding/i.test(n) ? "wedding" : /kiddies/i.test(n) ? "kiddies" : "other");
+      const first = list.find((t) => kindOf(t.name) === kind) ?? list.find((t) => kindOf(t.name) === "wedding") ?? list[0];
+      if (first && !(table && bookingId)) f.title = first.name;
       if (first) { setTpl(first.id); f.body = fillPlaceholders(first.body, v); }
       setValues(v); setForm(f);
     })();
@@ -194,7 +276,7 @@ function NewContract({ table, bookingId }: { table?: string; bookingId?: string 
         <label className="text-sm">Client name<input className={input} value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} /></label>
         <label className="text-sm">Client email<input type="email" className={input} value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })} /></label>
       </div>
-      <label className="text-sm block">Contract text (what the client will sign)<textarea className={`${input} font-mono`} rows={24} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} /></label>
+      <TextWithPreview title={form.title} label="Contract text (what the client will sign)" value={form.body} onChange={(v) => setForm({ ...form, body: v })} />
       <button className={primary} disabled={busy} onClick={() => void create()}>{busy ? <Loader2 size={15} className="animate-spin" /> : <FileSignature size={15} />} Create contract</button>
       {msg && <p className="text-sm text-destructive">{msg}</p>}
     </div>
@@ -238,7 +320,7 @@ function ContractView({ id }: { id: string }) {
       <div className="flex flex-wrap gap-2">
         {c.status !== "void" && c.status !== "signed" && c.status !== "countersigned" && <button className={primary} disabled={busy} onClick={() => void send()}>{busy ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />} {c.sent_at ? "Resend to client" : "Send to client"}</button>}
         {c.status !== "draft" && c.status !== "void" && <button className={btn} onClick={() => { void navigator.clipboard.writeText(link); setMsg({ ok: true, t: "Client link copied." }); }}><Copy size={15} /> Copy client link</button>}
-        <button className={btn} onClick={() => window.open(link + (c.status === "draft" ? "?preview=1" : ""), "_blank")}><Printer size={15} /> View / print</button>
+        {c.status !== "draft" && <button className={btn} onClick={() => window.open(link, "_blank")}><Printer size={15} /> View / print</button>}
         {c.booking_id && <a className={btn} href={`#invoices/booking/${c.booking_table}/${c.booking_id}`}>Create invoice</a>}
         {c.status !== "void" && <button className={btn} onClick={() => void voidIt()}>Void</button>}
       </div>
@@ -251,11 +333,18 @@ function ContractView({ id }: { id: string }) {
       </dl>
       {editable ? (
         <div className="space-y-2">
-          <textarea className={`${input} font-mono`} rows={24} value={body} onChange={(e) => setBody(e.target.value)} aria-label="Contract text" />
+          <TextWithPreview title={c.title} label="Contract text" value={body} onChange={setBody} />
           <button className={btn} onClick={() => void saveBody()}>Save changes</button>
         </div>
       ) : (
-        <div className="border border-border p-6 bg-background"><ContractText body={c.body} /></div>
+        <div className="p-3 md:p-6" style={{ background: "#f1ede6" }}>
+          <ContractPaper title={c.title} number={c.number} body={c.body}>
+            <SignatureBlocks
+              client={{ name: c.signer_name, date: c.signed_at ? fmt(c.signed_at) : null, image: c.signature_data }}
+              studio={{ name: c.studio_signer_name, date: c.studio_signed_at ? fmt(c.studio_signed_at) : null, image: c.studio_signature_data }}
+            />
+          </ContractPaper>
+        </div>
       )}
       {c.signature_data && (
         <div className="border border-border p-4 text-sm space-y-2">

@@ -27,6 +27,8 @@ export type ExtraRow = {
   follows_package: boolean;
   /** Minutes this extra adds to the session per unit (e.g. "Extra 30 Minutes" = 30). */
   extra_minutes?: number;
+  /** Which bookings offer it: portrait sessions, Tplum Kiddies, or both ("all"). */
+  category?: "portrait" | "kiddies" | "all";
   sort_order: number;
   active: boolean;
   sample?: boolean;
@@ -41,6 +43,9 @@ export const DEFAULT_BOOKING_PRICES: PriceRow[] = [
   pkg(1, "package-1", "Package 1", 350, 60, "60 Mins Studio Session · Up to 2 Outfits · 7 Highly retouched images · Creative Posing Guidance · Online Gallery"),
   pkg(2, "package-2", "Package 2", 450, 90, "90 Mins Studio Session · Up to 3 Outfits · 7 Highly retouched images · Creative Posing Guidance · Online Gallery"),
   pkg(3, "package-3", "Package 3", 500, 120, "120 Mins Studio Session · Up to 3 Outfits · 9 Highly retouched images · Creative Posing Guidance · Online Gallery"),
+  // Tplum Kiddies (client price sheet, 2026-11-16; supabase/migrations/20261116000400_kiddies_and_contracts.sql)
+  { ...pkg(1, "kiddies-1", "tplumkiddies 1", 350, 60, "60 Minutes Session · 6 edited high resolution images · 1–2 outfits · All props provided except outfits"), id: "kiddies-kiddies-1", setting: "kiddies" },
+  { ...pkg(2, "kiddies-2", "tplumkiddies 2", 500, 90, "90 Minutes Session · 8 edited high resolution images · 1–3 outfits, including family photos if time permits · All props provided except outfits"), id: "kiddies-kiddies-2", setting: "kiddies" },
 ];
 
 const extra = (i: number, name: string, description: string, price: number, max_qty: number | null, extra_minutes: number, sample: boolean): ExtraRow => ({

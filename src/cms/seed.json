@@ -1329,12 +1329,12 @@
  "book": {
   "seo": {
    "title": "Book → Tplum Photography",
-   "description": "Book your wedding, portrait or family session with Tplum Photography, Calgary | Edmonton | Toronto wedding & portrait photographer. Available to travel.",
+   "description": "Book your wedding, portrait, family or Tplum Kiddies session with Tplum Photography, Calgary | Edmonton | Toronto wedding & portrait photographer. Available to travel.",
    "ogTitle": "Book → Tplum Photography",
-   "ogDescription": "Book your wedding, portrait or family session with Tplum Photography.",
+   "ogDescription": "Book your wedding, portrait, family or Tplum Kiddies session with Tplum Photography.",
    "ogType": "article",
    "twitterTitle": "Book → Tplum Photography",
-   "twitterDescription": "Book your wedding, portrait or family session with Tplum Photography.",
+   "twitterDescription": "Book your wedding, portrait, family or Tplum Kiddies session with Tplum Photography.",
    "shareImage": {
     "src": "/media/cropped-tplum-logo-dark-1000.webp",
     "srcset": "/media/cropped-tplum-logo-dark-480.webp 480w, /media/cropped-tplum-logo-dark-960.webp 960w, /media/cropped-tplum-logo-dark-1000.webp 1000w",
@@ -1386,6 +1386,21 @@
     "button": {
      "label": "Book Now",
      "href": "/booking/"
+    }
+   },
+   {
+    "title": "Tplum Kiddies",
+    "text": "Birthday, cake smash and milestone sessions for your little ones. All props provided; you bring the outfits.",
+    "image": {
+     "src": "/media/tplum-kiddies-540.webp",
+     "srcset": "/media/tplum-kiddies-480.webp 480w, /media/tplum-kiddies-540.webp 540w",
+     "width": 540,
+     "height": 700,
+     "alt": "tplumkiddies: capturing the innocence, preserving the moments"
+    },
+    "button": {
+     "label": "Book Now",
+     "href": "/booking/kiddies/"
     }
    },
    {

@@ -1,3 +1,4 @@
+import { DEFAULT_KIDDIES_TERMS } from "@/data/kiddiesTerms";
 import { useEffect, useState } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { DEFAULT_BOOKING_EXTRAS, DEFAULT_BOOKING_PRICES, type ExtraRow, type PriceRow } from "@/data/pricingDefaults";
@@ -106,11 +107,13 @@ export type BusinessSettings = {
   booking_tax_enabled: boolean; booking_tax_name: string; booking_tax_rate: number;
   /** Short note under the add-ons on the Booking page (e.g. "No unedited images."). */
   session_note: string;
+  /** Tplum Kiddies terms & conditions: shown on the Kiddies booking page, printed on kiddies invoices and contracts. */
+  kiddies_terms: string;
 };
 export const DEFAULT_BUSINESS: BusinessSettings = {
   business_name: "Tplum Photography", email: "info@tplumphotography.com", phone: "+14034935511", deposit_mode: "percent", deposit_percent: 30, deposit_fixed: 0,
   balance_due_days_before: 14, booking_terms: "", cancellation_policy: "", online_payments_enabled: false,
-  booking_tax_enabled: true, booking_tax_name: "GST", booking_tax_rate: 5, session_note: "No unedited images.",
+  booking_tax_enabled: true, booking_tax_name: "GST", booking_tax_rate: 5, session_note: "No unedited images.", kiddies_terms: DEFAULT_KIDDIES_TERMS,
 };
 export const useBusinessSettings = () => {
   const { loaded, data } = useManaged<BusinessSettings>(

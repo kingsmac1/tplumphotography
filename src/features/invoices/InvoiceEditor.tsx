@@ -4,7 +4,7 @@ import { callFn } from '@/features/gallery/api'
 import { useData } from '@/features/gallery/admin/kit/data'
 import { Badge, Field, fmtDate } from '@/features/gallery/admin/kit/ui'
 import { Modal, addDaysIso, todayIso } from './ui'
-import { BOOKING_KIND, BUSINESS_FIELDS, STAGE_LABEL, STAGE_TONE, blankInvoice, bookingPaid, defaultEmail, emptyItem, invoiceFromBooking, invoiceStatus, invoiceTotals, isBookingTable, lineAmount, money, nextNumber, normalizeDoc, paymentsFromBooking, pdfFilename, plain, type BookingTable, type BusinessDefaults, type InvoiceDoc, type InvoicePayment, type InvoiceStage } from './model'
+import { BOOKING_KIND, BUSINESS_FIELDS, STAGE_LABEL, STAGE_TONE, blankInvoice, bookingPaid, defaultEmail, emptyItem, KIDDIES_TERMS_TITLE, invoiceFromBooking, invoiceStatus, invoiceTotals, isBookingTable, lineAmount, money, nextNumber, normalizeDoc, paymentsFromBooking, pdfFilename, plain, type BookingTable, type BusinessDefaults, type InvoiceDoc, type InvoicePayment, type InvoiceStage } from './model'
 import { DEFAULT_LOGO } from './logo'
 import { InvoicePaper } from './InvoicePaper'
 import { SETUP_NOTE, missingTable, type InvoiceRow } from './InvoicesSection'
@@ -61,6 +61,8 @@ export function InvoiceEditor({ path }: { path: string[] }) {
   const [link, setLink] = useState<{ table: BookingTable; id: string } | null>(startTable && startBooking ? { table: startTable, id: startBooking } : null)
   const [booking, setBooking] = useState<Booking | null>(null)
   const [doc, setDoc] = useState<InvoiceDoc | null>(null)
+  // Settings → Tplum Kiddies terms, offered as a one-click replacement on the terms page
+  const [kiddiesTerms, setKiddiesTerms] = useState('')
   const [row, setRow] = useState<InvoiceRow | null>(null)
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState('')
@@ -81,15 +83,18 @@ export function InvoiceEditor({ path }: { path: string[] }) {
     opened.current = true
     ;(async () => {
       const today = todayIso()
-      const [{ data: all, error: err }, { data: defaultsRow }, startRow] = await Promise.all([
+      const [{ data: all, error: err }, { data: defaultsRow }, startRow, { data: bizRow }] = await Promise.all([
         supabase.from('invoices').select('id,number,booking_table,booking_id,created_at').order('created_at', { ascending: false }).limit(5000),
         supabase.from('invoice_settings').select('value').eq('key', 'defaults').maybeSingle(),
         startTable && startBooking ? loadBooking(startTable, startBooking) : Promise.resolve(null),
+        supabase.from('business_settings').select('kiddies_terms').eq('id', 1).maybeSingle(),
       ])
+      const kiddiesTerms = String((bizRow as { kiddies_terms?: string } | null)?.kiddies_terms ?? '')
+      setKiddiesTerms(kiddiesTerms)
       const defaults = ((defaultsRow as { value?: BusinessDefaults } | null)?.value ?? {}) as BusinessDefaults
       if (startBooking && !startRow) { setError('That booking could not be found. It may have been deleted.'); return }
       setBooking(startRow)
-      if (err) { setError(missingTable(err.message) ? SETUP_NOTE : err.message); setDoc(startRow ? invoiceFromBooking(blankInvoice(today, defaults), startTable!, startRow) : blankInvoice(today, defaults)); return }
+      if (err) { setError(missingTable(err.message) ? SETUP_NOTE : err.message); setDoc(startRow ? invoiceFromBooking(blankInvoice(today, defaults), startTable!, startRow, { kiddiesTerms }) : blankInvoice(today, defaults)); return }
       const used = (all ?? []) as { id: string; number: string; booking_table: string | null; booking_id: string | null }[]
       let openId = mode !== 'new' && mode !== 'booking' ? mode : null
       if (mode === 'booking') openId = used.find((u) => u.booking_id === startBooking && u.booking_table === startTable)?.id ?? null
@@ -117,7 +122,7 @@ export function InvoiceEditor({ path }: { path: string[] }) {
       // TPL-0001, TPL-0002 … from the database counter (never reused); falls back to the highest number in use
       const { data: dbNumber } = await supabase.rpc('next_invoice_number')
       const base = { ...blankInvoice(today, defaults), number: (typeof dbNumber === 'string' && dbNumber) || nextNumber(used.map((u) => u.number)) }
-      const start = startRow && startTable ? invoiceFromBooking(base, startTable, startRow) : base
+      const start = startRow && startTable ? invoiceFromBooking(base, startTable, startRow, { kiddiesTerms }) : base
       setDoc(start)
       setDirty(!!startRow)
       if (after === 'send') openSend(start)
@@ -410,6 +415,11 @@ export function InvoiceEditor({ path }: { path: string[] }) {
               <Field label="Heading" full><input type="text" {...text('termsTitle')} /></Field>
               <Field label="Terms" full hint="Printed on a second page. Leave the box empty to leave the terms page out. Start a heading line with a number (1. Booking) and a point with •."><textarea rows={12} {...text('termsText')} /></Field>
             </div>
+            {kiddiesTerms.trim() && doc.termsText.trim() !== kiddiesTerms.trim() && (
+              <button type="button" className="ad-btn" style={{ marginTop: 10 }} onClick={() => patch({ termsTitle: KIDDIES_TERMS_TITLE, termsText: kiddiesTerms.trim() })}>
+                Use the Tplum Kiddies terms
+              </button>
+            )}
           </Section>
 
           <div><button type="button" className="ad-btn sm" onClick={saveDefaults}>Save logo, business, payment, tax and terms as default</button></div>

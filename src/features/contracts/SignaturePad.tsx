@@ -44,18 +44,8 @@ export default function SignaturePad({ onChange, height = 160 }: { onChange: (pn
   );
 }
 
-/** The contract text as paragraphs (plain text; blank line = new paragraph, "1. Title" lines become headings). */
-export function ContractText({ body }: { body: string }) {
-  return (
-    <div className="contract-text" style={{ lineHeight: 1.65, fontSize: 15 }}>
-      {body.split(/\n{2,}/).map((para, i) =>
-        /^\d+\.\s/.test(para.trim()) && para.trim().length < 80 && !para.includes("\n")
-          ? <h3 key={i} style={{ fontWeight: 700, margin: "22px 0 6px", fontSize: 16 }}>{para.trim()}</h3>
-          : <p key={i} style={{ margin: "0 0 12px", whiteSpace: "pre-wrap" }}>{para}</p>,
-      )}
-    </div>
-  );
-}
+// The contract renderer now lives in ContractPaper.tsx (kept exported here for older imports).
+export { ContractText } from "./ContractPaper";
 
 /** Fills {{placeholders}} in a template. Unknown ones stay visible so nothing is silently dropped. */
 export function fillPlaceholders(template: string, values: Record<string, string>) {

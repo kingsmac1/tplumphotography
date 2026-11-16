@@ -101,6 +101,11 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
             <p className="text-xs text-muted-foreground mt-1">e.g. “No unedited images.” Leave empty to show nothing.</p>
           </div>
           <div>
+            <label className={labelCls}>TPLUM KIDDIES TERMS &amp; CONDITIONS</label>
+            <textarea rows={14} className={inputCls} value={String(s.kiddies_terms ?? "")} onChange={(e) => set("kiddies_terms", e.target.value)} />
+            <p className="text-xs text-muted-foreground mt-1">One point per line, starting with •. Lines without • are shown after the points. Parents must agree to these on the Kiddies booking page; they are also printed on invoices for kiddies bookings and filled into the Kiddies contract.</p>
+          </div>
+          <div>
             <label className={labelCls}>BOOKING TERMS (SHOWN BEFORE PAYMENT)</label>
             <textarea rows={5} className={inputCls} value={String(s.booking_terms ?? "")} onChange={(e) => set("booking_terms", e.target.value)} />
           </div>

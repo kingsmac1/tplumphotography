@@ -25,6 +25,7 @@ import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as TheTplumSignatureRouteImport } from './routes/the-tplum-signature'
 import { Route as BookingIndexRouteImport } from './routes/booking/index'
 import { Route as BookingConfirmedRouteImport } from './routes/booking/confirmed'
+import { Route as BookingKiddiesRouteImport } from './routes/booking/kiddies'
 import { Route as BookingWeddingRouteImport } from './routes/booking/wedding'
 import { Route as ClientGalleryIndexRouteImport } from './routes/client-gallery/index'
 import { Route as ContractIndexRouteImport } from './routes/contract/index'
@@ -112,6 +113,11 @@ const BookingConfirmedRoute = BookingConfirmedRouteImport.update({
   path: '/booking/confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingKiddiesRoute = BookingKiddiesRouteImport.update({
+  id: '/booking/kiddies',
+  path: '/booking/kiddies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingWeddingRoute = BookingWeddingRouteImport.update({
   id: '/booking/wedding',
   path: '/booking/wedding',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
+  '/booking/kiddies': typeof BookingKiddiesRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/dashboard/login': typeof DashboardLoginRoute
   '/booking/': typeof BookingIndexRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
+  '/booking/kiddies': typeof BookingKiddiesRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/dashboard/login': typeof DashboardLoginRoute
   '/booking': typeof BookingIndexRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
+  '/booking/kiddies': typeof BookingKiddiesRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/dashboard/login': typeof DashboardLoginRoute
   '/booking/': typeof BookingIndexRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/the-tplum-signature'
     | '/booking/confirmed'
+    | '/booking/kiddies'
     | '/booking/wedding'
     | '/dashboard/login'
     | '/booking/'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/the-tplum-signature'
     | '/booking/confirmed'
+    | '/booking/kiddies'
     | '/booking/wedding'
     | '/dashboard/login'
     | '/booking'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/the-tplum-signature'
     | '/booking/confirmed'
+    | '/booking/kiddies'
     | '/booking/wedding'
     | '/dashboard/login'
     | '/booking/'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   TheTplumSignatureRoute: typeof TheTplumSignatureRoute
   BookingConfirmedRoute: typeof BookingConfirmedRoute
+  BookingKiddiesRoute: typeof BookingKiddiesRoute
   BookingWeddingRoute: typeof BookingWeddingRoute
   BookingIndexRoute: typeof BookingIndexRoute
   ClientGalleryIndexRoute: typeof ClientGalleryIndexRoute
@@ -426,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/kiddies': {
+      id: '/booking/kiddies'
+      path: '/booking/kiddies'
+      fullPath: '/booking/kiddies'
+      preLoaderRoute: typeof BookingKiddiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/wedding': {
       id: '/booking/wedding'
       path: '/booking/wedding'
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   TheTplumSignatureRoute: TheTplumSignatureRoute,
   BookingConfirmedRoute: BookingConfirmedRoute,
+  BookingKiddiesRoute: BookingKiddiesRoute,
   BookingWeddingRoute: BookingWeddingRoute,
   BookingIndexRoute: BookingIndexRoute,
   ClientGalleryIndexRoute: ClientGalleryIndexRoute,

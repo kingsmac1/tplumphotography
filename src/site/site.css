@@ -539,7 +539,9 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .book-main .sec-head { padding: 10px; display: flex; flex-direction: column; gap: 20px; }
 .tp .book-main .lead { font-family: var(--lato); font-size: 16px; line-height: 1.65; color: #000; max-width: 640px; }
 .tp .book-main .lead p:last-child { margin-bottom: 0; }
-.tp .book-options { list-style: none; margin: 30px 0 0; padding: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
+.tp .book-options { list-style: none; margin: 30px 0 0; padding: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+/* four kinds of shoot: one row on wide screens, two by two on tablets (never three plus an orphan) */
+@media (min-width: 1100px) { .tp .book-options { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; } .tp .book-card h3 { font-size: 23px; } }
 .tp .book-card { height: 100%; display: flex; flex-direction: column; }
 .tp .book-card .photo { display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #111; }
 .tp .book-card .photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }

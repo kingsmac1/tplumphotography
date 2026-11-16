@@ -9,9 +9,12 @@ import { supabase } from "@/lib/supabaseClient";
 import { useBookingPricing, useBusinessSettings } from "@/lib/content";
 import { depositFor, taxOn } from "@/lib/pricing";
 import { createBooking } from "@/lib/bookingLog";
+import { splitKiddiesTerms } from "@/data/kiddiesTerms";
 import { closeTab, messageLines, prepareWhatsAppTab, sendToWhatsApp, whatsappUrl } from "@/lib/whatsapp";
 
-type SettingId = "indoor" | "outdoor";
+type SettingId = "indoor" | "outdoor" | "kiddies";
+/** Which booking page this is: portrait & family sessions, or Tplum Kiddies (same calendar, its own packages and terms). */
+export type SessionCategory = "portrait" | "kiddies";
 type GroupId = string;
 
 type ServiceOption = {
@@ -45,6 +48,8 @@ const shootTypes = [
   "Family", "Birthday", "Graduation", "Corporate", "Other",
 ];
 
+const kiddiesShootTypes = ["Birthday", "Cake Smash", "Milestone", "Newborn", "Family", "Other"];
+
 const genderOptions = ["Male", "Female", "Prefer not to say"];
 
 const monthNames = [
@@ -65,9 +70,11 @@ const labelCls = "block text-xs font-body font-bold tracking-widest mb-2";
 const inputCls =
   "w-full border border-border bg-background px-5 py-4 text-sm font-body outline-none focus:border-foreground transition-colors";
 
-const Booking = () => {
+const Booking = ({ category = "portrait" }: { category?: SessionCategory }) => {
+  const kiddies = category === "kiddies";
   const formRef = useRef<HTMLDivElement>(null);
-  const [setting, setSetting] = useState<SettingId>("indoor");
+  const [setting, setSetting] = useState<SettingId>(kiddies ? "kiddies" : "indoor");
+  const [childName, setChildName] = useState("");
   const [selectedService, setSelectedService] = useState<GroupId | "">("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -126,17 +133,18 @@ const Booking = () => {
     [pricing.loaded, pricing.services, setting],
   );
   // Studio / On location tabs only when both kinds of package exist (Tplum's portrait packages are all studio).
-  const settingsWithRows = useMemo(() => new Set(pricing.services.filter((r) => r.active !== false).map((r) => r.setting)), [pricing.services]);
-  const hasBothSettings = settingsWithRows.has("indoor") && settingsWithRows.has("outdoor");
+  const settingsWithRows = useMemo(() => new Set(pricing.services.filter((r) => r.active !== false && r.setting !== "kiddies").map((r) => r.setting)), [pricing.services]);
+  const hasBothSettings = !kiddies && settingsWithRows.has("indoor") && settingsWithRows.has("outdoor");
   useEffect(() => {
-    if (settingsWithRows.size && !settingsWithRows.has(setting)) setSetting([...settingsWithRows][0] as SettingId);
-  }, [settingsWithRows, setting]);
+    if (!kiddies && settingsWithRows.size && !settingsWithRows.has(setting)) setSetting([...settingsWithRows][0] as SettingId);
+  }, [settingsWithRows, setting, kiddies]);
   const chosenService = services.find((s) => s.id === selectedService);
   const packagePrice = chosenService?.price ?? 0;
   const availableExtras: Extra[] = useMemo(
     () =>
       pricing.loaded
         ? pricing.extras
+            .filter((r) => (r.category ?? "portrait") === category || r.category === "all")
             .sort((a, b) => a.sort_order - b.sort_order)
             .map((r) => ({
               name: r.name,
@@ -147,7 +155,7 @@ const Booking = () => {
               extraMinutes: Number(r.extra_minutes) || 0,
             }))
         : [],
-    [pricing.loaded, pricing.extras, packagePrice],
+    [pricing.loaded, pricing.extras, packagePrice, category],
   );
   const serviceTotal = chosenService
     ? chosenService.pricingMode === "per_outfit"
@@ -175,7 +183,8 @@ const Booking = () => {
   }, 0);
   const couponNote = promo ? `Coupon ${promo.code} (${promo.percent}% off): -${formatMoney(discount)}` : "";
 
-  const settingLabel = setting === "indoor" ? "Studio" : "On location";
+  const settingLabel = kiddies ? "Tplum Kiddies" : setting === "indoor" ? "Studio" : "On location";
+  const kiddiesTerms = splitKiddiesTerms(business.kiddies_terms);
   const depositNow = business.online_payments_enabled ? depositFor(grandTotal, business) : 0;
   const birthdayLabel = birthMonth && birthDay ? `${Number(birthDay)} ${monthNames[Number(birthMonth) - 1]}` : "";
 
@@ -268,7 +277,8 @@ const Booking = () => {
 
   const canSubmit =
     !!chosenService &&
-    !!(name.trim() && gender && shootType && shootDate && shootTime && phone.trim() && email.trim() && birthMonth && birthDay) && agree;
+    !!(name.trim() && gender && shootType && shootDate && shootTime && phone.trim() && email.trim() && birthMonth && birthDay) && agree &&
+    (!kiddies || !!childName.trim());
 
   const buildSheetPayload = () => {
     const socials = socialHandles
@@ -299,6 +309,7 @@ const Booking = () => {
       social_handles: socials.join(" | "),
       inspiration_links: links.join(" | "),
       location: "",
+      notes: kiddies ? `Child: ${childName.trim()}` : "",
       shoot_setting: settingLabel,
       selected_service: chosenService?.name ?? "",
       service_price: chosenService ? String(chosenService.price) : "",
@@ -311,7 +322,7 @@ const Booking = () => {
       extras_total: String(extrasTotal),
       grand_total: String(grandTotal),
       service_summary: couponNote ? `${serviceLine} | ${couponNote}` : serviceLine,
-      source: "booking_form",
+      source: kiddies ? "kiddies_form" : "booking_form",
     };
   };
 
@@ -351,10 +362,12 @@ const Booking = () => {
     setSubmitting(false);
     setSubmitted(true);
     if (!business.online_payments_enabled) {
-      const text = messageLines(`Hi Tplum, I just booked a portrait session on your website (ref ${res.reference}).`, [
-        ["Name", name],
+      const text = messageLines(`Hi Tplum, I just booked ${kiddies ? "a Tplum Kiddies session" : "a portrait session"} on your website (ref ${res.reference}).`, [
+        [kiddies ? "Parent" : "Name", name],
+        ["Child", kiddies ? childName.trim() : ""],
         ["Package", `${chosenService.name} (${formatMoney(serviceTotal)})`],
         ["Setting", hasBothSettings ? settingLabel : ""],
+        ["Terms", kiddies ? "I have read and agree to the Tplum Kiddies terms & conditions" : ""],
         ["Date", longDate(shootDate)],
         ["Time", `${slotLabel(shootTime, sessionMinutes)} (${sessionMinutes} mins)`],
         ["Shoot type", shootType],
@@ -426,8 +439,13 @@ const Booking = () => {
 
       <section className="pt-28 pb-24 px-6 md:px-16 lg:px-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="font-display text-5xl md:text-7xl mb-2">Pricing &amp; Booking</h1>
-          <Link
+          {kiddies ? (
+            <>
+              <h1 className="font-display text-5xl md:text-7xl mb-2">Tplum Kiddies</h1>
+              <p className="font-display text-xl md:text-2xl text-muted-foreground mb-6">Capturing the innocence, preserving the moments.</p>
+            </>
+          ) : <h1 className="font-display text-5xl md:text-7xl mb-2">Pricing &amp; Booking</h1>}
+          {!kiddies && <Link
             to="/booking/wedding/"
             className="group flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-accent text-accent-foreground px-6 py-6 md:px-10 md:py-8 my-6 transition-opacity hover:opacity-90"
           >
@@ -442,9 +460,11 @@ const Booking = () => {
             <span className="inline-flex items-center justify-center gap-2 bg-background text-foreground px-8 py-4 font-body text-sm md:text-base font-bold tracking-widest shrink-0 group-hover:gap-4 transition-all">
               BOOK HERE <ChevronRight size={20} />
             </span>
-          </Link>
+          </Link>}
           <p className="text-muted-foreground font-body mb-10">
-            {hasBothSettings ? "Choose studio or on location, pick a package, then fill in your details to reserve your session." : "Pick a package, then fill in your details to reserve your session."}
+            {kiddies
+              ? "Birthday, cake smash and milestone sessions for your little ones. All props are provided; you bring the outfits. Pick a package, then fill in your details."
+              : hasBothSettings ? "Choose studio or on location, pick a package, then fill in your details to reserve your session." : "Pick a package, then fill in your details to reserve your session."}
           </p>
 
           {publicPromos.length > 0 && (
@@ -481,7 +501,7 @@ const Booking = () => {
           {!pricing.loaded && <p className="text-sm font-body text-muted-foreground mb-4">Loading prices…</p>}
 
           {/* Price cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={`grid grid-cols-1 gap-4 ${services.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
             {services.map((s) => {
               const active = selectedService === s.id;
               return (
@@ -509,7 +529,7 @@ const Booking = () => {
           </div>
 
           {/* Extras price list */}
-          <div className="mt-8 border border-border p-6">
+          {availableExtras.length > 0 && <div className="mt-8 border border-border p-6">
             <p className="text-xs font-body font-bold tracking-widest mb-4">ADD-ONS</p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
               {availableExtras.map((extra) => (
@@ -524,8 +544,8 @@ const Booking = () => {
                 </li>
               ))}
             </ul>
-            {business.session_note && <p className="mt-4 pt-4 border-t border-border text-sm font-body font-bold">{business.session_note}</p>}
-          </div>
+            {!kiddies && business.session_note && <p className="mt-4 pt-4 border-t border-border text-sm font-body font-bold">{business.session_note}</p>}
+          </div>}
 
           {/* Booking form */}
           <div ref={formRef} className="scroll-mt-24 mt-12">
@@ -550,16 +570,23 @@ const Booking = () => {
                   <p className="font-display text-2xl md:text-3xl font-bold">{formatMoney(chosenService.price)}</p>
                 </div>
 
-                <h2 className="font-display text-2xl md:text-3xl font-bold">TELL US ABOUT YOU</h2>
+                <h2 className="font-display text-2xl md:text-3xl font-bold">{kiddies ? "TELL US ABOUT YOUR LITTLE ONE" : "TELL US ABOUT YOU"}</h2>
 
                 <div className="space-y-5">
                   <div>
-                    <label className={labelCls}>FULL NAME *</label>
+                    <label className={labelCls}>{kiddies ? "PARENT'S FULL NAME *" : "FULL NAME *"}</label>
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your full name" className={inputCls} />
                   </div>
 
+                  {kiddies && (
+                    <div>
+                      <label className={labelCls}>CHILD'S NAME *</label>
+                      <input type="text" value={childName} onChange={(e) => setChildName(e.target.value)} placeholder="Your child's name" className={inputCls} />
+                    </div>
+                  )}
+
                   <div>
-                    <label className={labelCls}>GENDER *</label>
+                    <label className={labelCls}>{kiddies ? "CHILD'S GENDER *" : "GENDER *"}</label>
                     <div className="grid grid-cols-2 gap-2">
                       {genderOptions.map((g) => (
                         <button
@@ -578,7 +605,7 @@ const Booking = () => {
                   <div>
                     <label className={labelCls}>TYPE OF SHOOT *</label>
                     <div className="flex flex-wrap gap-2">
-                      {shootTypes.map((type) => (
+                      {(kiddies ? kiddiesShootTypes : shootTypes).map((type) => (
                         <button
                           key={type}
                           onClick={() => setShootType(type)}
@@ -610,7 +637,7 @@ const Booking = () => {
 
                   {/* Birthday (day & month only) */}
                   <div>
-                    <label className={labelCls}>BIRTHDAY *</label>
+                    <label className={labelCls}>{kiddies ? "CHILD'S BIRTHDAY *" : "BIRTHDAY *"}</label>
                     <div className="grid grid-cols-2 gap-4">
                       <select
                         value={birthMonth}
@@ -705,11 +732,11 @@ const Booking = () => {
                 )}
 
                 {/* Extras */}
-                <div className="space-y-4">
+                {availableExtras.length > 0 && <div className="space-y-4">
                   <div>
                     <h2 className="font-display text-2xl md:text-3xl font-bold mb-1">ADD EXTRAS</h2>
                     <p className="text-sm text-muted-foreground font-body">Optional add-ons to enhance your session</p>
-                    {business.session_note && <p className="text-sm font-body font-bold mt-2">{business.session_note}</p>}
+                    {!kiddies && business.session_note && <p className="text-sm font-body font-bold mt-2">{business.session_note}</p>}
                   </div>
                   {availableExtras.map((extra) => {
                     const selected = selectedExtras.includes(extra.name);
@@ -764,7 +791,7 @@ const Booking = () => {
                       </div>
                     );
                   })}
-                </div>
+                </div>}
 
                 {/* Coupon */}
                 <div>
@@ -819,13 +846,28 @@ const Booking = () => {
                   )}
                 </div>
 
+                {kiddies && kiddiesTerms.points.length > 0 && (
+                  <section className="border border-foreground p-5 md:p-7 font-body" aria-labelledby="kiddies-terms">
+                    <h2 id="kiddies-terms" className="font-display text-2xl md:text-3xl font-bold mb-1">Terms &amp; Conditions</h2>
+                    <p className="text-sm text-muted-foreground mb-4">Please read well before booking.</p>
+                    <ul className="space-y-2.5 text-sm leading-relaxed">
+                      {kiddiesTerms.points.map((t) => (
+                        <li key={t} className="flex gap-3"><span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />{t}</li>
+                      ))}
+                    </ul>
+                    {kiddiesTerms.closing.map((t) => <p key={t} className="text-sm font-bold mt-4">{t}</p>)}
+                  </section>
+                )}
+
                 <label className="flex items-start gap-3 text-sm font-body cursor-pointer">
                   <input type="checkbox" className="mt-1" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
-                  <span>
+                  {kiddies ? (
+                    <span>I have read and agree to the Tplum Kiddies terms &amp; conditions above.</span>
+                  ) : <span>
                     I agree to the booking terms{business.booking_terms ? ":" : "."}
                     {business.booking_terms && <span className="block text-xs text-muted-foreground mt-1 whitespace-pre-line">{business.booking_terms}</span>}
                     {business.cancellation_policy && <span className="block text-xs text-muted-foreground mt-1 whitespace-pre-line">{business.cancellation_policy}</span>}
-                  </span>
+                  </span>}
                 </label>
                 {submitError && <p role="alert" className="text-sm font-body text-destructive">{submitError}</p>}
 

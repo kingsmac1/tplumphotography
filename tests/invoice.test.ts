@@ -71,3 +71,20 @@ describe('invoice from a booking that was charged GST', () => {
     expect(invoiceTotals(doc).total).toBe(530.25)
   })
 })
+
+describe('invoice from a Tplum Kiddies booking', () => {
+  const kid = { full_name: 'Parent', email: 'p@example.com', phone: '', selected_service: 'tplumkiddies 1', service_total: 350, extras_total: 0, tax_total: 17.5, tax_name: 'GST', grand_total: 367.5, amount_paid: 0, payment_status: 'Not Paid', shoot_setting: 'Tplum Kiddies', source: 'kiddies_form' }
+  it('prints the kiddies terms and keeps the total', async () => {
+    const { invoiceFromBooking, blankInvoice, invoiceTotals, KIDDIES_TERMS_TITLE } = await import('../src/features/invoices/model')
+    const doc = invoiceFromBooking(blankInvoice('2026-11-16'), 'bookings', kid, { kiddiesTerms: '• A non-refundable retainer of $150 is required.' })
+    expect(doc.termsTitle).toBe(KIDDIES_TERMS_TITLE)
+    expect(doc.termsText).toContain('$150')
+    expect(invoiceTotals(doc).total).toBe(367.5)
+  })
+  it('a portrait booking keeps the usual terms', async () => {
+    const { invoiceFromBooking, blankInvoice } = await import('../src/features/invoices/model')
+    const base = blankInvoice('2026-11-16')
+    const doc = invoiceFromBooking(base, 'bookings', { ...kid, shoot_setting: 'Studio', source: 'booking_form' }, { kiddiesTerms: '• x' })
+    expect(doc.termsText).toBe(base.termsText)
+  })
+})
