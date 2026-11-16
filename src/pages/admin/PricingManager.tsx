@@ -163,8 +163,6 @@ const tabs = [
   { id: "extras", label: "Session extras" },
   { id: "wpackages", label: "Wedding packages" },
   { id: "wextras", label: "Wedding add-ons" },
-  { id: "sspace", label: "Studio rental prices" },
-  { id: "sextras", label: "Studio rental extras" },
   { id: "deposit", label: "Deposit & terms" },
 ] as const;
 
@@ -189,8 +187,6 @@ const PricingManager = () => {
       {tab === "extras" && <EntityManager key="be" cfg={bookingExtras} />}
       {tab === "wpackages" && <EntityManager key="wp" cfg={weddingPackages} />}
       {tab === "wextras" && <EntityManager key="we" cfg={weddingExtras} />}
-      {tab === "sspace" && <EntityManager key="sp" cfg={studioSpacePrices} />}
-      {tab === "sextras" && <EntityManager key="se" cfg={studioSpaceExtras} />}
       {tab === "deposit" && <BusinessSettingsPanel only="deposit" />}
     </div>
   );

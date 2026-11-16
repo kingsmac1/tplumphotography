@@ -1389,21 +1389,6 @@
     }
    },
    {
-    "title": "Studio Rental",
-    "text": "Rent the studio by the hour for your own photo or video shoot.",
-    "image": {
-     "src": "/media/dsc-9197-copy-1132.webp",
-     "srcset": "/media/dsc-9197-copy-480.webp 480w, /media/dsc-9197-copy-960.webp 960w, /media/dsc-9197-copy-1132.webp 1132w",
-     "width": 1132,
-     "height": 1326,
-     "alt": "Portrait in the studio"
-    },
-    "button": {
-     "label": "Book Now",
-     "href": "/studio-space/"
-    }
-   },
-   {
     "title": "Events",
     "text": "Birthdays, corporate events and celebrations, quoted for your day.",
     "image": {

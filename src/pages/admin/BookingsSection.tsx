@@ -1,18 +1,15 @@
 import { useState } from "react";
 import BookingTable from "./BookingTable";
-import StudioSpaceTable from "./StudioSpaceTable";
 import EventBookingTable from "./EventBookingTable";
 import ManualBookingForm from "./ManualBookingForm";
-import ManualStudioSpaceForm from "./ManualStudioSpaceForm";
 import ManualEventBookingForm from "./ManualEventBookingForm";
 
-type Tab = "all" | "photography" | "wedding" | "studio" | "events";
+type Tab = "all" | "photography" | "wedding" | "events";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "all", label: "All" },
   { id: "photography", label: "Photography" },
   { id: "wedding", label: "Wedding" },
-  { id: "studio", label: "Studio Space" },
   { id: "events", label: "Events" },
 ];
 
@@ -20,7 +17,6 @@ const BookingsSection = ({ onDataChanged }: { onDataChanged: () => void }) => {
   const [tab, setTab] = useState<Tab>("all");
   const [refreshKey, setRefreshKey] = useState(0);
   const [showBookingForm, setShowBookingForm] = useState(false);
-  const [showStudioForm, setShowStudioForm] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
 
   const handleSuccess = () => {
@@ -47,14 +43,10 @@ const BookingsSection = ({ onDataChanged }: { onDataChanged: () => void }) => {
       {tab === "all" && <BookingTable key={"all-" + refreshKey} title="All Bookings" onAdd={() => setShowBookingForm(true)} />}
       {tab === "photography" && <BookingTable key={"photo-" + refreshKey} title="Photography Bookings" restrictSource="booking_form" onAdd={() => setShowBookingForm(true)} />}
       {tab === "wedding" && <BookingTable key={"wedding-" + refreshKey} title="Wedding Bookings" restrictSource="wedding_form" onAdd={() => setShowBookingForm(true)} />}
-      {tab === "studio" && <StudioSpaceTable key={"studio-" + refreshKey} onAdd={() => setShowStudioForm(true)} />}
       {tab === "events" && <EventBookingTable key={"events-" + refreshKey} onAdd={() => setShowEventForm(true)} />}
 
       {showBookingForm && (
         <ManualBookingForm onClose={() => setShowBookingForm(false)} onSuccess={handleSuccess} />
-      )}
-      {showStudioForm && (
-        <ManualStudioSpaceForm onClose={() => setShowStudioForm(false)} onSuccess={handleSuccess} />
       )}
       {showEventForm && (
         <ManualEventBookingForm onClose={() => setShowEventForm(false)} onSuccess={handleSuccess} />

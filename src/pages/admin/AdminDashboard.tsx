@@ -7,7 +7,6 @@ import AttendanceSection from "./AttendanceSection";
 import TeamSection from "./TeamSection";
 import Finance from "./Finance";
 import PromoManager from "./PromoManager";
-import StudioSpacePromoManager from "./StudioSpacePromoManager";
 import EmailsSection from "./EmailsSection";
 import PricingManager from "./PricingManager";
 import ClientsSection from "./ClientsSection";
@@ -292,12 +291,7 @@ const AdminDashboardInner = () => {
           {active === "attendance" && <AttendanceSection />}
           {active === "team" && <TeamSection />}
           {active === "emails" && <EmailsSection />}
-          {active === "promos" && (
-            <div className="space-y-10">
-              <PromoManager />
-              <StudioSpacePromoManager />
-            </div>
-          )}
+          {active === "promos" && <PromoManager />}
           {active === "pricing" && <PricingManager />}
         </main>
       </div>

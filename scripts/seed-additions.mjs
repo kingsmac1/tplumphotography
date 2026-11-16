@@ -70,12 +70,6 @@ if (!seed.book) {
         button: { label: "Book Now", href: "/booking/" },
       },
       {
-        title: "Studio Rental",
-        text: "Rent the studio by the hour for your own photo or video shoot.",
-        image: pick(pf[1], "Portrait in the studio"),
-        button: { label: "Book Now", href: "/studio-space/" },
-      },
-      {
         title: "Events",
         text: "Birthdays, corporate events and celebrations, quoted for your day.",
         image: pick(pf[27], "Guests celebrating at an event"),
@@ -89,6 +83,9 @@ if (!seed.book) {
     },
   };
 }
+
+// Tplum doesn't offer studio rental (client, 2026-11-16): make sure the booking page never lists it.
+seed.book.options = seed.book.options.filter((o) => o.button.href !== "/studio-space/");
 
 fs.writeFileSync(FILE, JSON.stringify(seed, null, 1));
 console.log("seed additions applied");

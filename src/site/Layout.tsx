@@ -3,19 +3,12 @@ import { useLocation } from "@tanstack/react-router";
 import type { CmsImage, SiteContent } from "@/cms/types";
 import { backendReady, callFunction } from "@/lib/functions";
 import { Img, Reveal } from "./ui";
-import { IconClose, IconFacebook, IconInstagram, IconStream, ScrollTopArrow, socialIcon } from "./icons";
+import { IconClose, IconFacebook, IconInstagram, IconStream, ScrollTopArrow } from "./icons";
 
 export type IgPost = { image: Partial<CmsImage> & { src: string }; caption?: string; url: string };
 
-function Socials({ site, variant = "default" }: { site: SiteContent; variant?: "default" | "about" }) {
-  if (variant === "about") {
-    // The About page's original footer shows Facebook, Twitter and YouTube icons with no links (kept as-is; see MIGRATION-NOTES.md).
-    return (
-      <div className="socials">
-        {["facebook", "twitter", "youtube"].map((n) => { const I = socialIcon(n); return <span key={n} aria-hidden="true"><I /></span>; })}
-      </div>
-    );
-  }
+/** Instagram and Facebook, linked, on every page (the old About page showed unlinked Facebook/Twitter/YouTube icons; replaced at the client's request). */
+function Socials({ site }: { site: SiteContent; variant?: "default" | "about" }) {
   return (
     <div className="socials">
       <a href={site.contact.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IconInstagram /></a>

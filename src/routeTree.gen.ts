@@ -21,7 +21,8 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as StudioSpaceRouteImport } from './routes/studio-space'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TheTplumSignatureRouteImport } from './routes/the-tplum-signature'
 import { Route as BookingIndexRouteImport } from './routes/booking/index'
 import { Route as BookingConfirmedRouteImport } from './routes/booking/confirmed'
@@ -93,9 +94,14 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudioSpaceRoute = StudioSpaceRouteImport.update({
-  id: '/studio-space',
-  path: '/studio-space',
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TheTplumSignatureRoute = TheTplumSignatureRouteImport.update({
@@ -163,7 +169,8 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
-  '/studio-space': typeof StudioSpaceRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
@@ -187,7 +194,8 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
-  '/studio-space': typeof StudioSpaceRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
@@ -213,7 +221,8 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
-  '/studio-space': typeof StudioSpaceRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
@@ -240,7 +249,8 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/portfolio'
-    | '/studio-space'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/the-tplum-signature'
     | '/booking/confirmed'
     | '/booking/wedding'
@@ -264,7 +274,8 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/portfolio'
-    | '/studio-space'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/the-tplum-signature'
     | '/booking/confirmed'
     | '/booking/wedding'
@@ -289,7 +300,8 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/portfolio'
-    | '/studio-space'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/the-tplum-signature'
     | '/booking/confirmed'
     | '/booking/wedding'
@@ -315,7 +327,8 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   FaqRoute: typeof FaqRoute
   PortfolioRoute: typeof PortfolioRoute
-  StudioSpaceRoute: typeof StudioSpaceRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TheTplumSignatureRoute: typeof TheTplumSignatureRoute
   BookingConfirmedRoute: typeof BookingConfirmedRoute
   BookingWeddingRoute: typeof BookingWeddingRoute
@@ -412,11 +425,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/studio-space': {
-      id: '/studio-space'
-      path: '/studio-space'
-      fullPath: '/studio-space'
-      preLoaderRoute: typeof StudioSpaceRouteImport
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/the-tplum-signature': {
@@ -519,7 +539,8 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   FaqRoute: FaqRoute,
   PortfolioRoute: PortfolioRoute,
-  StudioSpaceRoute: StudioSpaceRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TheTplumSignatureRoute: TheTplumSignatureRoute,
   BookingConfirmedRoute: BookingConfirmedRoute,
   BookingWeddingRoute: BookingWeddingRoute,

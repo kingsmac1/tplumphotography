@@ -127,10 +127,15 @@ If the build is interrupted, read this file first and continue from the next unc
 - [x] **Home call-to-action photo** now covers the whole section while it scrolls (the original left a grey strip at the top)
 - [x] **Dashboard address** is `/dashboard/` (login `/dashboard/login/`); all links, emails and the team invite updated. The team invite now lands on `/account/`, where new staff set their password
 
+## Changes 2026-11-16
+- [x] Social icons linked on every page (About used to show unlinked Facebook/Twitter/YouTube icons)
+- [x] **Studio rental removed**: the `/studio-space/` page, its `/book/` card, and the dashboard's studio tabs (Bookings → Studio Space, Prices → studio rental prices/extras, studio promo codes). The `booking-create` function rejects studio bookings. Database tables are kept (empty) so it can be switched back on. Event coverage stays (`/events/`)
+- [x] **`/sitemap.xml`** lists every public page with the real domain's addresses; **`/robots.txt`** announces it on tplumphotography.com and keeps private areas out of search, and blocks all crawling on preview addresses
+
 ## Needs your decision
 1. ~~Booking pages unlinked~~: resolved, they are linked from the new `/book/` page and the Book Now buttons
-2. **About page footer icons**: on the original, Facebook, Twitter and YouTube icons have no links. Kept as-is. Link them, or show Instagram/Facebook as on the other pages?
-3. **Studio rental and events** are shown as options on `/book/`. If Tplum doesn't offer one of them, remove that card in Dashboard → Website → Book
+2. ~~About page footer icons~~: resolved (2026-11-16). The About page now shows the same linked Instagram and Facebook icons as every other page
+3. ~~Studio rental and events~~: resolved (2026-11-16). Tplum offers event coverage but not studio rental
 4. **Instagram token** is optional. Without it, the site keeps the 8 captured posts.
 
 ## Environment notes

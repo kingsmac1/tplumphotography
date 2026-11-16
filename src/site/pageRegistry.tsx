@@ -15,7 +15,7 @@ type Entry = { body: (c: never, site: SiteContent) => ReactNode; igVariant?: "de
 export const PAGE_REGISTRY: Record<PageKey, Entry> = {
   home: { body: (c: PageContentMap["home"]) => <Home c={c} />, igClass: "" },
   portfolio: { body: (c: PageContentMap["portfolio"]) => <Portfolio c={c} /> },
-  about: { body: (c: PageContentMap["about"]) => <About c={c} />, igVariant: "about", igClass: "inner gap-top" },
+  about: { body: (c: PageContentMap["about"]) => <About c={c} />, igClass: "inner gap-top" },
   contact: { body: (c: PageContentMap["contact"], site) => <Contact c={c} site={site} /> },
   "the-tplum-signature": { body: (c: PageContentMap["the-tplum-signature"]) => <Signature c={c} /> },
   faq: { body: (c: PageContentMap["faq"], site) => <Faq c={c} site={site} /> },

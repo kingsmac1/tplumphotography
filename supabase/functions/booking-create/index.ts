@@ -44,7 +44,8 @@ function requireClient(c: Record<string, unknown>, dateKey: string) {
 Deno.serve(handle(async (req, body) => {
   const db = service()
   const kind = body.kind as 'session' | 'wedding' | 'studio'
-  if (!['session', 'wedding', 'studio'].includes(kind)) throw new HttpError('Unknown booking type.')
+  // Studio rental is switched off: Tplum doesn't rent out its studio (the code below is kept for DMI parity).
+  if (!['session', 'wedding'].includes(kind)) throw new HttpError('Unknown booking type.')
 
   const { data: settings, error: sErr } = await db.from('business_settings').select('*').eq('id', 1).single()
   if (sErr) throw sErr
