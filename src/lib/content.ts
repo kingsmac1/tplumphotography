@@ -109,7 +109,7 @@ export type BusinessSettings = {
 };
 export const DEFAULT_BUSINESS: BusinessSettings = {
   business_name: "Tplum Photography", email: "info@tplumphotography.com", phone: "+14034935511", deposit_mode: "percent", deposit_percent: 30, deposit_fixed: 0,
-  balance_due_days_before: 14, booking_terms: "", cancellation_policy: "", online_payments_enabled: true,
+  balance_due_days_before: 14, booking_terms: "", cancellation_policy: "", online_payments_enabled: false,
   booking_tax_enabled: true, booking_tax_name: "GST", booking_tax_rate: 5, session_note: "No unedited images.",
 };
 export const useBusinessSettings = () => {

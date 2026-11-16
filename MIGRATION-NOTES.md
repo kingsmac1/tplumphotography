@@ -67,7 +67,21 @@ If the build is interrupted, read this file first and continue from the next unc
 - [x] Local preview running; summary given
 
 ## Phase B checklist
-- [ ] Not started (waits for "keys added")
+Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later; Stripe is not used for now (no online payments).
+- [x] Supabase project checked (name "Tplum Website", ACTIVE_HEALTHY). **Region is eu-central-1 (Frankfurt), not Canada (Central)** as the brief asked: see "Needs your decision" 6
+- [x] Linked; all 10 migrations applied to the empty database (incl. portrait packages, WhatsApp bookings, function-grant hardening)
+- [x] All 26 Edge Functions deployed
+- [x] Function secrets set: `SITE_URL` (pages.dev), `CRON_SECRET` / `GALLERY_CRON_SECRET` (generated, also saved in `.secrets.local`), `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. Still missing: `R2_BUCKET`, `CF_DEPLOY_HOOK_URL`, `RESEND_API_KEY` / `FROM_EMAIL` / `OWNER_EMAIL`
+- [x] Auth: site URL `https://tplumphotography.pages.dev`; redirect URLs for pages.dev, its previews, localhost:3000 and :4173
+- [x] `.env` (git-ignored) has the public Supabase URL and anon key and `VITE_SITE_URL`
+- [x] Security advisor: trigger functions and `recalc_booking_payment` no longer callable through the API. The remaining warnings are the public RPCs the site needs (availability, promos, invoice/contract by token) and the `cms_published` view, which only exposes published content
+- [x] **Bookings go to WhatsApp** (no payment): portrait, wedding and event bookings are saved, then the client's WhatsApp opens with a message to the business phone (Settings → Business details, +1 403 493 5511) listing package, date, time, add-ons, GST, total and contact details. "Open WhatsApp again" on the confirmation screen. Online payment is off (`online_payments_enabled = false`) and can be switched back on in Settings once Stripe is connected
+- [x] Tested against the live database: a Package 1 + Extra 30 Minutes booking saved as $350 + $50 + $20 GST = $420 with a 90-minute slot, the WhatsApp message matched, no errors; test rows removed
+- [ ] **R2 bucket:** the S3 keys are valid but bucket-scoped and no bucket name was given (ListBuckets and every guessed name: Access Denied). The `R2_API_TOKEN` in the file equals the Access Key ID, so it is not a real API token. The R2 account ID also differs from the Cloudflare (Pages) account ID. Needs: the bucket name (`R2_BUCKET`), then CORS for the site origins
+- [ ] **Cloudflare Pages:** the API token can read the project but not edit it (403), so the build variables and deploy hook could not be set. Needs a token with *Account → Cloudflare Pages → Edit*, or add these by hand under Settings → Variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SITE_URL` (values in `.env`). Until then GitHub builds run in demo mode
+- [ ] Admin account: `OWNER_EMAIL` is empty, so no dashboard login exists yet
+- [ ] Scheduled jobs (email queue, gallery preview purge) wait for Resend
+- [ ] Resend domain, FROM_EMAIL, email tests
 
 ## DMI features and where they went
 
@@ -159,6 +173,7 @@ If the build is interrupted, read this file first and continue from the next unc
 3. ~~Studio rental and events~~: resolved (2026-11-16). Tplum offers event coverage but not studio rental
 5. **Suggested add-ons:** confirm or turn off Extra Outfit ($50) and Rush Delivery ($100) in Dashboard → Prices & Packages
 4. **Instagram token** is optional. Without it, the site keeps the 8 captured posts.
+6. **Supabase region:** the project is in Frankfurt (eu-central-1). The brief asked for Canada (Central). Moving region means a new project (the database is still empty, so now is the cheapest time). Keep it, or create a Canada project and swap the keys?
 
 ## Environment notes
 - An old dev server from the interrupted session was still running on port 3000. This session's dev server is on **3001** and the production preview on **4173**. Stopping the old one was blocked by a permission check, so close it yourself if you like (it's the `vite dev --port 3000` process started at 17:18).
@@ -166,4 +181,5 @@ If the build is interrupted, read this file first and continue from the next unc
 
 ## Session log
 - 2026-11-10 (earlier session): A1 capture, public site, booking flows, Edge Functions, invoices, dashboard shell. Interrupted mid-A3.
+- 2026-11-16: Phase B started: Supabase live (migrations, functions, secrets, auth URLs, hardening); WhatsApp booking flow; R2 and Pages blocked on bucket name and token permission.
 - 2026-11-10 (this session): resumed; fixed type errors; committed the unfinished dashboard sections; built the CMS editor and preview; added dashboard, client, invoice, contract and gallery routes; content inventory and content check; visual match pass; interaction tests; Lighthouse fixes; `.secrets.local`. **Phase A complete. Waiting for keys.**

@@ -4,10 +4,14 @@ import { getSiteContent } from "@/cms/content";
 import { AppShell, privateHead } from "@/site/AppShell";
 import { callFunction } from "@/lib/functions";
 import { formatMoney } from "@/pages/admin/formOptions";
+import { recallWhatsApp } from "@/lib/whatsapp";
 
 type Status = { reference: string; kind: string; name: string; when: string; total: number; paid: number; balance: number; paymentStatus: string; status: string };
 
-/** Where Stripe Checkout returns the client (success or cancel). The webhook confirms payment; this page reads the result. */
+/**
+ * After a booking: where Stripe Checkout returns the client (success or cancel), or, with online payment off,
+ * where a wedding booking lands once its WhatsApp message has opened ("Open WhatsApp again" if it didn't).
+ */
 export const Route = createFileRoute("/booking/confirmed")({
   loader: () => getSiteContent(),
   head: () => privateHead("Booking confirmed | Tplum Photography"),
@@ -20,6 +24,8 @@ function Confirmed() {
   const { b, session_id, cancelled } = Route.useSearch();
   const [st, setSt] = useState<Status | null>(null);
   const [err, setErr] = useState("");
+  const [waLink, setWaLink] = useState("");
+  useEffect(() => { if (b) setWaLink(recallWhatsApp(b)); }, [b]);
   useEffect(() => {
     let tries = 0;
     let stop = false;
@@ -56,8 +62,19 @@ function Confirmed() {
                 <p><span className="text-muted-foreground">Total:</span> {formatMoney(st.total)}</p>
                 <p><span className="text-muted-foreground">Paid:</span> {formatMoney(st.paid)}</p>
                 {st.balance > 0 && <p><span className="text-muted-foreground">Balance due:</span> {formatMoney(st.balance)}</p>}
-                <p className="pt-2">{st.paid > 0 ? "A confirmation and payment receipt have been emailed to you." : "We are confirming your payment. You'll receive an email shortly."}</p>
+                <p className="pt-2">
+                  {st.paid > 0
+                    ? "A confirmation and payment receipt have been emailed to you."
+                    : session_id
+                      ? "We are confirming your payment. You'll receive an email shortly."
+                      : "Nothing has been paid yet. Send us the WhatsApp message with your booking details and we'll confirm your date and arrange payment there."}
+                </p>
               </div>
+            )}
+            {waLink && !session_id && (
+              <a href={waLink} target="_blank" rel="noopener noreferrer" className="m-btn inline-block mt-8 bg-foreground text-background px-8 py-4 text-sm tracking-widest">
+                OPEN WHATSAPP AGAIN
+              </a>
             )}
           </>
         )}

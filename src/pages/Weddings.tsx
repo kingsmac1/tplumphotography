@@ -6,6 +6,8 @@ import { useBusinessSettings, useWeddingPricing } from "@/lib/content";
 import { depositFor } from "@/lib/pricing";
 import type { WeddingPackage } from "@/data/weddingDefaults";
 import { createBooking, type BookingPayload } from "@/lib/bookingLog";
+import { closeTab, messageLines, prepareWhatsAppTab, rememberWhatsApp, sendToWhatsApp, whatsappUrl } from "@/lib/whatsapp";
+import { longDate } from "@/lib/schedule";
 import type { SiteContent } from "@/cms/types";
 import { SEED } from "@/cms/types";
 
@@ -72,6 +74,8 @@ const Weddings = ({ site }: { site?: SiteContent }) => {
   const [submitError, setSubmitError] = useState("");
   const submitForm = async () => {
     if (!selectedPkg || submitting) return;
+    // Opened during the click so the browser allows it; pointed at WhatsApp once the booking is saved.
+    const waTab = business.online_payments_enabled ? null : prepareWhatsAppTab();
     setSubmitting(true);
     setSubmitError("");
     const base = form.events === "two" && selectedPkg.twoEvents ? selectedPkg.twoEvents : selectedPkg.oneEvent;
@@ -104,8 +108,25 @@ const Weddings = ({ site }: { site?: SiteContent }) => {
       source: "wedding_form",
     };
     const res = await createBooking({ kind: "wedding", packageId: selectedPkg.id, days: form.events, extras: form.extras, client: payload, returnUrl: window.location.origin });
-    if (!res.ok) { setSubmitting(false); setSubmitError(res.error); return; }
-    if (res.checkoutUrl) { window.location.href = res.checkoutUrl; return; }
+    if (!res.ok) { closeTab(waTab); setSubmitting(false); setSubmitError(res.error); return; }
+    if (res.checkoutUrl) { closeTab(waTab); window.location.href = res.checkoutUrl; return; }
+    if (!business.online_payments_enabled) {
+      const text = messageLines(`Hi Tplum, I just booked my wedding on your website (ref ${res.reference}).`, [
+        ["Names", payload.full_name],
+        ["Package", `${selectedPkg.name} (${eventsLabel.toLowerCase()}, ${formatMoney(base)})`],
+        ["Wedding date", longDate(form.weddingDate)],
+        ["Venue", form.venue],
+        ["City", form.city],
+        ["Add-ons", form.extras.map((n) => `${n} (${formatMoney(extrasList.find((e) => e.name === n)?.price ?? 0)})`).join(", ")],
+        ["Total", formatMoney(res.total || packageTotal())],
+        ["Notes", form.notes],
+        ["Phone", form.whatsapp],
+        ["Email", form.email],
+      ]);
+      const url = whatsappUrl(business.phone || "+14034935511", text);
+      rememberWhatsApp(res.bookingId, url);
+      sendToWhatsApp(waTab, url, true);
+    }
     window.location.href = `/booking/confirmed/?b=${res.bookingId}`;
   };
   const depositNow = selectedPkg && business.online_payments_enabled ? depositFor(packageTotal(), business) : 0;
@@ -429,7 +450,7 @@ ${business.cancellation_policy}` : ""}
                     onClick={() => void submitForm()}
                     className="bg-foreground text-background px-4 py-2.5 text-xs tracking-widest hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-2"
                   >
-                    {submitting ? "SENDING…" : depositNow > 0 ? "PAY RETAINER & BOOK" : "BOOK NOW"} <ArrowUpRight size={14} strokeWidth={1.5} />
+                    {submitting ? "SENDING…" : depositNow > 0 ? "PAY RETAINER & BOOK" : business.online_payments_enabled ? "BOOK NOW" : "BOOK & SEND ON WHATSAPP"} <ArrowUpRight size={14} strokeWidth={1.5} />
                   </button>
                 </div>
                 {depositNow > 0 && <p className="text-xs mt-3">Retainer due now: <strong>{formatMoney(depositNow)}</strong> · balance due before your wedding</p>}

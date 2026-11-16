@@ -4,6 +4,9 @@ import { Check } from "lucide-react";
 import { callFunction } from "@/lib/functions";
 import type { EventBookingPayload } from "@/lib/eventBookingLog";
 import { EVENT_TYPES, OTHER_EVENT_TYPE } from "@/data/eventTypes";
+import { useBusinessSettings } from "@/lib/content";
+import { longDate } from "@/lib/schedule";
+import { closeTab, messageLines, prepareWhatsAppTab, sendToWhatsApp, whatsappUrl } from "@/lib/whatsapp";
 
 const formatMoney = (amount: number) =>
   new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: Number.isInteger(amount) ? 0 : 2, maximumFractionDigits: 2 }).format(amount);
@@ -29,6 +32,8 @@ const EventBooking = () => {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [waLink, setWaLink] = useState("");
+  const { settings: business } = useBusinessSettings();
 
   const eventType = eventChoice === OTHER_EVENT_TYPE ? eventOther.trim() : eventChoice;
   const amount = Number(agreedAmount) || 0;
@@ -53,12 +58,29 @@ const EventBooking = () => {
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting) return;
+    // Opened during the click so the browser allows it; pointed at WhatsApp once the request is saved.
+    const waTab = prepareWhatsAppTab();
     setSubmitting(true);
     setSubmitError("");
     const res = await callFunction("form-submit", { form: "event", ...buildPayload(), website });
     setSubmitting(false);
-    if (!res.ok) { setSubmitError(res.error); return; }
+    if (!res.ok) { closeTab(waTab); setSubmitError(res.error); return; }
     setSubmitted(true);
+    const text = messageLines("Hi Tplum, I just sent an event booking request on your website.", [
+      ["Name", name],
+      ["Event", eventType],
+      ["Date", `${longDate(startDate)}${endDate && endDate !== startDate ? ` to ${longDate(endDate)}` : ""}`],
+      ["Start time", startTime],
+      ["Venue", venue],
+      ["Expected guests", guests],
+      ["Agreed amount", formatMoney(amount)],
+      ["Notes", notes],
+      ["Phone", whatsapp],
+      ["Email", email],
+    ]);
+    const url = whatsappUrl(business.phone || "+14034935511", text);
+    setWaLink(url);
+    sendToWhatsApp(waTab, url);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
   };
 
@@ -73,7 +95,12 @@ const EventBooking = () => {
             </div>
             <h1 className="font-display text-5xl md:text-7xl font-bold mb-4">REQUEST SENT</h1>
             <p className="text-muted-foreground font-body text-lg max-w-md mx-auto mb-4">
-              Thanks {name}! Your event request is in and a copy is on its way to {email}. We will be in touch shortly. </p>
+              Thanks {name}! Your event request is in. Send us the WhatsApp message that just opened and we'll confirm the arrangement there. </p>
+            {waLink && (
+              <a href={waLink} target="_blank" rel="noopener noreferrer" className="m-btn inline-block bg-foreground text-background px-8 py-4 text-sm tracking-widest font-body font-bold mb-4">
+                OPEN WHATSAPP AGAIN
+              </a>
+            )}
             <div className="mt-8 flex flex-col items-center gap-4">
               <div className="w-full max-w-[280px] border border-border px-8 py-6 mx-auto">
                 <p className="font-display text-2xl font-bold">{eventType}</p>
@@ -201,7 +228,7 @@ const EventBooking = () => {
                 canSubmit && !submitting ? "bg-foreground text-background hover:opacity-90" : "bg-muted text-muted-foreground cursor-not-allowed"
               }`}
             >
-              {submitting ? "SENDING…" : "SUBMIT EVENT REQUEST"}
+              {submitting ? "SENDING…" : "SEND REQUEST ON WHATSAPP"}
             </button>
             {submitError && <p role="alert" className="text-sm font-body text-destructive text-center">{submitError}</p>}
             {!canSubmit && (

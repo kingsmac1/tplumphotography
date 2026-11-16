@@ -80,6 +80,9 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
             <input type="checkbox" checked={!!s.online_payments_enabled} onChange={(e) => set("online_payments_enabled", e.target.checked)} />
             Take the deposit by card when clients book online (Stripe)
           </label>
+          {!s.online_payments_enabled && (
+            <p className="text-xs text-muted-foreground -mt-2">Off: website bookings are saved, then the client's WhatsApp opens with the booking details, addressed to the phone number under Business details. You confirm and arrange payment there.</p>
+          )}
           <div className="border border-border p-4 space-y-3">
             <label className="flex items-center gap-3 text-sm font-medium">
               <input type="checkbox" checked={!!s.booking_tax_enabled} onChange={(e) => set("booking_tax_enabled", e.target.checked)} />
@@ -142,7 +145,7 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
             {text("business_name", "BUSINESS NAME")}
             {text("legal_name", "LEGAL NAME (IF DIFFERENT)")}
             {text("email", "BUSINESS EMAIL", undefined, "email")}
-            {text("phone", "PHONE", "e.g. +1 (403) 493-5511")}
+            {text("phone", "PHONE (BOOKINGS GO TO THIS WHATSAPP)", "With the country code, e.g. +1 (403) 493-5511.")}
             {text("address", "STREET ADDRESS")}
             {text("city", "CITY")}
             {text("province", "PROVINCE", "e.g. AB")}

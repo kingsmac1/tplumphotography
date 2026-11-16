@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useBookingPricing, useBusinessSettings } from "@/lib/content";
 import { depositFor, taxOn } from "@/lib/pricing";
 import { createBooking } from "@/lib/bookingLog";
+import { closeTab, messageLines, prepareWhatsAppTab, sendToWhatsApp, whatsappUrl } from "@/lib/whatsapp";
 
 type SettingId = "indoor" | "outdoor";
 type GroupId = string;
@@ -103,6 +104,8 @@ const Booking = () => {
   const [publicPromos, setPublicPromos] = useState<{ code: string; percent: number; label: string | null }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  // The prefilled WhatsApp message to Tplum, kept so the confirmation screen can open it again.
+  const [waLink, setWaLink] = useState("");
 
   const pricing = useBookingPricing();
   const services: ServiceOption[] = useMemo(
@@ -314,6 +317,8 @@ const Booking = () => {
 
   const handleSubmit = async () => {
     if (!canSubmit || submitting || !chosenService) return;
+    // Opened now, during the click, so the browser allows it; it is pointed at WhatsApp once the booking is saved.
+    const waTab = business.online_payments_enabled ? null : prepareWhatsAppTab();
     setSubmitting(true);
     setSubmitError("");
     const payload = buildSheetPayload();
@@ -329,6 +334,7 @@ const Booking = () => {
       returnUrl: typeof window !== "undefined" ? window.location.origin : "",
     });
     if (!res.ok) {
+      closeTab(waTab);
       setSubmitting(false);
       if (res.code === "slot_taken") {
         setSlotError("Sorry, that time was just taken. Please pick another slot.");
@@ -341,9 +347,28 @@ const Booking = () => {
     const images = await uploadInspiration(inspirationFiles, res.bookingId);
     setImagesUploaded(images.uploaded);
     setImagesFailed(images.failed);
-    if (res.checkoutUrl) { window.location.href = res.checkoutUrl; return; }
+    if (res.checkoutUrl) { closeTab(waTab); window.location.href = res.checkoutUrl; return; }
     setSubmitting(false);
     setSubmitted(true);
+    if (!business.online_payments_enabled) {
+      const text = messageLines(`Hi Tplum, I just booked a portrait session on your website (ref ${res.reference}).`, [
+        ["Name", name],
+        ["Package", `${chosenService.name} (${formatMoney(serviceTotal)})`],
+        ["Setting", hasBothSettings ? settingLabel : ""],
+        ["Date", longDate(shootDate)],
+        ["Time", `${slotLabel(shootTime, sessionMinutes)} (${sessionMinutes} mins)`],
+        ["Shoot type", shootType],
+        ["Add-ons", selectedExtraObjects.map((e) => `${extraLabel(e)} (${formatMoney(extraLineTotal(e))})`).join(", ")],
+        ["Coupon", promo ? `${promo.code} (-${formatMoney(discount)})` : ""],
+        [taxRule ? taxRule.name : "", tax > 0 ? formatMoney(tax) : ""],
+        ["Total", formatMoney(grandTotal)],
+        ["Phone", phone],
+        ["Email", email],
+      ]);
+      const url = whatsappUrl(business.phone || "+14034935511", text);
+      setWaLink(url);
+      sendToWhatsApp(waTab, url);
+    }
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
   };
 
@@ -358,8 +383,13 @@ const Booking = () => {
             </div>
             <h1 className="font-display text-5xl md:text-7xl mb-4">Booking received</h1>
             <p className="text-muted-foreground font-body text-lg max-w-md mx-auto mb-4">
-              Thanks {name}! Your session request is in and a confirmation is on its way to <span className="font-bold text-foreground">{email}</span>. We'll be in touch about payment and the final details.
+              Thanks {name}! Your session request is in{waLink ? <>. Send us the WhatsApp message that just opened and we'll confirm your session and arrange payment there.</> : <> and a confirmation is on its way to <span className="font-bold text-foreground">{email}</span>. We'll be in touch about payment and the final details.</>}
             </p>
+            {waLink && (
+              <a href={waLink} target="_blank" rel="noopener noreferrer" className="m-btn inline-flex items-center gap-2 bg-foreground text-background px-8 py-4 text-sm tracking-wide font-body font-medium mb-4">
+                Open WhatsApp again <ChevronRight size={16} />
+              </a>
+            )}
             {imagesFailed > 0 && (
               <p role="alert" className="text-sm font-body font-medium text-destructive max-w-md mx-auto mb-4">
                 {imagesFailed} of your inspiration images could not be uploaded. Please email {imagesFailed === 1 ? "it" : "them"} to info@tplumphotography.com.
@@ -784,6 +814,9 @@ const Booking = () => {
                     </>
                   )}
                   <p className="text-[11px] text-muted-foreground pt-2">All prices in Canadian dollars (CAD).</p>
+                  {!business.online_payments_enabled && (
+                    <p className="text-[11px] text-muted-foreground">Nothing is paid online. When you book, WhatsApp opens with your booking details written out: send the message and we'll confirm your session and arrange payment.</p>
+                  )}
                 </div>
 
                 <label className="flex items-start gap-3 text-sm font-body cursor-pointer">
@@ -805,7 +838,7 @@ const Booking = () => {
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   }`}
                 >
-                  {submitting ? (inspirationFiles.length ? "UPLOADING IMAGES…" : "SUBMITTING…") : depositNow > 0 ? `PAY ${formatMoney(depositNow)} DEPOSIT & BOOK` : "SUBMIT BOOKING"} <ChevronRight size={16} />
+                  {submitting ? (inspirationFiles.length ? "UPLOADING IMAGES…" : "SUBMITTING…") : depositNow > 0 ? `PAY ${formatMoney(depositNow)} DEPOSIT & BOOK` : business.online_payments_enabled ? "SUBMIT BOOKING" : "BOOK & SEND ON WHATSAPP"} <ChevronRight size={16} />
                 </button>
                 {!canSubmit && (
                   <p className="text-xs text-center text-muted-foreground font-body -mt-4">
