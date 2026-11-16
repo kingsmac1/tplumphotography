@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "./site/site.css";
+@import "./site/modern.css";
 
 /*
  * Dashboard + booking-flow design system (ported from DMI, rebranded to Tplum:

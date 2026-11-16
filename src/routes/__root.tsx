@@ -1,7 +1,9 @@
 /// <reference types="vite/client" />
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
+import { DESIGN_HEAD_SCRIPT } from "@/site/design";
+import { BootPreloader, PRELOADER_FAILSAFE, releasePreloader } from "@/site/preloader";
 
 const FONTS =
   "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&family=Lato:wght@300;400;700&family=Montserrat:wght@400;600&family=Raleway:wght@500&family=Roboto:wght@400;600&family=Inter:wght@400;500&display=swap";
@@ -38,9 +40,15 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-  component: () => <Outlet />,
+  component: RootComponent,
   notFoundComponent: NotFound,
 });
+
+/** Lifts the boot preloader once the app has hydrated (every page, including the dashboard). */
+function RootComponent() {
+  useEffect(() => { releasePreloader(); }, []);
+  return <Outlet />;
+}
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
@@ -48,9 +56,12 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         {/* Lets CSS hide entrance-animated elements only when JavaScript is running (no-JS visitors and crawlers see everything). */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        {/* Temporary design switch (see src/site/design.tsx): applies the chosen design before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: DESIGN_HEAD_SCRIPT + ";" + PRELOADER_FAILSAFE }} />
         <HeadContent />
       </head>
       <body>
+        <BootPreloader />
         {children}
         <Scripts />
       </body>

@@ -3,6 +3,9 @@ import { useLocation } from "@tanstack/react-router";
 import type { CmsImage, SiteContent } from "@/cms/types";
 import { backendReady, callFunction } from "@/lib/functions";
 import { Img, Reveal } from "./ui";
+import { DesignSwitch, useDesign } from "./design";
+import { Cursor, ModernHeader, ModernMenu, RingToTop, TabBar, useModernMotion } from "./modern";
+import { releasePreloader } from "./preloader";
 import { IconClose, IconFacebook, IconInstagram, IconStream, ScrollTopArrow } from "./icons";
 
 export type IgPost = { image: Partial<CmsImage> & { src: string }; caption?: string; url: string };
@@ -152,6 +155,30 @@ function ToTop() {
   );
 }
 
+/** Modern design layer (temporary A/B, see design.tsx): only mounted when the visitor has chosen "Modern". */
+function ModernLayer({ site, app }: { site: SiteContent; app: boolean }) {
+  const design = useDesign();
+  const { pathname } = useLocation();
+  const [menu, setMenu] = useState(false);
+  const modern = design === "modern";
+  useModernMotion(modern, pathname);
+  useEffect(() => { releasePreloader(); }, []);
+  return (
+    <>
+      {modern && (
+        <>
+          <ModernHeader site={site} onMenu={() => setMenu(true)} menuOpen={menu} solid={app} />
+          <ModernMenu site={site} open={menu} onClose={() => setMenu(false)} />
+          <TabBar site={site} onMenu={() => setMenu(true)} />
+          <RingToTop />
+          <Cursor />
+        </>
+      )}
+      <DesignSwitch />
+    </>
+  );
+}
+
 /** Every public page: header + pop-out menu, page content, Instagram band, footer, back to top. */
 export function SiteLayout({ site, posts, children, igVariant, igClass, app = false }: { site: SiteContent; posts: IgPost[]; children: ReactNode; igVariant?: "default" | "about"; igClass?: string; app?: boolean }) {
   const [menu, setMenu] = useState(false);
@@ -165,7 +192,7 @@ export function SiteLayout({ site, posts, children, igVariant, igClass, app = fa
           <MenuOverlay site={site} open={menu} onClose={() => setMenu(false)} />
         </div>
         <main id="content" className="app">{children}</main>
-        <div className="tp"><Footer site={site} /><ToTop /></div>
+        <div className="tp"><Footer site={site} /><ToTop /><ModernLayer site={site} app /></div>
       </>
     );
   }
@@ -178,6 +205,7 @@ export function SiteLayout({ site, posts, children, igVariant, igClass, app = fa
       <InstagramBand site={site} posts={posts} variant={igVariant} className={igClass} />
       <Footer site={site} />
       <ToTop />
+      <ModernLayer site={site} app={false} />
     </div>
   );
 }

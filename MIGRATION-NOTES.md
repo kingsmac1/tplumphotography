@@ -132,6 +132,11 @@ If the build is interrupted, read this file first and continue from the next unc
 - [x] **Studio rental removed**: the `/studio-space/` page, its `/book/` card, and the dashboard's studio tabs (Bookings → Studio Space, Prices → studio rental prices/extras, studio promo codes). The `booking-create` function rejects studio bookings. Database tables are kept (empty) so it can be switched back on. Event coverage stays (`/events/`)
 - [x] **`/sitemap.xml`** lists every public page with the real domain's addresses; **`/robots.txt`** announces it on tplumphotography.com and keeps private areas out of search, and blocks all crawling on preview addresses
 
+## Design A/B test (2026-11-16, temporary)
+- [x] **Design switch** (bottom-left on every public page): **Classic** = the exact WordPress copy; **Modern** = PairMediaPro-style layer (read-only reference: `/Users/macbook/Documents/Website Codes/PairMediaPro`): split header with centred logo that hides on scroll down, full-screen numbered menu with photo previews, phone tab bar with a raised Book button, logo preloader, square spaced-caps and pill buttons, Lenis smooth scrolling, photos that open from the bottom, progress-ring back-to-top, cursor dot with magnetic buttons, and section refinements (rounded cards, roomier FAQ and form fields). Same content and section order; Tplum's own palette and fonts
+- Files: `src/site/design.tsx` (switch), `src/site/modern.tsx`, `src/site/modern.css` (all rules under `html.design-modern`), `src/site/preloader.tsx`; one script line in `src/routes/__root.tsx`; dependency `lenis`
+- **When the client chooses:** Classic → delete those files, the lenis dependency, the root script/preloader lines and the `ModernLayer` in `Layout.tsx`. Modern → make it the default (drop the `html.design-modern` scoping and the classic header/menu/to-top markup), then delete the switch
+
 ## Needs your decision
 1. ~~Booking pages unlinked~~: resolved, they are linked from the new `/book/` page and the Book Now buttons
 2. ~~About page footer icons~~: resolved (2026-11-16). The About page now shows the same linked Instagram and Facebook icons as every other page
