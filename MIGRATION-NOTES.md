@@ -77,9 +77,10 @@ Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later
 - [x] Security advisor: trigger functions and `recalc_booking_payment` no longer callable through the API. The remaining warnings are the public RPCs the site needs (availability, promos, invoice/contract by token) and the `cms_published` view, which only exposes published content
 - [x] **Bookings go to WhatsApp** (no payment): portrait, wedding and event bookings are saved, then the client's WhatsApp opens with a message to the business phone (Settings → Business details, +1 403 493 5511) listing package, date, time, add-ons, GST, total and contact details. "Open WhatsApp again" on the confirmation screen. Online payment is off (`online_payments_enabled = false`) and can be switched back on in Settings once Stripe is connected
 - [x] Tested against the live database: a Package 1 + Extra 30 Minutes booking saved as $350 + $50 + $20 GST = $420 with a 90-minute slot, the WhatsApp message matched, no errors; test rows removed
-- [ ] **R2 bucket:** the S3 keys are valid but bucket-scoped and no bucket name was given (ListBuckets and every guessed name: Access Denied). The `R2_API_TOKEN` in the file equals the Access Key ID, so it is not a real API token. The R2 account ID also differs from the Cloudflare (Pages) account ID. Needs: the bucket name (`R2_BUCKET`), then CORS for the site origins
-- [ ] **Cloudflare Pages:** the API token can read the project but not edit it (403), so the build variables and deploy hook could not be set. Needs a token with *Account → Cloudflare Pages → Edit*, or add these by hand under Settings → Variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SITE_URL` (values in `.env`). Until then GitHub builds run in demo mode
-- [ ] Admin account: `OWNER_EMAIL` is empty, so no dashboard login exists yet
+- [x] **R2:** bucket `tplum-photography` (set as `R2_BUCKET`). The S3 keys can upload, read, list and delete objects (tested, test file removed). They cannot change bucket settings, and the bucket is on a different Cloudflare account from the API token, so **CORS must be added by hand** in R2 → tplum-photography → Settings → CORS policy (JSON in SETUP notes below). `R2_API_TOKEN` in the file is not a real token (equals the Access Key ID) and is not used
+- [x] **Cloudflare Pages:** token now has Pages Edit. Build variables set for production and preview (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SITE_URL`, `NODE_VERSION=22`). Deploy hook "dashboard-publish" created; its URL is in `.secrets.local` and the Supabase secret `CF_DEPLOY_HOOK_URL`. Rebuilt via the hook; a live booking on tplumphotography.pages.dev saved correctly and opened WhatsApp (test rows removed)
+- [x] `OWNER_EMAIL` = tplumphotos@gmail.com, info@tplumphotography.com (local + Supabase secret)
+- [ ] Admin logins for both owner emails: waiting for the region decision
 - [ ] Scheduled jobs (email queue, gallery preview purge) wait for Resend
 - [ ] Resend domain, FROM_EMAIL, email tests
 
@@ -174,6 +175,11 @@ Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later
 5. **Suggested add-ons:** confirm or turn off Extra Outfit ($50) and Rush Delivery ($100) in Dashboard → Prices & Packages
 4. **Instagram token** is optional. Without it, the site keeps the 8 captured posts.
 6. **Supabase region:** the project is in Frankfurt (eu-central-1). The brief asked for Canada (Central). Moving region means a new project (the database is still empty, so now is the cheapest time). Keep it, or create a Canada project and swap the keys?
+
+## R2 CORS policy (paste in Cloudflare → R2 → tplum-photography → Settings → CORS policy)
+```json
+[{"AllowedOrigins":["https://tplumphotography.pages.dev","https://tplumphotography.com","https://www.tplumphotography.com","http://localhost:3000","http://localhost:4173"],"AllowedMethods":["GET","PUT","HEAD"],"AllowedHeaders":["*"],"ExposeHeaders":["ETag"],"MaxAgeSeconds":3600}]
+```
 
 ## Environment notes
 - An old dev server from the interrupted session was still running on port 3000. This session's dev server is on **3001** and the production preview on **4173**. Stopping the old one was blocked by a permission check, so close it yourself if you like (it's the `vite dev --port 3000` process started at 17:18).
