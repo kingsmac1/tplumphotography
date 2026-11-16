@@ -40,6 +40,15 @@ const timeLabel = (t: string | null) => {
 };
 
 const card = "rounded-[20px] bg-white shadow-[var(--dash-shadow)]";
+const greeting = () => {
+  const h = Number(new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hour: "2-digit", hourCycle: "h23" }).format(new Date()));
+  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+};
+/** "Today", "Tomorrow", "In 4 days" */
+const fromNow = (iso: string, today: string) => {
+  const n = Math.round((Date.parse(`${iso}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86400000);
+  return n <= 0 ? "Today" : n === 1 ? "Tomorrow" : `In ${n} days`;
+};
 const STREAM_ICON: Record<Stream, typeof Camera> = { Photography: Camera, Kiddies: Baby, Wedding: Heart, "Studio space": Camera, Events: PartyPopper };
 const STREAM_TINT: Record<Stream, string> = { Photography: "#efefed", Kiddies: "#f3e9e4", Wedding: "#ecebe8", "Studio space": "#efefed", Events: "#e9e9e6" };
 
@@ -225,7 +234,11 @@ const Overview = ({ pendingReviews: _pendingReviews, onNavigate }: { pendingRevi
     };
     const recent = [...data].sort((a, b) => b.created.localeCompare(a.created));
     const cur = months[6], prev = months[5];
+    const weekAhead = new Date(Date.parse(`${today}T12:00:00Z`) + 7 * 86400000).toISOString().slice(0, 10);
     return {
+      thisWeek: upcoming.filter((i) => i.date! <= weekAhead).length,
+      month30: upcoming.filter((i) => i.date! <= new Date(Date.parse(`${today}T12:00:00Z`) + 30 * 86400000).toISOString().slice(0, 10)).length,
+      upcomingOwing: upcoming.reduce((t, i) => t + Math.max(0, i.total - i.received), 0),
       today, booked, collected, outstanding: Math.max(booked - collected, 0), months, upcoming, busy, recent,
       monthChange: prev.count ? Math.round(((cur.count - prev.count) / prev.count) * 100) : null,
       owing: recent.filter((i) => i.total > 0 && i.received < i.total),
@@ -254,38 +267,82 @@ const Overview = ({ pendingReviews: _pendingReviews, onNavigate }: { pendingRevi
       <div className="space-y-6 min-w-0">
         {error && <p className="text-sm text-destructive font-body">{error}</p>}
 
-        {/* Coming up: the next three bookings */}
-        <section>
-          <SectionHead title="Coming up" action={<TextLink onClick={() => onNavigate("calendar")}>View calendar</TextLink>} />
-          {next3.length === 0 ? (
-            <div className={`${card} p-6 flex flex-wrap items-center justify-between gap-4`}>
+        {/* Coming up: a dark full-width card (after DMI's welcome panel): the week at a glance + the next bookings */}
+        <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}
+          aria-labelledby="coming-up" className="relative overflow-hidden rounded-[24px] bg-[#0a0a0a] text-white">
+          <img src={brandLogoWhite} alt="" aria-hidden className="pointer-events-none absolute -left-6 -bottom-10 h-48 opacity-[0.06]" />
+          <div className="relative grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10">
+            <div className="flex flex-col justify-between gap-6">
               <div>
-                <p className="font-body font-bold">Nothing booked yet</p>
-                <p className="text-sm text-muted-foreground font-body mt-1">New bookings from the website show up here as soon as they arrive.</p>
+                <p className="inline-flex items-center gap-2 text-xs font-body text-white/55"><span className="w-1.5 h-1.5 rounded-full bg-white/60" aria-hidden="true" />{greeting()}</p>
+                <h2 id="coming-up" className="font-display text-3xl sm:text-[2.6rem] leading-[1.08] mt-3">
+                  {m.thisWeek > 0
+                    ? <>You have {m.thisWeek} booking{m.thisWeek === 1 ? "" : "s"} <span className="text-white/45">in the next 7 days.</span></>
+                    : next3.length > 0
+                      ? <>A quiet week. <span className="text-white/45">Next session {fromNow(next3[0].date!, m.today).toLowerCase()}.</span></>
+                      : <>Nothing booked yet. <span className="text-white/45">Share the booking page to fill the calendar.</span></>}
+                </h2>
               </div>
-              <a href="/book/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] text-white px-4 py-2 text-xs font-body font-bold">Open the booking page <ArrowUpRight size={14} /></a>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => onNavigate("bookings")} className="rounded-full bg-white text-[#0a0a0a] px-5 py-2.5 text-xs font-body font-bold hover:bg-[#ececea] transition-colors">View bookings</button>
+                <button onClick={() => onNavigate("calendar")} className="rounded-full border border-white/25 px-5 py-2.5 text-xs font-body font-bold hover:bg-white/10 transition-colors">Open calendar</button>
+              </div>
             </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {next3.map((i, idx) => (
-                <motion.button key={idx} onClick={() => onNavigate("bookings")} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.06 }}
-                  className={`${card} p-4 text-left hover:-translate-y-0.5 transition-transform`}>
-                  <div className="flex items-center gap-3">
-                    <IconChip stream={i.stream} />
-                    <div className="min-w-0">
-                      <p className="text-sm font-body font-bold truncate">{i.name || "—"}</p>
-                      <p className="text-xs font-body text-muted-foreground truncate">{i.title}</p>
-                    </div>
+
+            <div className="min-w-0 flex flex-col">
+              <p className="text-xs font-body text-white/55 mb-3">Coming up</p>
+              {next3.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/20 p-6 text-sm font-body text-white/70">
+                  New bookings from the website appear here as soon as they arrive.
+                  <a href="/book/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full bg-white text-[#0a0a0a] px-4 py-2 text-xs font-bold">Open the booking page <ArrowUpRight size={14} /></a>
+                </div>
+              ) : (
+                <ul className="space-y-2.5">
+                  {next3.map((i, idx) => {
+                    const d = new Date(`${i.date}T12:00:00Z`);
+                    return (
+                      <motion.li key={idx} initial={{ opacity: 0, x: 14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + idx * 0.07 }}>
+                        <button onClick={() => onNavigate("bookings")} className="w-full flex items-center gap-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.11] transition-colors p-3 text-left">
+                          <span className="grid place-items-center w-14 h-14 shrink-0 rounded-xl bg-white text-[#0a0a0a] leading-none" aria-hidden="true">
+                            <span className="text-center">
+                              <span className="block font-display text-2xl">{d.getUTCDate()}</span>
+                              <span className="block text-[10px] font-body font-bold tracking-widest mt-0.5">{d.toLocaleString("en-CA", { month: "short", timeZone: "UTC" }).toUpperCase()}</span>
+                            </span>
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-sm font-body font-bold truncate">{i.name || "—"}</span>
+                            <span className="block text-xs font-body text-white/55 truncate mt-0.5">{[i.title, i.time ? timeLabel(i.time) : "", i.stream === "Photography" ? "" : i.stream].filter(Boolean).join(" · ")}</span>
+                          </span>
+                          <span className="text-right shrink-0">
+                            <span className="block text-sm font-body font-bold">{money(i.total)}</span>
+                            <span className="block text-[11px] font-body text-white/55 mt-0.5">{fromNow(i.date!, m.today)}</span>
+                          </span>
+                        </button>
+                      </motion.li>
+                    );
+                  })}
+                  {m.upcoming.length > 3 && (
+                    <li><button onClick={() => onNavigate("calendar")} className="text-xs font-body font-bold text-white/60 hover:text-white underline underline-offset-4">+{m.upcoming.length - 3} more in the calendar</button></li>
+                  )}
+                </ul>
+              )}
+              {next3.length > 0 && (
+                <div className="mt-auto pt-5">
+                <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-white/10">
+                  <div className="bg-[#0a0a0a] p-3.5">
+                    <dt className="text-[11px] font-body text-white/55">Next 30 days</dt>
+                    <dd className="font-display text-2xl mt-1">{m.month30} <span className="font-body text-xs text-white/55">booking{m.month30 === 1 ? "" : "s"}</span></dd>
                   </div>
-                  <dl className="grid grid-cols-2 gap-2 mt-4 text-xs font-body">
-                    <div><dt className="text-muted-foreground">Date</dt><dd className="font-bold mt-0.5">{dayLabel(i.date!)}{i.time ? `, ${timeLabel(i.time)}` : ""}</dd></div>
-                    <div><dt className="text-muted-foreground">Total</dt><dd className="font-bold mt-0.5">{money(i.total)}</dd></div>
-                  </dl>
-                </motion.button>
-              ))}
+                  <div className="bg-[#0a0a0a] p-3.5">
+                    <dt className="text-[11px] font-body text-white/55">Still to collect</dt>
+                    <dd className="font-display text-2xl mt-1">{money(m.upcomingOwing)}</dd>
+                  </div>
+                </dl>
+                </div>
+              )}
             </div>
-          )}
-        </section>
+          </div>
+        </motion.section>
 
         <OverviewDeliveries onOpen={() => onNavigate("deliveries")} />
 
@@ -385,7 +442,7 @@ const Overview = ({ pendingReviews: _pendingReviews, onNavigate }: { pendingRevi
           <img src={brandLogoWhite} alt="Tplum Photography" className="h-7 w-auto relative" />
           <p className="relative mt-5 text-xs font-body text-white/60">Collected, all time</p>
           <p className="relative font-display text-4xl mt-1"><AnimatedNumber value={m.collected} format={money} /></p>
-          <p className="relative mt-2 text-xs font-body text-white/60">Booked {compactMoney(m.booked)} · Owing {compactMoney(m.outstanding)}</p>
+          <p className="relative mt-2 text-xs font-body text-white/60">Booked {m.booked < 10000 ? money(m.booked) : compactMoney(m.booked)} · Owing {m.outstanding < 10000 ? money(m.outstanding) : compactMoney(m.outstanding)}</p>
           <div className="relative mt-5 flex flex-wrap gap-2">
             <button onClick={() => onNavigate("finance")} className="rounded-full bg-white text-[#0a0a0a] px-4 py-2 text-xs font-body font-bold hover:bg-[#ececea]">Open finance</button>
             <OverviewDeliveryButton onOpen={() => onNavigate("deliveries")} />
