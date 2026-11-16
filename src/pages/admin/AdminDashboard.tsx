@@ -33,7 +33,7 @@ const DeliveriesSection = lazy(() => import("@/features/delivery/DeliveriesSecti
 import { DeliveryMenuCount } from "@/features/delivery/MenuCount";
 import brandLogo from "@/assets/tplum-logo-dark.png";
 import brandLogoWhite from "@/assets/tplum-logo-white.png";
-import { LogOut, LayoutDashboard, CalendarDays, UserCheck, Tag, BadgeDollarSign, Wallet, Ellipsis, X, Mail, CalendarRange, GalleryHorizontalEnd, Users, FileText, Timer, Contact, FileSignature, Globe, Camera, Settings, Inbox } from "lucide-react";
+import { ArrowUpRight, Search, LogOut, LayoutDashboard, CalendarDays, UserCheck, Tag, BadgeDollarSign, Wallet, Ellipsis, X, Mail, CalendarRange, GalleryHorizontalEnd, Users, FileText, Timer, Contact, FileSignature, Globe, Camera, Settings, Inbox } from "lucide-react";
 
 type SectionId = "overview" | "bookings" | "inquiries" | "deliveries" | "galleries" | "calendar" | "clients" | "finance" | "invoices" | "contracts" | "attendance" | "team" | "website" | "instagram" | "pricing" | "promos" | "emails" | "settings";
 const sections: { id: SectionId; label: string; short: string; icon: typeof LayoutDashboard; group?: string }[] = [
@@ -71,6 +71,52 @@ const galleryOnlyFromHash = () => (typeof window === "undefined" ? null : /^#gal
 // #invoices/new, #invoices/<id>, #invoices/booking/<table>/<booking id>[/send] … (see InvoiceEditor)
 const invoicePathFromHash = () => (typeof window === "undefined" ? [] : /^#invoices\/(.+)/.exec(window.location.hash)?.[1].split("/").filter(Boolean) ?? []);
 
+/** Things the top-bar search can open: every section, plus a few quick actions. */
+const quickActions = [
+  { label: "New invoice", hint: "Invoices", hash: "#invoices/new" },
+  { label: "New contract", hint: "Contracts", hash: "#contracts/new" },
+];
+
+/** The admin's first name for the greeting, when the account has a real name (not just the email's first part). */
+const firstName = (full: string | null | undefined, email: string | null | undefined) => {
+  const f = (full ?? "").trim();
+  if (!f || f.toLowerCase() === String(email ?? "").split("@")[0].toLowerCase()) return "";
+  return f.split(/\s+/)[0];
+};
+
+function DashSearch({ onOpen }: { onOpen: (id: SectionId) => void }) {
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const term = q.trim().toLowerCase();
+  const results = [
+    ...sections.filter((sec) => !term || `${sec.label} ${sec.short} ${sec.group ?? ""}`.toLowerCase().includes(term)).map((sec) => ({ key: sec.id, label: sec.label, hint: sec.group ? sec.group.charAt(0) + sec.group.slice(1).toLowerCase() : "Dashboard", go: () => onOpen(sec.id) })),
+    ...quickActions.filter((a) => !term || a.label.toLowerCase().includes(term)).map((a) => ({ key: a.hash, label: a.label, hint: a.hint, go: () => { window.location.hash = a.hash; } })),
+  ].slice(0, 8);
+  const pick = (r: (typeof results)[number]) => { r.go(); setQ(""); setOpen(false); };
+  return (
+    <div className="relative w-full max-w-[280px]" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false); }}>
+      <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+      <input
+        value={q} onChange={(e) => { setQ(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)}
+        onKeyDown={(e) => { if (e.key === "Enter" && results[0]) pick(results[0]); if (e.key === "Escape") setOpen(false); }}
+        placeholder="Search the dashboard" aria-label="Search the dashboard" role="combobox" aria-expanded={open} aria-controls="dash-search-list"
+        className="w-full rounded-full bg-white pl-10 pr-4 py-2.5 text-sm font-body outline-none shadow-[var(--dash-shadow)] focus:ring-2 focus:ring-black/10"
+      />
+      {open && results.length > 0 && (
+        <ul id="dash-search-list" role="listbox" className="absolute right-0 left-0 mt-2 z-50 rounded-2xl bg-white p-1.5 shadow-[0_18px_40px_-16px_rgba(0,0,0,.35)]">
+          {results.map((r) => (
+            <li key={r.key}>
+              <button type="button" role="option" aria-selected={false} onClick={() => pick(r)} className="w-full flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-body hover:bg-[#f2f2f0]">
+                <span>{r.label}</span><span className="text-[11px] text-muted-foreground">{r.hint}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 const AdminDashboardInner = () => {
   const navigate = useNavigate();
   const visibleSections = sections;
@@ -81,6 +127,7 @@ const AdminDashboardInner = () => {
   const [galleryBooking, setGalleryBooking] = useState<string | null>(null);
   const [galleryOnly, setGalleryOnly] = useState<string | null>(null);
   const [invoicePath, setInvoicePath] = useState<string[]>([]);
+  const [me, setMe] = useState<{ name: string; email: string }>({ name: "", email: "" });
 
   // Remember the selected section across refreshes via the URL hash.
   useEffect(() => {
@@ -119,8 +166,9 @@ const AdminDashboardInner = () => {
       setIsAuthenticated(authed);
       if (!authed) { navigate("/dashboard/login"); return; }
       // Staff-role accounts only have access to the check-in page; clients (no staff record) go to their own area.
-      const { data: staff } = await supabase.from("staff").select("role").eq("id", data.user!.id).maybeSingle();
+      const { data: staff } = await supabase.from("staff").select("role, full_name").eq("id", data.user!.id).maybeSingle();
       if (!staff) { window.location.replace("/account"); return; }
+      setMe({ name: firstName(staff.full_name, data.user!.email), email: data.user!.email ?? "" });
       if (staff.role === "staff") navigate("/checkin");
     };
     checkAuth();
@@ -142,40 +190,47 @@ const AdminDashboardInner = () => {
 
   const current = sections.find((sec) => sec.id === active)!;
 
+  const initials = (me.name || me.email || "T").slice(0, 1).toUpperCase();
+  // Sections that draw their own heading keep the top bar to search + avatar only
+  const ownHeading = active === "galleries" || active === "invoices" || active === "deliveries" || active === "website";
+
   const sidebar = (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-white/10">
-        <img src={brandLogoWhite} alt="Tplum Photography" className="h-10 w-auto" />
-        <span className="font-display text-lg font-bold">Admin</span>
+      <div className="px-6 pt-6 pb-4">
+        <img src={brandLogoWhite} alt="Tplum Photography" className="h-9 w-auto" />
       </div>
-      <nav data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-4">
+      <nav data-lenis-prevent className="dash-nav flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 pb-4" aria-label="Dashboard sections">
         {visibleSections.map((sec) => {
           const Icon = sec.icon;
           const isActive = sec.id === active;
           return (
             <div key={sec.id}>
-            {sec.group && <p className="px-6 pt-5 pb-1 text-[10px] font-body font-bold tracking-widest text-white/35">{sec.group}</p>}
-            <button
-              onClick={() => selectSection(sec.id)}
-              className={`w-full flex items-center gap-3 px-6 py-2.5 text-sm font-body text-left border-l-4 transition-colors ${
-                isActive
-                  ? "border-white bg-white/10 font-bold text-white"
-                  : "border-transparent text-white/60 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <Icon size={18} /> {sec.label}
-              {sec.id === "deliveries" && <DeliveryMenuCount />}
-            </button>
+              {sec.group && <p className="px-4 pt-3.5 pb-1 text-[10px] font-body font-bold tracking-widest text-white/30">{sec.group}</p>}
+              <button
+                onClick={() => selectSection(sec.id)}
+                aria-current={isActive ? "page" : undefined}
+                className={`w-full flex items-center gap-3 rounded-full px-4 py-[7px] text-[13.5px] font-body text-left transition-colors ${
+                  isActive ? "bg-white text-[#0a0a0a] font-bold" : "text-white/65 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <Icon size={17} strokeWidth={isActive ? 2.25 : 1.75} /> <span className="flex-1">{sec.label}</span>
+                {sec.id === "deliveries" && <DeliveryMenuCount />}
+              </button>
             </div>
           );
         })}
       </nav>
-      <div className="p-4 border-t border-white/10">
-        <button
-          onClick={handleLogout}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-body font-medium border border-white/20 text-white hover:bg-white/10 rounded-md transition-colors"
-        >
-          <LogOut size={16} /> LOGOUT
+      <div className="p-3">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="group relative flex items-center gap-3 overflow-hidden rounded-[20px] bg-[#ececea] text-[#0a0a0a] p-3.5 hover:bg-white transition-colors">
+          <span aria-hidden="true" className="absolute -right-6 -bottom-8 w-20 h-20 rounded-full border-[10px] border-white/70" />
+          <span className="relative min-w-0 flex-1">
+            <span className="block font-display text-[17px] leading-tight">Your website</span>
+            <span className="block text-[11px] font-body text-[#545454] mt-0.5">See what clients see</span>
+          </span>
+          <span className="relative grid place-items-center w-9 h-9 shrink-0 rounded-full bg-[#0a0a0a] text-white group-hover:bg-[#545454] transition-colors" aria-hidden="true"><ArrowUpRight size={17} /></span>
+        </a>
+        <button onClick={handleLogout} className="mt-1.5 w-full inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-xs font-body font-bold tracking-widest text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+          <LogOut size={15} /> SIGN OUT
         </button>
       </div>
     </div>
@@ -184,12 +239,12 @@ const AdminDashboardInner = () => {
   return (
     <div className="app dash min-h-screen text-foreground">
       {/* Fixed left panel (desktop) */}
-      <aside className="hidden md:block fixed inset-y-0 left-0 w-64 bg-neutral-950 text-white z-40">
+      <aside className="hidden md:block fixed top-4 bottom-4 left-4 w-60 rounded-[28px] bg-[#0a0a0a] text-white z-40 overflow-hidden">
         {sidebar}
       </aside>
 
       {/* Bottom menu (mobile) */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-5 border-t border-white/10 bg-neutral-950 text-white pb-[env(safe-area-inset-bottom)]">
+      <nav className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 z-40 grid grid-cols-5 rounded-[22px] bg-[#0a0a0a] text-white px-1 shadow-[0_14px_30px_-12px_rgba(0,0,0,.5)]">
         {sections.filter((sec) => mobilePrimary.includes(sec.id)).map((sec) => {
           const Icon = sec.icon;
           const isActive = sec.id === active;
@@ -199,10 +254,10 @@ const AdminDashboardInner = () => {
               onClick={() => selectSection(sec.id)}
               aria-label={sec.label}
               className={`flex flex-col items-center gap-1 py-2.5 text-[10px] font-body transition-colors ${
-                isActive ? "text-white font-bold border-t-2 border-white -mt-px" : "text-white/55"
+                isActive ? "text-white font-bold" : "text-white/50"
               }`}
             >
-              <Icon size={20} />
+              <span className={`grid place-items-center w-10 h-7 rounded-full ${isActive ? "bg-white text-[#0a0a0a]" : ""}`}><Icon size={18} /></span>
               {sec.short}
             </button>
           );
@@ -211,7 +266,7 @@ const AdminDashboardInner = () => {
           onClick={() => setMoreOpen(true)}
           aria-label="More"
           className={`flex flex-col items-center gap-1 py-2.5 text-[10px] font-body transition-colors ${
-            !mobilePrimary.includes(active) ? "text-white font-bold border-t-2 border-white -mt-px" : "text-white/55"
+            !mobilePrimary.includes(active) ? "text-white font-bold" : "text-white/50"
           }`}
         >
           <span className="relative"><Ellipsis size={20} />{!mobilePrimary.includes("deliveries") && <DeliveryMenuCount compact />}</span>
@@ -221,7 +276,7 @@ const AdminDashboardInner = () => {
 
       {moreOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/60 flex items-end" onClick={() => setMoreOpen(false)}>
-          <div className="w-full bg-neutral-950 text-white p-4 pb-8 rounded-t-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full bg-[#0a0a0a] text-white p-4 pb-8 rounded-t-[28px]" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <p className="font-display text-lg font-bold">Menu</p>
               <button onClick={() => setMoreOpen(false)} aria-label="Close menu"><X size={20} /></button>
@@ -233,7 +288,7 @@ const AdminDashboardInner = () => {
                   <button
                     key={sec.id}
                     onClick={() => selectSection(sec.id)}
-                    className={`flex flex-col items-center gap-2 py-4 text-[11px] font-body border ${sec.id === active ? "border-white bg-white/10 font-bold" : "border-white/15 text-white/70"}`}
+                    className={`flex flex-col items-center gap-2 py-4 text-[11px] font-body rounded-2xl ${sec.id === active ? "bg-white text-[#0a0a0a] font-bold" : "bg-white/[0.06] text-white/70"}`}
                   >
                     <span className="relative"><Icon size={22} />{sec.id === "deliveries" && <DeliveryMenuCount compact />}</span>
                     {sec.short}
@@ -245,16 +300,29 @@ const AdminDashboardInner = () => {
         </div>
       )}
 
-      <div className="md:ml-64">
+      <div className="md:ml-[17rem]">
         {/* Mobile top bar */}
-        <header className="md:hidden sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3">
+        <header className="md:hidden sticky top-0 z-30 flex items-center justify-between bg-[hsl(var(--dash-page))]/90 backdrop-blur px-4 py-3">
           <img src={brandLogo} alt="Tplum Photography" className="h-8 w-auto" />
           <span className="font-display text-lg font-bold">{current.label}</span>
           <button onClick={handleLogout} aria-label="Logout" className="p-1 text-muted-foreground hover:text-foreground"><LogOut size={20} /></button>
         </header>
 
-        <main className="dash-main px-4 sm:px-6 md:px-10 py-6 md:py-10 pb-28 md:pb-10">
-          {active !== "galleries" && active !== "invoices" && active !== "deliveries" && active !== "website" && <h1 className="hidden md:block font-display text-4xl md:text-5xl mb-8">{current.label}</h1>}
+        <main className="dash-main px-4 sm:px-6 md:pl-4 md:pr-8 py-6 md:py-8 pb-28 md:pb-10">
+          {/* Top bar: greeting or section name, search, avatar */}
+          <div className="hidden md:flex items-center justify-between gap-6 mb-7">
+            <h1 className="font-display text-3xl lg:text-4xl leading-tight">
+              {active === "overview" ? <>Welcome back{me.name ? `, ${me.name}` : ""}</> : ownHeading ? "" : current.label}
+            </h1>
+            <div className="flex items-center gap-3 flex-1 justify-end">
+              <DashSearch onOpen={selectSection} />
+              <button onClick={() => selectSection("settings")} title={me.email ? `Signed in as ${me.email}` : "Settings"} aria-label="Account settings"
+                className="grid place-items-center w-10 h-10 shrink-0 rounded-full bg-[#0a0a0a] text-white font-display text-lg ring-4 ring-white shadow-[var(--dash-shadow)]">
+                {initials}
+              </button>
+            </div>
+          </div>
+          {active === "overview" && <h1 className="md:hidden font-display text-3xl mb-5">Welcome back{me.name ? `, ${me.name}` : ""}</h1>}
 
           {active === "overview" && <Overview pendingReviews={pendingReviews} onNavigate={selectSection} />}
 

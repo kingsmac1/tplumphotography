@@ -164,8 +164,8 @@ export const BarList = ({ items, color = PALETTE.ink, money = false }: { items: 
             <span className="truncate text-foreground">{it.label}</span>
             <b className="shrink-0">{money ? compactMoney(it.value) : it.value}</b>
           </div>
-          <div className="h-2 bg-muted overflow-hidden">
-            <motion.div className="h-full" style={{ background: `linear-gradient(90deg, ${color}, ${PALETTE.brown})` }}
+          <div className="h-2 bg-muted overflow-hidden rounded-full">
+            <motion.div className="h-full rounded-full" style={{ background: `linear-gradient(90deg, ${color}, ${PALETTE.brown})` }}
               initial={{ width: 0 }} whileInView={{ width: `${(it.value / max) * 100}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }} />
           </div>
         </li>

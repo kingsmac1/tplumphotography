@@ -88,6 +88,17 @@ body { background: #fff; }
 .dash { background: hsl(var(--dash-page)); }
 .dash-main :is(div, section, form, ul, article, table).border.border-border { background: hsl(var(--card)); box-shadow: var(--dash-shadow); }
 .dash-main div:has(> table) { padding: 1rem; }
+/* Sidebar: a soft fade at the bottom of the menu shows there is more to scroll to */
+.dash .dash-nav { mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); }
+/* Rounded, borderless cards (dashboard only; the public site keeps its square edges) */
+.dash-main :is(div, section, form, ul, article).border.border-border { border-radius: 20px; border-color: transparent; }
+.dash-main table.border.border-border { border-radius: 16px; border-color: transparent; }
+.dash-main div:has(> table) { border-radius: 20px; }
+.dash-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), select, textarea) { border-radius: 12px; }
+.dash-main button:is(.border, .bg-primary, .bg-foreground, .bg-black) { border-radius: 999px; }
+.dash-main .inline-flex.border > button { border-radius: 0; }
+.dash-main .inline-flex.border:has(> button) { border-radius: 999px; overflow: hidden; }
+.dash .fixed.inset-0 > div:is(.bg-background, .bg-white, .bg-card) { border-radius: 24px; }
 @media (max-width: 767px) { .dash-main div:has(> table) { padding: 0.625rem; } }
 
 /* "Sample: edit me" badge for placeholder prices (dashboard only) */
