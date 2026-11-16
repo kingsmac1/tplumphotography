@@ -125,7 +125,7 @@ function Card({ g, s, shoot, sel, orphan, onDelete }: { g: GalleryRow; s?: Galle
   const cover = useCover(g.id, !!s?.images_ready && !g.previews_purged_at)
   // a gallery whose booking was deleted has no Gallery Manager page: it opens as the client sees it
   // galleries made without a booking open by their own id
-  const href = !g.booking_id ? `#galleries/g/${g.id}` : !orphan ? `#galleries/${g.booking_id}` : `/client-gallery/${g.id}`
+  const href = !g.booking_id ? `#galleries/g/${g.id}` : !orphan ? `#galleries/${g.booking_id}` : `/client-gallery/?id=${g.id}`
   const [menu, setMenu] = useState(false)
   const box = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -156,7 +156,7 @@ function Card({ g, s, shoot, sel, orphan, onDelete }: { g: GalleryRow; s?: Galle
       {menu && (
         <div className="gx-menu" role="menu">
           {!orphan && <a role="menuitem" href={href}>Manage gallery</a>}
-          <a role="menuitem" href={`/client-gallery/${g.id}`} target="_blank" rel="noreferrer">Open as the client sees it ↗</a>
+          <a role="menuitem" href={`/client-gallery/?id=${g.id}`} target="_blank" rel="noreferrer">Open as the client sees it ↗</a>
           {g.status !== 'draft' && <button role="menuitem" type="button" onClick={copyLink}>Copy client link</button>}
           <button role="menuitem" type="button" onClick={rename}>Rename</button>
           <button role="menuitem" type="button" className="danger" onClick={() => { setMenu(false); onDelete() }}>Delete gallery</button>

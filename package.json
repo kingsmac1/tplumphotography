@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "node scripts/sync-shared.mjs && vite build",
-    "preview": "vite preview --port 4173",
-    "deploy": "npm run build && wrangler deploy",
+    "build": "node scripts/sync-shared.mjs && node scripts/fetch-cms.mjs && vite build && node scripts/postbuild.mjs",
+    "preview": "wrangler pages dev dist/client --port 4173",
+    "deploy": "npm run build && wrangler pages deploy dist/client --project-name tplumphotography",
     "typecheck": "tsc --noEmit",
     "test": "node scripts/sync-shared.mjs && vitest run",
     "capture": "node scripts/capture/capture-site.mjs && node scripts/capture/capture-api.mjs"
@@ -41,7 +41,6 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.68.0",
     "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",

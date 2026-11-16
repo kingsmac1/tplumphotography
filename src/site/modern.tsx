@@ -39,15 +39,20 @@ export function useModernMotion(enabled: boolean, key: string) {
     if (!enabled) return;
     const els = Array.from(document.querySelectorAll<HTMLElement>(FRAMES));
     if (reduced() || !("IntersectionObserver" in window)) return;
+    // A fully clipped element reports no intersection, so each photo is watched through its parent (as on PairMediaPro).
+    const targets = new Map<Element, HTMLElement[]>();
     const io = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (!e.isIntersecting) return;
-      e.target.classList.add("is-in");
+      (targets.get(e.target) ?? []).forEach((el) => el.classList.add("is-in"));
       io.unobserve(e.target);
+      targets.delete(e.target);
     }), { rootMargin: "0px 0px -6% 0px" });
     els.forEach((el, i) => {
       el.style.setProperty("--d", String(i % 4));
       el.classList.add("m-frame");
-      io.observe(el);
+      const watch = el.parentElement ?? el;
+      if (!targets.has(watch)) { targets.set(watch, []); io.observe(watch); }
+      targets.get(watch)!.push(el);
     });
     // failsafe: never leave a photo closed
     const t = window.setTimeout(() => els.forEach((el) => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add("is-in"); }), 1500);

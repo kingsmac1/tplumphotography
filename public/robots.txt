@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /checkin/
+Disallow: /cms-preview/
+Disallow: /invoice/
+Disallow: /contract/
+Disallow: /client-gallery/
+Disallow: /client-gallery-cover/
+Disallow: /booking/confirmed/
+
+Sitemap: https://tplumphotography.com/sitemap.xml

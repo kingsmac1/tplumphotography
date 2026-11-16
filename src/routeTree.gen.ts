@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R404RouteImport } from './routes/404'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as BookRouteImport } from './routes/book'
@@ -21,22 +22,24 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TheTplumSignatureRouteImport } from './routes/the-tplum-signature'
 import { Route as BookingIndexRouteImport } from './routes/booking/index'
 import { Route as BookingConfirmedRouteImport } from './routes/booking/confirmed'
 import { Route as BookingWeddingRouteImport } from './routes/booking/wedding'
-import { Route as ClientGalleryCoverGalleryIdRouteImport } from './routes/client-gallery-cover/$galleryId'
-import { Route as ClientGalleryGalleryIdRouteImport } from './routes/client-gallery/$galleryId'
-import { Route as ContractTokenRouteImport } from './routes/contract/$token'
+import { Route as ClientGalleryIndexRouteImport } from './routes/client-gallery/index'
+import { Route as ContractIndexRouteImport } from './routes/contract/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardLoginRouteImport } from './routes/dashboard/login'
-import { Route as InvoiceTokenRouteImport } from './routes/invoice/$token'
+import { Route as InvoiceIndexRouteImport } from './routes/invoice/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -94,16 +97,6 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TheTplumSignatureRoute = TheTplumSignatureRouteImport.update({
   id: '/the-tplum-signature',
   path: '/the-tplum-signature',
@@ -124,20 +117,14 @@ const BookingWeddingRoute = BookingWeddingRouteImport.update({
   path: '/booking/wedding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClientGalleryCoverGalleryIdRoute =
-  ClientGalleryCoverGalleryIdRouteImport.update({
-    id: '/client-gallery-cover/$galleryId',
-    path: '/client-gallery-cover/$galleryId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ClientGalleryGalleryIdRoute = ClientGalleryGalleryIdRouteImport.update({
-  id: '/client-gallery/$galleryId',
-  path: '/client-gallery/$galleryId',
+const ClientGalleryIndexRoute = ClientGalleryIndexRouteImport.update({
+  id: '/client-gallery/',
+  path: '/client-gallery/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ContractTokenRoute = ContractTokenRouteImport.update({
-  id: '/contract/$token',
-  path: '/contract/$token',
+const ContractIndexRoute = ContractIndexRouteImport.update({
+  id: '/contract/',
+  path: '/contract/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
@@ -150,15 +137,16 @@ const DashboardLoginRoute = DashboardLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const InvoiceTokenRoute = InvoiceTokenRouteImport.update({
-  id: '/invoice/$token',
-  path: '/invoice/$token',
+const InvoiceIndexRoute = InvoiceIndexRouteImport.update({
+  id: '/invoice/',
+  path: '/invoice/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/404': typeof R404Route
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/book': typeof BookRoute
@@ -169,21 +157,19 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
-  '/client-gallery-cover/$galleryId': typeof ClientGalleryCoverGalleryIdRoute
-  '/client-gallery/$galleryId': typeof ClientGalleryGalleryIdRoute
-  '/contract/$token': typeof ContractTokenRoute
   '/dashboard/login': typeof DashboardLoginRoute
-  '/invoice/$token': typeof InvoiceTokenRoute
   '/booking/': typeof BookingIndexRoute
+  '/client-gallery/': typeof ClientGalleryIndexRoute
+  '/contract/': typeof ContractIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/invoice/': typeof InvoiceIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/book': typeof BookRoute
@@ -194,23 +180,21 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
-  '/client-gallery-cover/$galleryId': typeof ClientGalleryCoverGalleryIdRoute
-  '/client-gallery/$galleryId': typeof ClientGalleryGalleryIdRoute
-  '/contract/$token': typeof ContractTokenRoute
   '/dashboard/login': typeof DashboardLoginRoute
-  '/invoice/$token': typeof InvoiceTokenRoute
   '/booking': typeof BookingIndexRoute
+  '/client-gallery': typeof ClientGalleryIndexRoute
+  '/contract': typeof ContractIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/invoice': typeof InvoiceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/404': typeof R404Route
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/book': typeof BookRoute
@@ -221,24 +205,22 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/portfolio': typeof PortfolioRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/the-tplum-signature': typeof TheTplumSignatureRoute
   '/booking/confirmed': typeof BookingConfirmedRoute
   '/booking/wedding': typeof BookingWeddingRoute
-  '/client-gallery-cover/$galleryId': typeof ClientGalleryCoverGalleryIdRoute
-  '/client-gallery/$galleryId': typeof ClientGalleryGalleryIdRoute
-  '/contract/$token': typeof ContractTokenRoute
   '/dashboard/login': typeof DashboardLoginRoute
-  '/invoice/$token': typeof InvoiceTokenRoute
   '/booking/': typeof BookingIndexRoute
+  '/client-gallery/': typeof ClientGalleryIndexRoute
+  '/contract/': typeof ContractIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/invoice/': typeof InvoiceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/404'
     | '/about'
     | '/account'
     | '/book'
@@ -249,21 +231,19 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/portfolio'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/the-tplum-signature'
     | '/booking/confirmed'
     | '/booking/wedding'
-    | '/client-gallery-cover/$galleryId'
-    | '/client-gallery/$galleryId'
-    | '/contract/$token'
     | '/dashboard/login'
-    | '/invoice/$token'
     | '/booking/'
+    | '/client-gallery/'
+    | '/contract/'
     | '/dashboard/'
+    | '/invoice/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/404'
     | '/about'
     | '/account'
     | '/book'
@@ -274,22 +254,20 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/portfolio'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/the-tplum-signature'
     | '/booking/confirmed'
     | '/booking/wedding'
-    | '/client-gallery-cover/$galleryId'
-    | '/client-gallery/$galleryId'
-    | '/contract/$token'
     | '/dashboard/login'
-    | '/invoice/$token'
     | '/booking'
+    | '/client-gallery'
+    | '/contract'
     | '/dashboard'
+    | '/invoice'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/404'
     | '/about'
     | '/account'
     | '/book'
@@ -300,23 +278,21 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/portfolio'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/the-tplum-signature'
     | '/booking/confirmed'
     | '/booking/wedding'
-    | '/client-gallery-cover/$galleryId'
-    | '/client-gallery/$galleryId'
-    | '/contract/$token'
     | '/dashboard/login'
-    | '/invoice/$token'
     | '/booking/'
+    | '/client-gallery/'
+    | '/contract/'
     | '/dashboard/'
+    | '/invoice/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  R404Route: typeof R404Route
   AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRoute
   BookRoute: typeof BookRoute
@@ -327,16 +303,13 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   FaqRoute: typeof FaqRoute
   PortfolioRoute: typeof PortfolioRoute
-  RobotsDottxtRoute: typeof RobotsDottxtRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TheTplumSignatureRoute: typeof TheTplumSignatureRoute
   BookingConfirmedRoute: typeof BookingConfirmedRoute
   BookingWeddingRoute: typeof BookingWeddingRoute
-  ClientGalleryCoverGalleryIdRoute: typeof ClientGalleryCoverGalleryIdRoute
-  ClientGalleryGalleryIdRoute: typeof ClientGalleryGalleryIdRoute
-  ContractTokenRoute: typeof ContractTokenRoute
-  InvoiceTokenRoute: typeof InvoiceTokenRoute
   BookingIndexRoute: typeof BookingIndexRoute
+  ClientGalleryIndexRoute: typeof ClientGalleryIndexRoute
+  ContractIndexRoute: typeof ContractIndexRoute
+  InvoiceIndexRoute: typeof InvoiceIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -346,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -425,20 +405,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/the-tplum-signature': {
       id: '/the-tplum-signature'
       path: '/the-tplum-signature'
@@ -467,25 +433,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingWeddingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/client-gallery-cover/$galleryId': {
-      id: '/client-gallery-cover/$galleryId'
-      path: '/client-gallery-cover/$galleryId'
-      fullPath: '/client-gallery-cover/$galleryId'
-      preLoaderRoute: typeof ClientGalleryCoverGalleryIdRouteImport
+    '/client-gallery/': {
+      id: '/client-gallery/'
+      path: '/client-gallery'
+      fullPath: '/client-gallery/'
+      preLoaderRoute: typeof ClientGalleryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/client-gallery/$galleryId': {
-      id: '/client-gallery/$galleryId'
-      path: '/client-gallery/$galleryId'
-      fullPath: '/client-gallery/$galleryId'
-      preLoaderRoute: typeof ClientGalleryGalleryIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contract/$token': {
-      id: '/contract/$token'
-      path: '/contract/$token'
-      fullPath: '/contract/$token'
-      preLoaderRoute: typeof ContractTokenRouteImport
+    '/contract/': {
+      id: '/contract/'
+      path: '/contract'
+      fullPath: '/contract/'
+      preLoaderRoute: typeof ContractIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/': {
@@ -502,11 +461,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLoginRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/invoice/$token': {
-      id: '/invoice/$token'
-      path: '/invoice/$token'
-      fullPath: '/invoice/$token'
-      preLoaderRoute: typeof InvoiceTokenRouteImport
+    '/invoice/': {
+      id: '/invoice/'
+      path: '/invoice'
+      fullPath: '/invoice/'
+      preLoaderRoute: typeof InvoiceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -529,6 +488,7 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  R404Route: R404Route,
   AboutRoute: AboutRoute,
   AccountRoute: AccountRoute,
   BookRoute: BookRoute,
@@ -539,16 +499,13 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   FaqRoute: FaqRoute,
   PortfolioRoute: PortfolioRoute,
-  RobotsDottxtRoute: RobotsDottxtRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TheTplumSignatureRoute: TheTplumSignatureRoute,
   BookingConfirmedRoute: BookingConfirmedRoute,
   BookingWeddingRoute: BookingWeddingRoute,
-  ClientGalleryCoverGalleryIdRoute: ClientGalleryCoverGalleryIdRoute,
-  ClientGalleryGalleryIdRoute: ClientGalleryGalleryIdRoute,
-  ContractTokenRoute: ContractTokenRoute,
-  InvoiceTokenRoute: InvoiceTokenRoute,
   BookingIndexRoute: BookingIndexRoute,
+  ClientGalleryIndexRoute: ClientGalleryIndexRoute,
+  ContractIndexRoute: ContractIndexRoute,
+  InvoiceIndexRoute: InvoiceIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

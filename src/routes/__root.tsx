@@ -3,22 +3,11 @@ import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-r
 import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { DESIGN_HEAD_SCRIPT } from "@/site/design";
+import { NotFoundView } from "@/site/NotFound";
 import { BootPreloader, PRELOADER_FAILSAFE, releasePreloader } from "@/site/preloader";
 
 const FONTS =
   "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&family=Lato:wght@300;400;700&family=Montserrat:wght@400;600&family=Raleway:wght@500&family=Roboto:wght@400;600&family=Inter:wght@400;500&display=swap";
-
-function NotFound() {
-  return (
-    <div style={{ minHeight: "70vh", display: "grid", placeItems: "center", padding: 24, fontFamily: "Lato, sans-serif", textAlign: "center" }}>
-      <div>
-        <h1 style={{ fontFamily: "Fulgate, serif", fontSize: 50, fontWeight: 100, margin: 0 }}>Page not found</h1>
-        <p>The page you were looking for has moved or no longer exists.</p>
-        <a href="/" style={{ textDecoration: "underline" }}>Go to the home page</a>
-      </div>
-    </div>
-  );
-}
 
 export const Route = createRootRoute({
   head: () => ({
@@ -41,12 +30,17 @@ export const Route = createRootRoute({
   }),
   shellComponent: RootDocument,
   component: RootComponent,
-  notFoundComponent: NotFound,
+  notFoundComponent: NotFoundView,
 });
 
 /** Lifts the boot preloader once the app has hydrated (every page, including the dashboard). */
 function RootComponent() {
-  useEffect(() => { releasePreloader(); }, []);
+  useEffect(() => {
+    releasePreloader();
+    // 404.html (Cloudflare Pages): put back the address the visitor asked for (see scripts/postbuild.mjs).
+    const real = (window as { __realPath?: string }).__realPath;
+    if (real) window.history.replaceState(window.history.state, "", real);
+  }, []);
   return <Outlet />;
 }
 

@@ -340,7 +340,7 @@ function Downloads({ rows }: { rows: DownloadRow[] }) {
       {rows.map((d) => (
         <div key={d.id} className="ca-row slim">
           <div className="ca-row-main"><b>{d.image_id ? d.gallery_images?.original_filename ?? 'Photo' : 'All photos (zip)'}</b><span className="ca-muted">{d.galleries?.title}</span></div>
-          <div className="ca-row-side"><time className="ca-muted" dateTime={d.created_at}>{fmtDay(d.created_at)}</time><a href={`/client-gallery/${d.gallery_id}`}>Open gallery</a></div>
+          <div className="ca-row-side"><time className="ca-muted" dateTime={d.created_at}>{fmtDay(d.created_at)}</time><a href={`/client-gallery/?id=${d.gallery_id}`}>Open gallery</a></div>
         </div>
       ))}
     </div>

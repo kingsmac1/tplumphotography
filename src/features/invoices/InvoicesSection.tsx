@@ -80,7 +80,7 @@ export function InvoicesSection() {
                 <td className="sel"><RowBox s={sel} id={r.id} label={`invoice ${r.number}`} /></td>
                 <td><a href={`#invoices/${r.id}`} onClick={(e) => e.stopPropagation()}><b>{r.number}</b></a><span className="sub">{fmtDate(doc.invoiceDate)}{r.booking_table ? ` · ${BOOKING_KIND[r.booking_table]}` : ''}</span></td>
                 <td><b>{doc.billName || '—'}</b><span className="sub">{doc.billEmail || doc.billPhone}</span></td>
-                <td><Badge tone={STATUS_TONE[st]}>{STATUS_LABEL[st]}</Badge>{r.public_token && st !== 'draft' && <button className="ad-btn sm" style={{ marginLeft: 6 }} onClick={(e) => { e.stopPropagation(); void navigator.clipboard.writeText(`${window.location.origin}/invoice/${r.public_token}/`); toast('✓ Client link copied') }}>Copy link</button>}</td>
+                <td><Badge tone={STATUS_TONE[st]}>{STATUS_LABEL[st]}</Badge>{r.public_token && st !== 'draft' && <button className="ad-btn sm" style={{ marginLeft: 6 }} onClick={(e) => { e.stopPropagation(); void navigator.clipboard.writeText(`${window.location.origin}/invoice/?t=${r.public_token}`); toast('✓ Client link copied') }}>Copy link</button>}</td>
                 <td className="num"><b>{money(t.total)}</b></td>
                 <td className="num">{money(t.balance)}</td>
                 <td>{r.sent_at ? <>{fmtDate(r.sent_at)}<span className="sub">as {r.sent_stage ? STAGE_LABEL[r.sent_stage].toLowerCase() : ''}</span></> : <span className="ad-muted">Not sent</span>}</td>

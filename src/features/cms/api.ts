@@ -95,3 +95,18 @@ export async function restoreRevision(key: DocKey, id: string): Promise<void> {
 
 /** Back to the original WordPress content (into the draft only). */
 export const seedFor = (key: DocKey) => clone(SEED[key]);
+
+/**
+ * After a publish: rebuild the pre-rendered pages on Cloudflare Pages (publish-site function → deploy hook), so search
+ * engines get the new content too. Visitors see the change straight away either way. Returns an error message or "".
+ */
+export async function rebuildSite(): Promise<string> {
+  if (demoMode) return "";
+  const { data, error } = await supabase.functions.invoke("publish-site", { body: {} });
+  if (error) {
+    const ctx = (error as { context?: Response }).context;
+    try { const j = ctx ? await ctx.json() : null; if (j?.error) return String(j.error); } catch { /* not JSON */ }
+    return error.message;
+  }
+  return (data as { ok?: boolean; error?: string })?.ok ? "" : String((data as { error?: string })?.error ?? "");
+}

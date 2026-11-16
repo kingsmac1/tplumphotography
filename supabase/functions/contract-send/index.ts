@@ -19,7 +19,7 @@ Deno.serve(handle(async (req, body) => {
   if (!EMAIL_RE.test(String(c.client_email ?? ''))) throw new HttpError("Add the client's email address first.")
   if (!String(c.body ?? '').trim()) throw new HttpError('The contract is empty.')
   const cfg = mailConfig()
-  const link = `${cfg.siteUrl}/contract/${c.public_token}/`
+  const link = `${cfg.siteUrl}/contract/?t=${c.public_token}`
   const first = String(c.client_name || '').trim().split(/\s+/)[0] || 'there'
   const results = await sendToClientAndOwner({
     client: c.client_email,

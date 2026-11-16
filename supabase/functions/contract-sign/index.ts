@@ -34,7 +34,7 @@ Deno.serve(handle(async (req, body) => {
   }).eq('id', c.id).in('status', ['sent', 'viewed'])
   if (error) throw error
   const cfg = mailConfig()
-  const link = `${cfg.siteUrl}/contract/${token}/`
+  const link = `${cfg.siteUrl}/contract/?t=${token}`
   const signedAt = new Date(now).toLocaleString('en-CA', { timeZone: 'America/Edmonton', dateStyle: 'long', timeStyle: 'short' })
   await sendToClientAndOwner({
     client: c.client_email,

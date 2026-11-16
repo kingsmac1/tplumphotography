@@ -1,0 +1,6 @@
+# Cloudflare Pages. Private links are one pre-rendered page each, with the token in the query string
+# (/invoice/?t=…, /contract/?t=…, /client-gallery/?id=…&k=…). Older path-style links keep working:
+/invoice/:token/    /invoice/?t=:token    301
+/invoice/:token     /invoice/?t=:token    301
+/contract/:token/   /contract/?t=:token   301
+/contract/:token    /contract/?t=:token   301

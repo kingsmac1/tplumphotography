@@ -26,8 +26,8 @@ Deno.serve(handle(async (_req, body) => {
     name: `Invoice ${inv.number}`,
     description: `Tplum Photography · balance on invoice ${inv.number}`,
     email: inv.client_email || doc.billEmail || undefined,
-    successUrl: `${site}/invoice/${token}/?paid=1`,
-    cancelUrl: `${site}/invoice/${token}/`,
+    successUrl: `${site}/invoice/?t=${token}&paid=1`,
+    cancelUrl: `${site}/invoice/?t=${token}`,
     metadata: { invoice_id: inv.id, booking_table: inv.booking_table ?? '', booking_id: inv.booking_id ?? '', kind: 'balance', reference: inv.number },
     expiresInMinutes: 60,
   })

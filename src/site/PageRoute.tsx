@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { getPageContent, type FeedPost } from "@/cms/content";
+import { getPageContent, useLiveContent, type FeedPost } from "@/cms/content";
 import type { CmsImage, PageContentMap, PageKey, SiteContent } from "@/cms/types";
 import { BG_PHONE_WIDTH, pickSrc } from "./ui";
 import { SiteLayout } from "./Layout";
@@ -37,7 +37,8 @@ export function cmsPage<K extends PageKey>(key: K, path: string, Body: (p: { c: 
         scripts: key === "home" ? [{ type: "application/ld+json", children: JSON.stringify(businessJsonLd(loaderData.site, loaderData.origin)) }] : [],
       };
     },
-    component: function Page({ data }: { data: Awaited<ReturnType<typeof getPageContent>> }) {
+    component: function Page({ data: built }: { data: Awaited<ReturnType<typeof getPageContent>> }) {
+      const data = useLiveContent(key, built);
       return (
         <SiteLayout site={data.site} posts={data.posts as FeedPost[]} igVariant={opts.igVariant} igClass={opts.igClass ?? (key === "home" ? "" : "inner")}>
           <Body c={data.page as PageContentMap[K]} site={data.site} />

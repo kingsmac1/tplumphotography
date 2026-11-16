@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ExternalLink, History, Monitor, RotateCcw, Smartphone, Undo2, Eye, EyeOff, X, ChevronDown, ChevronRight } from "lucide-react";
 import { SEED, type DocKey } from "@/cms/types";
-import { demoMode, discardDraft, listRevisions, loadDoc, publish, restoreRevision, saveDraft, seedFor, type Doc, type Revision } from "./api";
+import { demoMode, discardDraft, listRevisions, loadDoc, publish, rebuildSite, restoreRevision, saveDraft, seedFor, type Doc, type Revision } from "./api";
 import { Field, GroupField } from "./fields";
 import { PAGES, sectionsFor, type PageDef } from "./schema";
 import { sendPreview } from "./previewChannel";
@@ -111,6 +111,7 @@ function Editor({ def, onBack }: { def: PageDef; onBack: () => void }) {
   const [save, setSave] = useState<SaveState>("idle");
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [err, setErr] = useState("");
+  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState(false);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
@@ -208,6 +209,9 @@ function Editor({ def, onBack }: { def: PageDef; onBack: () => void }) {
       await publish(def.doc, content, note.trim());
       await load();
       setSave("idle");
+      // Visitors see it now; the pre-rendered pages (for search engines) rebuild on Cloudflare Pages in a minute or two.
+      const problem = await rebuildSite();
+      setNotice(problem ? `Published. Visitors see it now, but the search-engine copy wasn't refreshed: ${problem}` : demoMode ? "" : "Published. Visitors see it now; search engines get the update in about 2 minutes.");
     } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
     finally { setBusy(false); }
   };
@@ -242,6 +246,7 @@ function Editor({ def, onBack }: { def: PageDef; onBack: () => void }) {
           <button type="button" className={`${btn} bg-foreground text-background border-foreground hover:bg-foreground/85`} onClick={doPublish} disabled={!unpublished || busy}>{busy ? "Publishing…" : "Publish"}</button>
         </div>
         {err && <p className="text-xs text-destructive mt-2">{err}</p>}
+        {notice && <p className="text-xs text-emerald-700 mt-2" role="status">{notice}</p>}
       </div>
 
       <div className={`grid gap-8 ${showPreview ? "xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}`}>

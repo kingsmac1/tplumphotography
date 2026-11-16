@@ -26,14 +26,14 @@ If the build is interrupted, read this file first and continue from the next unc
 - Capture failures: **none** (`meta/capture-failures.json` and `wp-api/failures.json` are empty)
 
 ### A2: public site
-- [x] TanStack Start + React + Vite + Tailwind, server-rendered on Cloudflare Workers (`@cloudflare/vite-plugin`); production build passes
+- [x] TanStack Start + React + Vite + Tailwind, **pre-rendered for Cloudflare Pages** (changed from Workers on 2026-11-16 at the client's request; same set-up as PairMediaPro); production build passes
 - [x] Home, Portfolio, About, Contact, The Tplum Signature, FAQ, Coming Soon, all rendered from the CMS (seeded with the exact WordPress content)
 - [x] Same URL paths; SEO title/description/OG/Twitter per page; favicon; LocalBusiness JSON-LD on the home page
 - [x] Pop-out menu, hero slider, testimonials, portfolio gallery + lightbox, FAQ accordion, contact form (browser + server validation, honeypot): all tested in a browser at 1440 and 390, no page errors
 - [x] **Visual match**: every page is within 30px of the original's height at 1440 and 390 (under 1%). Text positions, sizes, line heights and colours measured against the original with `scripts/layout-diff.mjs`; side-by-side images with `scripts/compare.mjs`
 - [x] **Content check**: every heading, paragraph, button and form label in the inventory is word-for-word in the CMS (`node scripts/content-check.mjs`: 82 items, 0 missing)
 - [~] Instagram feed: shows the 8 posts captured from the old site until the token is added in Phase B
-- Preview addresses (localhost, *.workers.dev) are `noindex`; only tplumphotography.com is indexable
+- Preview addresses (*.pages.dev) are kept out of search by `functions/robots.txt.js`; only tplumphotography.com is crawlable
 
 ### A3: dashboard (from DMI)
 - [x] Every section opens without errors: Overview, Bookings, Enquiries, Calendar, Clients, Deliveries, Client Galleries, Invoices, Contracts, Finance, Staff Check-in, Team & Accounts, Website (CMS), Instagram Feed, Prices & Packages, Promos, Emails & Messaging, Settings
@@ -136,6 +136,15 @@ If the build is interrupted, read this file first and continue from the next unc
 - [x] **Design switch** (bottom-left on every public page): **Classic** = the exact WordPress copy; **Modern** = PairMediaPro-style layer (read-only reference: `/Users/macbook/Documents/Website Codes/PairMediaPro`): split header with centred logo that hides on scroll down, full-screen numbered menu with photo previews, phone tab bar with a raised Book button, logo preloader, square spaced-caps and pill buttons, Lenis smooth scrolling, photos that open from the bottom, progress-ring back-to-top, cursor dot with magnetic buttons, and section refinements (rounded cards, roomier FAQ and form fields). Same content and section order; Tplum's own palette and fonts
 - Files: `src/site/design.tsx` (switch), `src/site/modern.tsx`, `src/site/modern.css` (all rules under `html.design-modern`), `src/site/preloader.tsx`; one script line in `src/routes/__root.tsx`; dependency `lenis`
 - **When the client chooses:** Classic → delete those files, the lenis dependency, the root script/preloader lines and the `ModernLayer` in `Layout.tsx`. Modern → make it the default (drop the `html.design-modern` scoping and the classic header/menu/to-top markup), then delete the switch
+
+## Cloudflare Pages set-up (2026-11-16)
+- **Build:** `npm run build` → `dist/client` (21 pre-rendered pages + `_redirects`, `_headers`, `sitemap.xml`, `robots.txt`). Pages Functions in `functions/` (robots.txt, client-gallery share preview, client-gallery-cover). No Workers config.
+- **Pages project settings:** Framework preset None · Build command `npm run build` · Build output directory `dist/client` · Environment variables `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY`, `VITE_SITE_URL` (Phase B) and `NODE_VERSION=22`
+- **CMS content:** `scripts/fetch-cms.mjs` saves published content + Instagram posts into the build; visitors' browsers also load the latest published content straight away; Publish in the dashboard calls the `publish-site` function, which triggers the Pages deploy hook (`CF_DEPLOY_HOOK_URL`, created in Phase B) to rebuild the saved pages
+- **Private links** now carry their token in the query string: `/invoice/?t=…`, `/contract/?t=…`, `/client-gallery/?id=…&k=…`. Old path-style links redirect (`public/_redirects`, `functions/client-gallery`)
+- **404:** `dist/client/404.html` (pre-rendered `/404/`), keeps the address the visitor typed
+- **Local:** `npm run dev` (port 3000) for development; `npm run preview` serves the build exactly like Pages (`wrangler pages dev`, port 4173); `npm run deploy` builds and uploads with `wrangler pages deploy`
+- Checked: all pages, redirects and functions under `wrangler pages dev`; 16/16 browser checks in each design; no hydration errors
 
 ## Needs your decision
 1. ~~Booking pages unlinked~~: resolved, they are linked from the new `/book/` page and the Book Now buttons

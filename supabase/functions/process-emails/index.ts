@@ -685,7 +685,7 @@ Deno.serve(async (req) => {
       const { data: inv } = await db.from("invoices").select("public_token").eq("booking_table", "bookings").eq("booking_id", b.id).neq("status", "void").order("created_at", { ascending: false }).limit(1).maybeSingle();
       await send(budget, { db, templateKey: "balance_reminder", dedupeKey: `balance_reminder:bookings:${b.id}:${target}`, to: email, sourceTable: "bookings", sourceId: String(b.id), vars: {
         client_name: b.full_name ?? "", item: b.service_summary || b.selected_service || "your booking", shoot_date: b.shoot_date ?? "",
-        total: money(total), amount_paid: money(paid), balance: money(total - paid), pay_url: inv?.public_token ? `${SITE}/invoice/${inv.public_token}/` : "",
+        total: money(total), amount_paid: money(paid), balance: money(total - paid), pay_url: inv?.public_token ? `${SITE}/invoice/?t=${inv.public_token}` : "",
       } });
     }
   });
@@ -698,7 +698,7 @@ Deno.serve(async (req) => {
     for (const inv of data ?? []) {
       if (!EMAIL_RE.test(String(inv.client_email ?? ""))) continue;
       await send(budget, { db, templateKey: "invoice_overdue", dedupeKey: `invoice_overdue:${inv.id}:${inv.due_date}`, to: inv.client_email, sourceTable: "invoices", sourceId: String(inv.id), vars: {
-        client_name: inv.client_name ?? "", invoice_number: inv.number, balance: money(inv.balance), due_date: inv.due_date ?? "", pay_url: `${SITE}/invoice/${inv.public_token}/`,
+        client_name: inv.client_name ?? "", invoice_number: inv.number, balance: money(inv.balance), due_date: inv.due_date ?? "", pay_url: `${SITE}/invoice/?t=${inv.public_token}`,
       } });
     }
   });

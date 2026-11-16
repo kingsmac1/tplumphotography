@@ -210,7 +210,7 @@ function ContractView({ id }: { id: string }) {
   const load = useCallback(async () => { const { data } = await supabase.from("contracts").select("*").eq("id", id).maybeSingle(); setC(data as Contract); setBody((data as Contract)?.body ?? ""); }, [id]);
   useEffect(() => { void load(); }, [load]);
   if (!c) return <p className="text-sm text-muted-foreground">Loading…</p>;
-  const link = `${window.location.origin}/contract/${c.public_token}/`;
+  const link = `${window.location.origin}/contract/?t=${c.public_token}`;
   const editable = c.status === "draft";
   const saveBody = async () => { const { error } = await supabase.from("contracts").update({ body }).eq("id", c.id); setMsg(error ? { ok: false, t: error.message } : { ok: true, t: "Saved." }); void load(); };
   const send = async () => {

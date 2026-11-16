@@ -39,7 +39,7 @@ Deno.serve(handle(async (req, body) => {
   const number = String(inv.number)
   const filename = pdfFilename(number)
   const cfg = mailConfig()
-  const payUrl = t.balance > 0 ? `${cfg.siteUrl}/invoice/${inv.public_token}/` : ''
+  const payUrl = t.balance > 0 ? `${cfg.siteUrl}/invoice/?t=${inv.public_token}` : ''
   const email = invoiceEmail({ siteUrl: cfg.siteUrl, subject, message, stage: t.stage, number, filename, total: t.total, paid: t.paid, balance: t.balance, tax: t.tax, taxName: doc.taxEnabled ? doc.taxName : '', payUrl })
 
   if (Deno.env.get('MAIL_DRY_RUN') === '1') return json({ ok: true, dryRun: true, stage: t.stage, email: { to, subject: email.subject }, attachment: { filename, bytes: Math.floor(pdf.length * 0.75) } })

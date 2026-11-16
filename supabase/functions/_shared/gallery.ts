@@ -9,7 +9,7 @@ export const PAGE_SIZE = 200
 export const MAX_FILES_PER_CALL = 50
 
 /** The private link emailed to the client: opens the gallery without signing in. */
-export const clientLink = (g: Pick<Gallery, 'id' | 'share_token'>) => `${mailConfig().siteUrl}/client-gallery/${g.id}?k=${g.share_token}`
+export const clientLink = (g: Pick<Gallery, 'id' | 'share_token'>) => `${mailConfig().siteUrl}/client-gallery/?id=${g.id}&k=${g.share_token}`
 export const adminLink = (g: Pick<Gallery, 'booking_id'>) =>
   `${mailConfig().siteUrl}/dashboard/#galleries${g.booking_id ? `/${g.booking_id}` : ''}`
 
