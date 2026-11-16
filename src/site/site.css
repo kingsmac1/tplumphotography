@@ -66,56 +66,12 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 @media (max-width: 767px) { .tp .btn { font-size: 14px; padding: 10px 24px; } }
 
 /* =====================================================================
-   Header (overlays the hero) · pop-out menu · footer · back to top
+   Social icons · footer (the header and menu are in modern.css)
    ===================================================================== */
-.tp .site-header {
-  position: relative; z-index: 100; display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 80px 50px 20px; margin-bottom: -220px; height: 220px; pointer-events: none;
-}
-.tp .site-header > * { pointer-events: auto; }
-.tp .site-header .logo { display: block; width: 18%; }
-.tp .site-header .logo img { width: 44%; min-width: 106px; height: auto; }
-.tp .site-header .right { display: flex; align-items: center; justify-content: flex-end; padding: 10px; width: 228px; }
+/* Social icons (Instagram strip) */
 .tp .socials { display: flex; gap: 5px; align-items: center; }
 .tp .socials a, .tp .socials span { display: inline-flex; width: 30px; height: 30px; padding: 2.5px; border-radius: 50%; align-items: center; justify-content: center; transition: opacity .3s; }
 .tp .socials svg { width: 25px; height: 25px; fill: #fff; }
-.tp .site-header .socials { margin-right: 20px; }
-.tp .menu-toggle { width: 43px; display: flex; justify-content: center; background: none; border: 0; padding: 0; cursor: pointer; color: #fff; }
-.tp .menu-toggle svg { width: 25px; height: 25px; fill: #fff; }
-@media (max-width: 1024px) {
-  .tp .site-header { padding: 27px 30px 0; margin-bottom: -210px; height: 210px; }
-  .tp .site-header .logo { width: 30%; }
-  .tp .site-header .logo img { width: 35%; min-width: 0; }
-}
-@media (max-width: 767px) {
-  .tp .site-header { padding: 20px; align-items: center; height: 95px; margin-bottom: -95px; }
-  .tp .site-header .logo { width: 84px; }
-  .tp .site-header .logo img { width: 100%; height: 45px; object-fit: cover; }
-  .tp .site-header .right { width: 120px; padding: 10px; }
-  .tp .site-header .socials { margin-right: 20px; }
-  .tp .menu-toggle { width: 12px; }
-}
-
-/* Pop-out menu (full-screen black) */
-.tp .menu-overlay {
-  position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center;
-  opacity: 0; visibility: hidden; transition: opacity .5s, visibility .5s;
-}
-.tp .menu-overlay.open { opacity: 1; visibility: visible; }
-.tp .menu-overlay .menu-close { position: absolute; top: 6%; right: 6%; width: 27px; height: 27px; display: flex; align-items: center; justify-content: center; background: none; border: 0; cursor: pointer; padding: 0; }
-.tp .menu-overlay .menu-close svg { width: 27px; height: 27px; fill: #fff; }
-.tp .menu-overlay .menu-inner { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 10px; }
-.tp .menu-overlay .menu-logo { display: flex; justify-content: center; width: 1000px; max-width: 100%; }
-.tp .menu-overlay .menu-logo img { width: 13%; height: auto; }
-.tp .menu-overlay nav { margin-top: 60px; display: flex; flex-direction: column; align-items: center; }
-.tp .menu-overlay nav a { font-family: var(--fulgate); font-size: 47px; font-weight: 600; line-height: 42px; color: #fff; padding: 13px 20px; transition: color .3s; }
-.tp .menu-overlay nav a.active { color: #dadada; }
-.tp .menu-overlay .socials { margin-top: 24px; }
-@media (max-width: 1024px) { .tp .menu-overlay nav a { font-size: 42px; line-height: .8em; } }
-@media (max-width: 767px) {
-  .tp .menu-overlay .menu-logo img { width: 30%; }
-  .tp .menu-overlay nav a { font-size: 29px; line-height: .9em; }
-}
 
 /* Footer (copyright bar) */
 .tp .site-footer { background: #000; padding: 20px 0; }
@@ -123,13 +79,6 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .site-footer p { margin: 0; font-size: 8pt; line-height: 26.4px; }
 .tp .site-footer em, .tp .site-footer em a { color: #999; }
 
-/* Back to top */
-.tp .to-top {
-  position: fixed; right: 30px; bottom: 30px; z-index: 99; width: 32px; height: 32px; border-radius: 2px; background: #000; color: #fff; border: 0;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;
-}
-.tp .to-top.show { opacity: 1; visibility: visible; }
-.tp .to-top svg { width: 15px; height: 15px; fill: #fff; transform: rotate(180deg); }
 
 /* =====================================================================
    Hero slider (home)
@@ -539,11 +488,6 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .ig-band .follow p { margin-bottom: 25.6px; }
 @media (max-width: 767px) { .tp .ig-band .top { padding: 0 20px; min-height: 69px; } .tp .ig-band .follow p { margin-bottom: 22.4px; } }
 
-/* Solid black header for app pages (booking, studio rental, client areas) */
-.tp.tp-solid { background: #000; }
-.tp.tp-solid .site-header { margin-bottom: 0; height: auto; padding: 24px 50px; align-items: center; }
-@media (max-width: 1024px) { .tp.tp-solid .site-header { padding: 20px 30px; } }
-@media (max-width: 767px) { .tp.tp-solid .site-header { padding: 16px 20px; height: auto; margin-bottom: 0; } }
 
 /* Measured against the original at 1440px (kept last so it wins over the base rules above). */
 @media (min-width: 768px) { .tp .process { padding-top: 10px; } }
@@ -574,8 +518,6 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 /* Contact form: space above the first field as on the original (WPForms container spacing). */
 .tp form.tp-form { padding-top: 40px; }
 @media (max-width: 767px) { .tp form.tp-form { padding-top: 55px; } .tp .contact-main + .contact-info { margin-top: 10px; } }
-/* Phones: the original menu icon sits in a 12px box but draws at full 25px, spilling past the box edge. */
-@media (max-width: 767px) { .tp .menu-toggle { justify-content: flex-start; overflow: visible; } .tp .menu-toggle svg { flex: none; } }
 /* Page banners: full-size photo on larger screens, a phone-sized one on phones (see PageHero). */
 .tp .page-hero, .tp .bgv { background-image: var(--bg-l); }
 @media (max-width: 767px) { .tp .page-hero, .tp .bgv { background-image: var(--bg-s, var(--bg-l)); } }
@@ -588,20 +530,8 @@ html.js .tp .reveal.fade.in { animation-name: tpFadeIn; }
 .tp .btn.solid { background: #000; color: #fff; border-color: #000; }
 .tp .btn.light.solid { background: #fff; color: #000; border-color: #fff; }
 .tp .btn-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
-.tp .header-book {
-  display: inline-flex; align-items: center; white-space: nowrap; margin-right: 18px; padding: 9px 18px;
-  font-family: var(--dm); font-size: 13px; letter-spacing: .1em; line-height: 1; color: #fff;
-  border: 1px solid #fff; border-radius: 30px; transition: background-color .3s, color .3s;
-}
-.tp .header-book:hover, .tp .header-book:focus-visible { background: #fff; color: #000; }
-.tp .site-header .right { width: auto; min-width: 228px; }
 .tp .contact-book { margin: 16px 0 6px; }
-@media (max-width: 767px) {
-  .tp .site-header .right { min-width: 0; width: auto; }
-  .tp .header-book { margin-right: 12px; padding: 7px 11px; font-size: 11px; letter-spacing: .06em; }
-  .tp .site-header .socials { margin-right: 14px; }
-}
-@media (max-width: 380px) { .tp .site-header .socials { display: none; } }
+
 
 /* ---------- /book/ ---------- */
 .tp .hero-book { background-size: cover; background-position: center 40%; }

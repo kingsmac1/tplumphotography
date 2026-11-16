@@ -7,7 +7,7 @@ import { Link } from "@/lib/router-compat";
 import InspirationImages, { uploadInspiration } from "@/components/InspirationImages";
 import { supabase } from "@/lib/supabaseClient";
 import { useBookingPricing, useBusinessSettings } from "@/lib/content";
-import { depositFor } from "@/lib/pricing";
+import { depositFor, taxOn } from "@/lib/pricing";
 import { createBooking } from "@/lib/bookingLog";
 
 type SettingId = "indoor" | "outdoor";
@@ -20,6 +20,8 @@ type ServiceOption = {
   /** "bundle" = flat price. "per_outfit" = price multiplied by outfit count. */
   pricingMode: "bundle" | "per_outfit";
   desc: string;
+  /** Session length in minutes (the calendar slot grows with "Extra 30 Minutes"). */
+  minutes: number;
 };
 
 type Extra = {
@@ -30,7 +32,12 @@ type Extra = {
   maxQty?: number;
   /** Costs the same as the package the client picked (e.g. Extra Outfit). */
   followsPackage?: boolean;
+  /** Minutes added to the session per unit (e.g. "Extra 30 Minutes"). */
+  extraMinutes: number;
 };
+
+/** A package description written as "60 Mins Studio Session · Up to 2 Outfits · …" becomes a list of inclusions. */
+const inclusions = (desc: string) => desc.split(/\s*·\s*/).map((x) => x.trim()).filter(Boolean);
 
 const shootTypes = [
   "Portrait", "Engagement", "Maternity", "Proposal", "Couple",
@@ -51,7 +58,7 @@ type SocialHandle = { platform: string; handle: string };
 const platformOptions = ["Instagram", "Twitter", "TikTok", "Facebook", "YouTube", "LinkedIn"];
 
 const formatMoney = (amount: number) =>
-  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: 0 }).format(amount);
+  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: Number.isInteger(amount) ? 0 : 2, maximumFractionDigits: 2 }).format(amount);
 
 const labelCls = "block text-xs font-body font-bold tracking-widest mb-2";
 const inputCls =
@@ -110,10 +117,17 @@ const Booking = () => {
               price: r.price,
               pricingMode: r.pricing_mode === "per_outfit" ? ("per_outfit" as const) : ("bundle" as const),
               desc: r.description,
+              minutes: Number(r.duration_minutes) || 60,
             }))
         : [],
     [pricing.loaded, pricing.services, setting],
   );
+  // Studio / On location tabs only when both kinds of package exist (Tplum's portrait packages are all studio).
+  const settingsWithRows = useMemo(() => new Set(pricing.services.filter((r) => r.active !== false).map((r) => r.setting)), [pricing.services]);
+  const hasBothSettings = settingsWithRows.has("indoor") && settingsWithRows.has("outdoor");
+  useEffect(() => {
+    if (settingsWithRows.size && !settingsWithRows.has(setting)) setSetting([...settingsWithRows][0] as SettingId);
+  }, [settingsWithRows, setting]);
   const chosenService = services.find((s) => s.id === selectedService);
   const packagePrice = chosenService?.price ?? 0;
   const availableExtras: Extra[] = useMemo(
@@ -127,6 +141,7 @@ const Booking = () => {
               desc: r.description,
               maxQty: r.max_qty ?? undefined,
               followsPackage: r.follows_package,
+              extraMinutes: Number(r.extra_minutes) || 0,
             }))
         : [],
     [pricing.loaded, pricing.extras, packagePrice],
@@ -146,7 +161,15 @@ const Booking = () => {
   const subtotal = serviceTotal + extrasTotal;
   // The discount applies to the package price only, never to extras.
   const discount = promo ? Math.round((serviceTotal * promo.percent) / 100) : 0;
-  const grandTotal = subtotal - discount;
+  // Sales tax (GST) from Settings, on the discounted subtotal — the server charges exactly the same.
+  const taxRule = business.booking_tax_enabled && Number(business.booking_tax_rate) > 0 ? { name: business.booking_tax_name || "GST", rate: Number(business.booking_tax_rate) } : null;
+  const tax = taxOn(subtotal - discount, taxRule);
+  const grandTotal = subtotal - discount + tax;
+  // How long the session runs: the package plus any time-adding extras
+  const sessionMinutes = (chosenService?.minutes ?? 60) + selectedExtras.reduce((m, n) => {
+    const ex = availableExtras.find((e) => e.name === n);
+    return ex ? m + ex.extraMinutes * (ex.maxQty ? qtyOf(ex.name) : 1) : m;
+  }, 0);
   const couponNote = promo ? `Coupon ${promo.code} (${promo.percent}% off): -${formatMoney(discount)}` : "";
 
   const settingLabel = setting === "indoor" ? "Studio" : "On location";
@@ -391,7 +414,7 @@ const Booking = () => {
             </span>
           </Link>
           <p className="text-muted-foreground font-body mb-10">
-            Choose studio or on location, pick a package, then fill in your details to reserve your session.
+            {hasBothSettings ? "Choose studio or on location, pick a package, then fill in your details to reserve your session." : "Pick a package, then fill in your details to reserve your session."}
           </p>
 
           {publicPromos.length > 0 && (
@@ -408,9 +431,9 @@ const Booking = () => {
           {/* Setting toggle */}
           <div className="flex flex-wrap items-center justify-between gap-4 mt-6 mb-6">
             <p className="text-sm text-muted-foreground font-body">
-              Every session is a 1-hour slot
+              {taxRule ? `Prices in Canadian dollars, plus ${taxRule.name}.` : "Prices in Canadian dollars."}
             </p>
-            <div className="inline-flex border border-border">
+            {hasBothSettings && <div className="inline-flex border border-border">
               {(["indoor", "outdoor"] as const).map((opt) => (
                 <button
                   key={opt}
@@ -422,7 +445,7 @@ const Booking = () => {
                   {opt === "indoor" ? "STUDIO" : "ON LOCATION"}
                 </button>
               ))}
-            </div>
+            </div>}
           </div>
 
           {!pricing.loaded && <p className="text-sm font-body text-muted-foreground mb-4">Loading prices…</p>}
@@ -441,8 +464,12 @@ const Booking = () => {
                   }`}
                 >
                   <p className="text-xs font-body font-bold tracking-widest opacity-70">{s.name.toUpperCase()}</p>
-                  <p className="font-display text-3xl md:text-4xl font-bold mt-3">{formatMoney(s.price)}</p>
-                  <p className="text-xs font-body opacity-70 mt-2 flex-1">{s.desc}</p>
+                  <p className="font-display text-3xl md:text-4xl font-bold mt-3">
+                    {formatMoney(s.price)}{taxRule && <span className="font-body text-sm font-normal opacity-70"> + {taxRule.name}</span>}
+                  </p>
+                  <ul className="text-sm font-body opacity-80 mt-4 space-y-1.5 flex-1">
+                    {inclusions(s.desc).map((x) => <li key={x} className="flex gap-2"><Check size={14} className="mt-0.5 shrink-0" aria-hidden="true" />{x}</li>)}
+                  </ul>
                   <span className="mt-5 inline-flex items-center gap-2 text-xs font-body font-bold tracking-widest">
                     {active ? <><Check size={14} /> SELECTED</> : <>BOOK THIS <ChevronRight size={14} /></>}
                   </span>
@@ -467,6 +494,7 @@ const Booking = () => {
                 </li>
               ))}
             </ul>
+            {business.session_note && <p className="mt-4 pt-4 border-t border-border text-sm font-body font-bold">{business.session_note}</p>}
           </div>
 
           {/* Booking form */}
@@ -536,7 +564,7 @@ const Booking = () => {
 
                   <div id="shoot-slot" className="scroll-mt-24">
                     <label className={labelCls}>SHOOT DATE & TIME *</label>
-                    <SlotPicker date={shootDate} time={shootTime} onChange={pickSlot} refreshKey={slotsVersion} />
+                    <SlotPicker date={shootDate} time={shootTime} onChange={pickSlot} refreshKey={slotsVersion} minutes={sessionMinutes} />
                     {slotError && <p className="mt-2 text-sm font-body text-destructive">{slotError}</p>}
                   </div>
 
@@ -651,6 +679,7 @@ const Booking = () => {
                   <div>
                     <h2 className="font-display text-2xl md:text-3xl font-bold mb-1">ADD EXTRAS</h2>
                     <p className="text-sm text-muted-foreground font-body">Optional add-ons to enhance your session</p>
+                    {business.session_note && <p className="text-sm font-body font-bold mt-2">{business.session_note}</p>}
                   </div>
                   {availableExtras.map((extra) => {
                     const selected = selectedExtras.includes(extra.name);
@@ -740,6 +769,9 @@ const Booking = () => {
                   ))}
                   {promo && (
                     <div className="flex justify-between"><span className="text-muted-foreground">Discount ({promo.code} · {promo.percent}%)</span><span>-{formatMoney(discount)}</span></div>
+                  )}
+                  {tax > 0 && taxRule && (
+                    <div className="flex justify-between"><span className="text-muted-foreground">{taxRule.name} ({taxRule.rate}%)</span><span>{formatMoney(tax)}</span></div>
                   )}
                   <div className="flex justify-between items-center border-t border-border pt-3 mt-3">
                     <span className="font-bold tracking-widest text-xs">TOTAL</span>

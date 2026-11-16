@@ -1,36 +1,50 @@
 import { describe, expect, it } from 'vitest'
-import { balanceDue, couponDiscount, depositFor, PricingError, quoteSession, quoteStudio, quoteWedding } from '../src/lib/pricing'
+import { balanceDue, couponDiscount, depositFor, PricingError, quoteSession, quoteStudio, quoteWedding, taxOn } from '../src/lib/pricing'
 import { DEFAULT_BOOKING_EXTRAS, DEFAULT_BOOKING_PRICES } from '../src/data/pricingDefaults'
 
 const services = DEFAULT_BOOKING_PRICES.map((r) => ({ id: r.service_id, name: r.name, price: r.price, pricing_mode: r.pricing_mode }))
 const extras = DEFAULT_BOOKING_EXTRAS
 
-describe('session quotes (DMI booking rules)', () => {
+describe('session quotes (Tplum portrait packages)', () => {
+  const svc = DEFAULT_BOOKING_PRICES.map((r) => ({ id: r.service_id, name: r.name, price: r.price, pricing_mode: r.pricing_mode, duration_minutes: r.duration_minutes }))
+  const GST = { name: 'GST', rate: 5 }
   it('prices a package with no extras', () => {
-    const q = quoteSession({ serviceId: 'portrait-individual', extras: [] }, services, extras)
-    expect(q).toMatchObject({ serviceTotal: 250, extrasTotal: 0, subtotal: 250, discount: 0, total: 250 })
+    const q = quoteSession({ serviceId: 'package-1', extras: [] }, svc, extras)
+    expect(q).toMatchObject({ serviceTotal: 350, extrasTotal: 0, subtotal: 350, discount: 0, tax: 0, total: 350, durationMinutes: 60 })
+  })
+  it('adds GST on top (5% of the discounted subtotal)', () => {
+    const q = quoteSession({ serviceId: 'package-2', extras: [], tax: GST }, svc, extras)
+    expect(q).toMatchObject({ subtotal: 450, tax: 22.5, taxName: 'GST', taxRate: 5, total: 472.5 })
   })
   it('multiplies quantity extras and adds tick-box extras once', () => {
-    const q = quoteSession({ serviceId: 'engagement', extras: [{ name: 'Extra Edited Picture', qty: 4 }, { name: '30-second Reel' }] }, services, extras)
-    expect(q.extrasTotal).toBe(4 * 25 + 150)
-    expect(q.total).toBe(450 + 250)
+    const q = quoteSession({ serviceId: 'package-3', extras: [{ name: 'Additional Edited Images', qty: 4 }, { name: 'Rush Delivery' }] }, svc, extras)
+    expect(q.extrasTotal).toBe(4 * 25 + 100)
+    expect(q.total).toBe(500 + 200)
+  })
+  it('"Extra 30 Minutes" adds $50 and 30 minutes per unit', () => {
+    const q = quoteSession({ serviceId: 'package-1', extras: [{ name: 'Extra 30 Minutes', qty: 2 }] }, svc, extras)
+    expect(q.extrasTotal).toBe(100)
+    expect(q.durationMinutes).toBe(60 + 60)
   })
   it('caps quantities at the maximum and never below 1', () => {
-    const q = quoteSession({ serviceId: 'engagement', extras: [{ name: 'Extra Edited Picture', qty: 999 }, { name: 'Extra Outfit', qty: -3 }] }, services, extras)
-    expect(q.extrasTotal).toBe(20 * 25 + 1 * 75)
+    const q = quoteSession({ serviceId: 'package-1', extras: [{ name: 'Additional Edited Images', qty: 999 }, { name: 'Extra Outfit', qty: -3 }] }, svc, extras)
+    expect(q.extrasTotal).toBe(20 * 25 + 1 * 50)
   })
   it('ignores a duplicated extra (a tampered request cannot double-charge)', () => {
-    const q = quoteSession({ serviceId: 'engagement', extras: [{ name: '30-second Reel' }, { name: '30-second Reel' }] }, services, extras)
-    expect(q.extrasTotal).toBe(150)
+    const q = quoteSession({ serviceId: 'package-1', extras: [{ name: 'Rush Delivery' }, { name: 'Rush Delivery' }] }, svc, extras)
+    expect(q.extrasTotal).toBe(100)
   })
-  it('applies a coupon to the package only, never to extras', () => {
-    const q = quoteSession({ serviceId: 'engagement', extras: [{ name: '30-second Reel' }], promoPercent: 10 }, services, extras)
+  it('applies a coupon to the package only, then GST on what is left', () => {
+    const q = quoteSession({ serviceId: 'package-2', extras: [{ name: 'Rush Delivery' }], promoPercent: 10, tax: GST }, svc, extras)
     expect(q.discount).toBe(45)
-    expect(q.total).toBe(450 + 150 - 45)
+    expect(q.tax).toBe(25.25) // 5% of (450 + 100 − 45)
+    expect(q.total).toBe(530.25)
   })
-  it('rounds coupons to the cent', () => {
+  it('rounds coupons and tax to the cent', () => {
     expect(couponDiscount(333.33, 15)).toBe(50)
     expect(couponDiscount(99.99, 33)).toBe(33)
+    expect(taxOn(333.33, { name: 'GST', rate: 5 })).toBe(16.67)
+    expect(taxOn(100, null)).toBe(0)
   })
   it('per-outfit packages multiply by outfits', () => {
     const q = quoteSession({ serviceId: 'x', outfits: 3, extras: [] }, [{ id: 'x', name: 'Per outfit', price: 120.5, pricing_mode: 'per_outfit' }], [])
@@ -41,8 +55,8 @@ describe('session quotes (DMI booking rules)', () => {
     expect(q.extrasTotal).toBe(400)
   })
   it('rejects unknown packages and extras', () => {
-    expect(() => quoteSession({ serviceId: 'nope', extras: [] }, services, extras)).toThrow(PricingError)
-    expect(() => quoteSession({ serviceId: 'engagement', extras: [{ name: 'Free money' }] }, services, extras)).toThrow(PricingError)
+    expect(() => quoteSession({ serviceId: 'nope', extras: [] }, svc, extras)).toThrow(PricingError)
+    expect(() => quoteSession({ serviceId: 'package-1', extras: [{ name: 'Free money' }] }, svc, extras)).toThrow(PricingError)
   })
 })
 

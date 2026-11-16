@@ -60,3 +60,14 @@ describe('invoice from a booking', () => {
     expect(t).toMatchObject({ total: 555, paid: 166.5, balance: 388.5 })
   })
 })
+
+describe('invoice from a booking that was charged GST', () => {
+  it('charges the same GST so the invoice total matches the booking', async () => {
+    const { invoiceFromBooking, blankInvoice, invoiceTotals } = await import('../src/features/invoices/model')
+    const booking = { full_name: 'Test Client', email: 't@example.com', phone: '', selected_service: 'Package 2', service_total: 450, extras_total: 100, selected_extras: 'Rush Delivery', discount_total: 45, promo_code: 'TEN', tax_total: 25.25, tax_name: 'GST', grand_total: 530.25, amount_paid: 0, payment_status: 'Not Paid' }
+    const doc = invoiceFromBooking(blankInvoice('2026-11-16'), 'bookings', booking)
+    expect(doc.taxEnabled).toBe(true)
+    expect(doc.taxName).toBe('GST')
+    expect(invoiceTotals(doc).total).toBe(530.25)
+  })
+})

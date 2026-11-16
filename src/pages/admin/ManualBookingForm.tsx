@@ -6,7 +6,8 @@ import { useBodyScrollLock } from "./useBodyScrollLock";
 import CustomSelect from "./CustomSelect";
 import { PaymentFields, paymentForSave, friendlyPaymentError } from "./payment";
 import { announcePayment } from "@/features/invoices/events";
-import { useBookingPricing } from "@/lib/content";
+import { useBookingPricing, useBusinessSettings } from "@/lib/content";
+import { taxOn } from "@/lib/pricing";
 
 interface Props { onClose: () => void; onSuccess: () => void; initial?: { shoot_date?: string; shoot_time?: string } }
 
@@ -18,7 +19,7 @@ const platformOptsList = platformOptions.map((p) => ({ value: p, label: p }));
 const paymentOptsList = paymentStatusOptions.map((p) => ({ value: p, label: p }));
 
 const formatMoney = (n: number) =>
-  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).format(n);
 
 const initialForm = {
   full_name: "", gender: "", shoot_type: "", shoot_type_other: "",
@@ -92,6 +93,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
         price: r.follows_package ? servicePrice : r.price,
         maxQty: r.max_qty ?? undefined,
         followsPackage: r.follows_package,
+        extraMinutes: Number(r.extra_minutes) || 0,
       })),
     [pricing.extras, servicePrice],
   );
@@ -100,7 +102,13 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
   const pickedExtras = availableExtras.filter((e) => selectedExtras.includes(e.name));
   const extrasTotal = pickedExtras.reduce((sum, e) => sum + lineTotal(e), 0);
   const discount = Math.max(0, Number(form.discount) || 0);
-  const grandTotal = Math.max(0, serviceTotal + extrasTotal - discount);
+  // GST from Settings, same rule as the website (on the discounted subtotal)
+  const { settings: business } = useBusinessSettings();
+  const taxRule = business.booking_tax_enabled && Number(business.booking_tax_rate) > 0 ? { name: business.booking_tax_name || "GST", rate: Number(business.booking_tax_rate) } : null;
+  const tax = taxOn(Math.max(0, serviceTotal + extrasTotal - discount), taxRule);
+  const grandTotal = Math.max(0, serviceTotal + extrasTotal - discount) + tax;
+  // the session's length (package + extra time), so the calendar blocks the right amount of time
+  const durationMinutes = (Number(chosenService?.duration_minutes) || 60) + pickedExtras.reduce((m, e) => m + e.extraMinutes * (e.maxQty ? qtyOf(e.name) : 1), 0);
 
   const toggleExtra = (name: string) =>
     setSelectedExtras((p) => (p.includes(name) ? p.filter((n) => n !== name) : [...p, name]));
@@ -182,6 +190,10 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
       // The Total column reads grand_total, so it has to be set here (the public form does the same).
       service_total: serviceTotal,
       extras_total: extrasTotal,
+      discount_total: discount,
+      tax_total: tax,
+      tax_name: tax ? taxRule?.name ?? "" : "",
+      duration_minutes: durationMinutes,
       grand_total: grandTotal,
       service_summary: form.service_summary.trim() || autoSummary,
       ...paymentForSave(form.payment_status, form.amount_paid, grandTotal),
@@ -269,7 +281,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
             <Field fieldErrors={fieldErrors} name="selected_service" label="Service" required>
               <CustomSelect value={form.selected_service} onChange={pickService} options={serviceOptsList} placeholder="Select..." hasError={!!fieldErrors.selected_service} />
             </Field>
-            <Field fieldErrors={fieldErrors} name="service_price" label={pricingMode === "per_outfit" ? "Price per Outfit (NGN)" : "Service Price (NGN)"}>
+            <Field fieldErrors={fieldErrors} name="service_price" label={pricingMode === "per_outfit" ? "Price per Outfit ($ CAD)" : "Service Price ($ CAD)"}>
               <input className={inputCls + errBorder("service_price")} type="number" min="0" value={form.service_price} onChange={(e) => set("service_price", e.target.value)} />
             </Field>
           </div>
@@ -327,7 +339,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
             <Field fieldErrors={fieldErrors} name="coupon_code" label="Coupon Code">
               <input className={inputCls} value={form.coupon_code} onChange={(e) => set("coupon_code", e.target.value)} placeholder="Optional" />
             </Field>
-            <Field fieldErrors={fieldErrors} name="discount" label="Discount (NGN)">
+            <Field fieldErrors={fieldErrors} name="discount" label="Discount ($ CAD)">
               <input className={inputCls + errBorder("discount")} type="number" min="0" value={form.discount} onChange={(e) => set("discount", e.target.value)} placeholder="0" />
             </Field>
           </div>
@@ -338,6 +350,7 @@ export default function ManualBookingForm({ onClose, onSuccess, initial }: Props
               <div key={e.name} className="flex justify-between"><span className="text-muted-foreground">{e.maxQty ? `${e.name} x${qtyOf(e.name)}` : e.name}</span><span>{formatMoney(lineTotal(e))}</span></div>
             ))}
             {discount > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span>-{formatMoney(discount)}</span></div>}
+            {tax > 0 && taxRule && <div className="flex justify-between"><span className="text-muted-foreground">{taxRule.name} ({taxRule.rate}%)</span><span>{formatMoney(tax)}</span></div>}
             <div className="flex justify-between pt-2 mt-2 border-t border-border font-bold"><span>Total</span><span>{formatMoney(grandTotal)}</span></div>
           </div>
 

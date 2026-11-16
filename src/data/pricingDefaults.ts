@@ -1,7 +1,7 @@
 /**
- * SAMPLE prices (CAD) used only until Supabase is connected; the same rows are seeded into the database
- * (supabase/migrations/..._seed_sample_prices.sql) with sample = true, which shows a "Sample: edit me"
- * badge in Dashboard -> Prices. Nothing here is ever labelled "sample" on the public site.
+ * Session prices (CAD, before GST) used until Supabase is connected; the same rows are seeded into the database
+ * (supabase/migrations/20261116000100_portrait_packages.sql). Rows with sample = true show a "Sample: edit me"
+ * badge in Dashboard -> Prices only. Nothing here is ever labelled "sample" on the public site.
  * No location/branch dimension (DMI had Lagos/Abuja/Uyo; Tplum has none).
  */
 export type PriceRow = {
@@ -25,34 +25,36 @@ export type ExtraRow = {
   price: number;
   max_qty: number | null;
   follows_package: boolean;
+  /** Minutes this extra adds to the session per unit (e.g. "Extra 30 Minutes" = 30). */
+  extra_minutes?: number;
   sort_order: number;
   active: boolean;
   sample?: boolean;
 };
 
-const row = (setting: "indoor" | "outdoor", i: number, service_id: string, name: string, price: number, description: string): PriceRow => ({
-  id: `${setting}-${service_id}`, setting, service_id, name, description, price, pricing_mode: "bundle", duration_minutes: 60, sort_order: i, active: true, sample: true,
+const pkg = (i: number, service_id: string, name: string, price: number, duration_minutes: number, description: string): PriceRow => ({
+  id: `indoor-${service_id}`, setting: "indoor", service_id, name, description, price, pricing_mode: "bundle", duration_minutes, sort_order: i, active: true, sample: false,
 });
 
+/** Tplum's portrait packages (client price sheet, 2026-11-16). Prices are before GST; GST is added at checkout. */
 export const DEFAULT_BOOKING_PRICES: PriceRow[] = [
-  row("indoor", 1, "portrait-individual", "Studio Portrait · Individual", 250, "1 hour · 1 outfit · 15 edited images"),
-  row("indoor", 2, "portrait-couple", "Studio Portrait · Couple", 325, "1 hour · 2 outfits · 20 edited images"),
-  row("indoor", 3, "maternity-studio", "Maternity · Studio", 350, "1 hour · 2 outfits · 20 edited images"),
-  row("indoor", 4, "family", "Family & Group", 400, "1 hour · up to 6 people · 25 edited images"),
-  row("outdoor", 1, "engagement", "Engagement Session", 450, "1 hour on location · 30 edited images"),
-  row("outdoor", 2, "portrait-location", "Portrait · On Location", 350, "1 hour · 2 outfits · 20 edited images"),
-  row("outdoor", 3, "maternity-location", "Maternity · On Location", 400, "1 hour · 2 outfits · 25 edited images"),
-  row("outdoor", 4, "proposal", "Proposal Coverage", 500, "Up to 1 hour · hidden coverage · 40 edited images"),
+  pkg(1, "package-1", "Package 1", 350, 60, "60 Mins Studio Session · Up to 2 Outfits · 7 Highly retouched images · Creative Posing Guidance · Online Gallery"),
+  pkg(2, "package-2", "Package 2", 450, 90, "90 Mins Studio Session · Up to 3 Outfits · 7 Highly retouched images · Creative Posing Guidance · Online Gallery"),
+  pkg(3, "package-3", "Package 3", 500, 120, "120 Mins Studio Session · Up to 3 Outfits · 9 Highly retouched images · Creative Posing Guidance · Online Gallery"),
 ];
 
-const extra = (i: number, name: string, description: string, price: number, max_qty: number | null = null, follows_package = false): ExtraRow => ({
-  id: `extra-${i}`, name, description, price, max_qty, follows_package, sort_order: i, active: true, sample: true,
+const extra = (i: number, name: string, description: string, price: number, max_qty: number | null, extra_minutes: number, sample: boolean): ExtraRow => ({
+  id: `extra-${i}`, name, description, price, max_qty, follows_package: false, extra_minutes, sort_order: i, active: true, sample,
 });
 
+/**
+ * Add-ons. The first two are from Tplum's price sheet; "Extra Outfit" and "Rush Delivery" are suggestions, seeded as
+ * samples ("Sample: edit me" in the dashboard) until the photographer confirms or turns them off.
+ * Unedited images are not offered (price sheet: "No unedited images").
+ */
 export const DEFAULT_BOOKING_EXTRAS: ExtraRow[] = [
-  extra(1, "Extra Edited Picture", "Per additional retouched photo", 25, 20),
-  extra(2, "Extra Outfit", "Per additional outfit change", 75, 3),
-  extra(3, "30-second Reel", "Short-form video edit for social media", 150),
-  extra(4, "All Unedited Photos", "Every unedited image from your session", 200),
-  extra(5, "Rush Delivery", "Edited gallery within 72 hours", 100),
+  extra(1, "Additional Edited Images", "Per extra highly retouched image", 25, 20, 0, false),
+  extra(2, "Extra 30 Minutes", "Adds 30 minutes to your session", 50, 2, 30, false),
+  extra(3, "Extra Outfit", "One more outfit change", 50, 2, 0, true),
+  extra(4, "Rush Delivery", "Your edited images within 72 hours", 100, null, 0, true),
 ];

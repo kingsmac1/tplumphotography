@@ -3,10 +3,9 @@ import { useLocation } from "@tanstack/react-router";
 import type { CmsImage, SiteContent } from "@/cms/types";
 import { backendReady, callFunction } from "@/lib/functions";
 import { Img, Reveal } from "./ui";
-import { DesignSwitch, useDesign } from "./design";
 import { Cursor, ModernHeader, ModernMenu, RingToTop, TabBar, useModernMotion } from "./modern";
 import { releasePreloader } from "./preloader";
-import { IconClose, IconFacebook, IconInstagram, IconStream, ScrollTopArrow } from "./icons";
+import { IconFacebook, IconInstagram } from "./icons";
 
 export type IgPost = { image: Partial<CmsImage> & { src: string }; caption?: string; url: string };
 
@@ -16,52 +15,6 @@ function Socials({ site }: { site: SiteContent; variant?: "default" | "about" })
     <div className="socials">
       <a href={site.contact.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IconInstagram /></a>
       <a href={site.contact.facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><IconFacebook /></a>
-    </div>
-  );
-}
-
-function Header({ site, onMenu }: { site: SiteContent; onMenu: () => void }) {
-  return (
-    <header className="site-header">
-      <a className="logo" href="/" aria-label={`${site.brand.siteName} home`}>
-        <Img image={site.brand.logoLight} sizes="160px" loading="eager" alt={site.brand.siteName} />
-      </a>
-      <div className="right">
-        {site.header?.bookButton?.label && <a className="header-book" href={site.header.bookButton.href}>{site.header.bookButton.label}</a>}
-        <Socials site={site} />
-        <button type="button" className="menu-toggle" aria-label="Open menu" aria-haspopup="dialog" onClick={onMenu}>
-          <IconStream />
-        </button>
-      </div>
-    </header>
-  );
-}
-
-function MenuOverlay({ site, open, onClose }: { site: SiteContent; open: boolean; onClose: () => void }) {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
-  }, [open, onClose]);
-  const norm = (p: string) => (p.endsWith("/") ? p : p + "/");
-  return (
-    <div className={`menu-overlay${open ? " open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu" aria-hidden={!open} inert={!open || undefined}>
-      <button type="button" className="menu-close" aria-label="Close menu" onClick={onClose}><IconClose /></button>
-      <div className="menu-inner">
-        <a href="/" className="menu-logo" onClick={onClose}><Img image={site.brand.menuLogo} sizes="240px" alt={site.brand.siteName} /></a>
-        <nav aria-label="Main">
-          {site.menu.items.map((item) => (
-            <a key={item.href + item.label} href={item.href} className={norm(pathname) === norm(item.href) ? "active" : undefined} onClick={onClose}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        <Socials site={site} />
-      </div>
     </div>
   );
 }
@@ -140,72 +93,43 @@ function Footer({ site }: { site: SiteContent }) {
   );
 }
 
-function ToTop() {
-  const [show, setShow] = useState(false);
-  useEffect(() => {
-    const on = () => setShow(window.scrollY > 300);
-    on();
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
-  }, []);
-  return (
-    <button type="button" className={`to-top${show ? " show" : ""}`} aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-      <ScrollTopArrow />
-    </button>
-  );
-}
-
-/** Modern design layer (temporary A/B, see design.tsx): only mounted when the visitor has chosen "Modern". */
-function ModernLayer({ site, app }: { site: SiteContent; app: boolean }) {
-  const design = useDesign();
+/** Header, full-screen menu, phone tab bar, back-to-top and cursor (the site design, after PairMediaPro), plus smooth
+ *  scrolling and photo reveals. Content comes from the CMS; see modern.tsx and modern.css. */
+function SiteChrome({ site, app }: { site: SiteContent; app: boolean }) {
   const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
-  const modern = design === "modern";
-  useModernMotion(modern, pathname);
+  useModernMotion(true, pathname);
   useEffect(() => { releasePreloader(); }, []);
   return (
     <>
-      {modern && (
-        <>
-          <ModernHeader site={site} onMenu={() => setMenu(true)} menuOpen={menu} solid={app} />
-          <ModernMenu site={site} open={menu} onClose={() => setMenu(false)} />
-          <TabBar site={site} onMenu={() => setMenu(true)} />
-          <RingToTop />
-          <Cursor />
-        </>
-      )}
-      <DesignSwitch />
+      <a href="#content" className="sr-only">Skip to content</a>
+      <ModernHeader site={site} onMenu={() => setMenu(true)} menuOpen={menu} solid={app} />
+      <ModernMenu site={site} open={menu} onClose={() => setMenu(false)} />
+      <TabBar site={site} onMenu={() => setMenu(true)} />
+      <RingToTop />
+      <Cursor />
     </>
   );
 }
 
-/** Every public page: header + pop-out menu, page content, Instagram band, footer, back to top. */
+/** Every public page: header + menu, page content, Instagram band, footer. */
 export function SiteLayout({ site, posts, children, igVariant, igClass, app = false }: { site: SiteContent; posts: IgPost[]; children: ReactNode; igVariant?: "default" | "about"; igClass?: string; app?: boolean }) {
-  const [menu, setMenu] = useState(false);
   if (app) {
-    // Booking / rental / client pages: Tplum header + footer around a DMI-style app area (no public-page typography inside).
+    // Booking / client pages: the Tplum header + footer around a DMI-style app area (no public-page typography inside).
     return (
       <>
-        <div className="tp tp-solid">
-          <a href="#content" className="sr-only">Skip to content</a>
-          <Header site={site} onMenu={() => setMenu(true)} />
-          <MenuOverlay site={site} open={menu} onClose={() => setMenu(false)} />
-        </div>
+        <div className="tp"><SiteChrome site={site} app /></div>
         <main id="content" className="app">{children}</main>
-        <div className="tp"><Footer site={site} /><ToTop /><ModernLayer site={site} app /></div>
+        <div className="tp"><Footer site={site} /></div>
       </>
     );
   }
   return (
     <div className="tp">
-      <a href="#content" className="sr-only">Skip to content</a>
-      <Header site={site} onMenu={() => setMenu(true)} />
-      <MenuOverlay site={site} open={menu} onClose={() => setMenu(false)} />
+      <SiteChrome site={site} app={false} />
       <main id="content">{children}</main>
       <InstagramBand site={site} posts={posts} variant={igVariant} className={igClass} />
       <Footer site={site} />
-      <ToTop />
-      <ModernLayer site={site} app={false} />
     </div>
   );
 }

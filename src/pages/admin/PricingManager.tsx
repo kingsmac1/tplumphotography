@@ -33,10 +33,10 @@ const bookingPrices: EntityConfig = {
   fields: [
     { key: "setting", label: "Setting", type: "select", options: settingOptions, half: true },
     { key: "name", label: "Package name", type: "text", required: true, help: "e.g. Individual, Couple, Group/Family" },
-    { key: "description", label: "Short description", type: "text", help: "e.g. 1 outfit · 3 edited images" },
-    { key: "price", label: "Price ($)", type: "number", required: true, half: true },
+    { key: "description", label: "What's included", type: "text", help: "Separate items with “ · ”, e.g. 60 Mins Studio Session · Up to 2 Outfits · 7 Highly retouched images. Each item shows as its own line." },
+    { key: "price", label: "Price ($, before GST)", type: "number", required: true, half: true },
     { key: "pricing_mode", label: "Pricing type", type: "select", half: true, options: [{ value: "bundle", label: "Flat price" }, { value: "per_outfit", label: "Price × number of outfits" }] },
-    { key: "duration_minutes", label: "Session length (minutes)", type: "number", half: true, help: "How long the calendar slot is. Most sessions are 60." },
+    { key: "duration_minutes", label: "Session length (minutes)", type: "number", half: true, help: "How long the session is, e.g. 60, 90 or 120. The calendar keeps that much time free." },
     { key: "active", label: "Shown on the Booking page", type: "bool" },
   ],
   columns: [
@@ -53,12 +53,13 @@ const bookingExtras: EntityConfig = {
   orderBy: { column: "sort_order", ascending: true }, reorderKey: "sort_order",
   toggle: { key: "active", on: "TURN ON", off: "TURN OFF" },
   intro: "Add-ons shown on the Booking page. “Same as package” extras (like Extra Outfit) cost whatever package the client picked.",
-  newDefaults: { name: "", description: "", price: 0, max_qty: null, follows_package: false, sort_order: 0, active: true },
+  newDefaults: { name: "", description: "", price: 0, max_qty: null, follows_package: false, extra_minutes: 0, sort_order: 0, active: true },
   fields: [
     { key: "name", label: "Extra name", type: "text", required: true, half: true },
     { key: "description", label: "Short description", type: "text" },
     { key: "price", label: "Price ($)", type: "number", half: true, help: "Ignored when “same price as the package” is ticked." },
     { key: "max_qty", label: "Maximum quantity", type: "number", nullable: true, half: true, help: "Leave empty for a simple tick box. A number lets the client choose how many, up to that number." },
+    { key: "extra_minutes", label: "Adds time to the session (minutes, per one)", type: "number", half: true, help: "e.g. 30 for “Extra 30 Minutes”. The booking calendar keeps that much more time free. 0 for extras that don't add time." },
     { key: "follows_package", label: "Same price as the package the client picked", type: "bool" },
     { key: "active", label: "Shown on the Booking page", type: "bool" },
   ],
@@ -66,7 +67,7 @@ const bookingExtras: EntityConfig = {
     { label: "Extra", render: (r) => <span className="font-medium">{r.name}{sampleBadge(r)}</span> },
     { label: "Description", render: (r) => r.description || "—" },
     { label: "Price ($)", render: () => null, inline: { key: "price" } },
-    { label: "Notes", render: (r) => [r.follows_package ? "same as package" : "", r.max_qty ? `up to ${r.max_qty}` : ""].filter(Boolean).join(" · ") || "—" },
+    { label: "Notes", render: (r) => [r.follows_package ? "same as package" : "", r.max_qty ? `up to ${r.max_qty}` : "", Number(r.extra_minutes) ? `+${r.extra_minutes} min each` : ""].filter(Boolean).join(" · ") || "—" },
     { label: "Status", render: (r) => statusBadge(r.active) },
   ],
 };

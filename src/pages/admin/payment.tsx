@@ -108,7 +108,7 @@ const PartPaymentDialog = ({ total, initial, onClose, onSave }: { total: number;
       <div className="bg-background border border-border max-w-sm w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
         <h2 className="font-display text-xl font-bold">Part payment</h2>
         <label className="block">
-          <span className="block text-xs font-body font-bold tracking-widest mb-2">AMOUNT PAID SO FAR (NGN)</span>
+          <span className="block text-xs font-body font-bold tracking-widest mb-2">AMOUNT PAID SO FAR ($ CAD)</span>
           <input autoFocus type="number" min="0" value={value} onChange={(e) => setValue(e.target.value)}
             className="w-full border border-border bg-background px-4 py-2 text-sm font-body outline-none focus:border-foreground" />
         </label>
@@ -166,7 +166,7 @@ export const PaymentFields = ({ status, amount, total, onStatus, onAmount, error
     </div>
     {status === "Part Payment" && (
       <div>
-        <label className="block text-xs font-body font-bold tracking-widest mb-2">AMOUNT PAID SO FAR (NGN) *</label>
+        <label className="block text-xs font-body font-bold tracking-widest mb-2">AMOUNT PAID SO FAR ($ CAD) *</label>
         <input type="number" min="0" value={amount} onChange={(e) => onAmount(e.target.value)}
           className={`w-full border bg-background px-4 py-2 text-sm font-body outline-none focus:border-foreground ${error ? "border-destructive" : "border-border"}`} />
         {error && <p className="text-xs text-destructive mt-1 font-body">{error}</p>}

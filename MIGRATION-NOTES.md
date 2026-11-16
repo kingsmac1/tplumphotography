@@ -132,10 +132,17 @@ If the build is interrupted, read this file first and continue from the next unc
 - [x] **Studio rental removed**: the `/studio-space/` page, its `/book/` card, and the dashboard's studio tabs (Bookings → Studio Space, Prices → studio rental prices/extras, studio promo codes). The `booking-create` function rejects studio bookings. Database tables are kept (empty) so it can be switched back on. Event coverage stays (`/events/`)
 - [x] **`/sitemap.xml`** lists every public page with the real domain's addresses; **`/robots.txt`** announces it on tplumphotography.com and keeps private areas out of search, and blocks all crawling on preview addresses
 
-## Design A/B test (2026-11-16, temporary)
-- [x] **Design switch** (bottom-left on every public page): **Classic** = the exact WordPress copy; **Modern** = PairMediaPro-style layer (read-only reference: `/Users/macbook/Documents/Website Codes/PairMediaPro`): split header with centred logo that hides on scroll down, full-screen numbered menu with photo previews, phone tab bar with a raised Book button, logo preloader, square spaced-caps and pill buttons, Lenis smooth scrolling, photos that open from the bottom, progress-ring back-to-top, cursor dot with magnetic buttons, and section refinements (rounded cards, roomier FAQ and form fields). Same content and section order; Tplum's own palette and fonts
-- Files: `src/site/design.tsx` (switch), `src/site/modern.tsx`, `src/site/modern.css` (all rules under `html.design-modern`), `src/site/preloader.tsx`; one script line in `src/routes/__root.tsx`; dependency `lenis`
-- **When the client chooses:** Classic → delete those files, the lenis dependency, the root script/preloader lines and the `ModernLayer` in `Layout.tsx`. Modern → make it the default (drop the `html.design-modern` scoping and the classic header/menu/to-top markup), then delete the switch
+## Design (decided 2026-11-16)
+- [x] **Modern design chosen**; the Classic/Modern switch and the classic header, pop-out menu and back-to-top were removed. The site uses the PairMediaPro-style layer: split header with centred logo that hides on scroll down (no dividing line under it), full-screen numbered menu, phone tab bar with a raised Book button, logo preloader, square spaced-caps and pill buttons, Lenis smooth scrolling, photos that open as they scroll in, progress-ring back-to-top, cursor dot with magnetic buttons. Read-only reference: `/Users/macbook/Documents/Website Codes/PairMediaPro`
+- Files: `src/site/modern.tsx`, `src/site/modern.css` (rules start with `:root` so they take precedence over the base page styles in `site.css`), `src/site/preloader.tsx`; dependency `lenis`
+- The visual match against the WordPress screenshots (A5) applies to page content and spacing; header, menu and buttons now follow the chosen modern design
+
+## Portrait packages (2026-11-16, from the client's price sheet)
+- [x] Package 1 C$350 + GST (60 mins · up to 2 outfits · 7 retouched images · posing guidance · online gallery); Package 2 C$450 + GST (90 mins · up to 3 outfits · 7 images); Package 3 C$500 + GST (120 mins · up to 3 outfits · 9 images)
+- [x] Add-ons from the sheet: Additional Edited Images ($25 each, up to 20), Extra 30 Minutes ($50 each, up to 2, lengthens the session). **Suggested, marked "Sample: edit me" in the dashboard:** Extra Outfit ($50), Rush Delivery ($100). "No unedited images" shows as a note (Settings → note under the add-ons); the old "All unedited photos" add-on was dropped
+- [x] **GST:** 5% added on top of the discounted subtotal on the website and in manual bookings (Settings: on/off, name, rate); shown as its own line; saved on the booking (`tax_total`, `tax_name`) and carried into invoices made from the booking
+- [x] **Session length:** the calendar offers only start times where the whole session (package + extra time) fits and doesn't overlap another booking; the server and the database check the same
+- Seeded by `supabase/migrations/20261116000100_portrait_packages.sql` (only when the price tables are empty); tests: 35 passing (GST, extra time, rounding, invoice from a GST booking)
 
 ## Cloudflare Pages set-up (2026-11-16)
 - **Build:** `npm run build` → `dist/client` (21 pre-rendered pages + `_redirects`, `_headers`, `sitemap.xml`, `robots.txt`). Pages Functions in `functions/` (robots.txt, client-gallery share preview, client-gallery-cover). No Workers config.
@@ -150,6 +157,7 @@ If the build is interrupted, read this file first and continue from the next unc
 1. ~~Booking pages unlinked~~: resolved, they are linked from the new `/book/` page and the Book Now buttons
 2. ~~About page footer icons~~: resolved (2026-11-16). The About page now shows the same linked Instagram and Facebook icons as every other page
 3. ~~Studio rental and events~~: resolved (2026-11-16). Tplum offers event coverage but not studio rental
+5. **Suggested add-ons:** confirm or turn off Extra Outfit ($50) and Rush Delivery ($100) in Dashboard → Prices & Packages
 4. **Instagram token** is optional. Without it, the site keeps the 8 captured posts.
 
 ## Environment notes

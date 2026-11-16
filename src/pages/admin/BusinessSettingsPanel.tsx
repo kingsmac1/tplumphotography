@@ -42,6 +42,8 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
     const { id: _id, updated_at: _u, ...patch } = s as Settings;
     const pct = Number(patch.deposit_percent);
     if (patch.deposit_mode === "percent" && (!(pct >= 0) || pct > 100)) { setBusy(false); return setMsg("Deposit percent must be between 0 and 100."); }
+    const taxRate = Number(patch.booking_tax_rate ?? 0);
+    if (patch.booking_tax_enabled && (!(taxRate >= 0) || taxRate > 30)) { setBusy(false); return setMsg("Tax rate must be between 0 and 30."); }
     const { error } = await supabase.from("business_settings").update(patch).eq("id", 1);
     setBusy(false);
     if (error) return setMsg(error.message);
@@ -78,6 +80,23 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
             <input type="checkbox" checked={!!s.online_payments_enabled} onChange={(e) => set("online_payments_enabled", e.target.checked)} />
             Take the deposit by card when clients book online (Stripe)
           </label>
+          <div className="border border-border p-4 space-y-3">
+            <label className="flex items-center gap-3 text-sm font-medium">
+              <input type="checkbox" checked={!!s.booking_tax_enabled} onChange={(e) => set("booking_tax_enabled", e.target.checked)} />
+              Add sales tax to website bookings (prices show “+ GST”)
+            </label>
+            {!!s.booking_tax_enabled && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {text("booking_tax_name", "TAX NAME", "e.g. GST (Alberta) or HST.")}
+                {text("booking_tax_rate", "TAX RATE (%)", "e.g. 5 for GST.", "number")}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className={labelCls}>NOTE UNDER THE ADD-ONS ON THE BOOKING PAGE</label>
+            <input className={inputCls} value={String(s.session_note ?? "")} onChange={(e) => set("session_note", e.target.value)} />
+            <p className="text-xs text-muted-foreground mt-1">e.g. “No unedited images.” Leave empty to show nothing.</p>
+          </div>
           <div>
             <label className={labelCls}>BOOKING TERMS (SHOWN BEFORE PAYMENT)</label>
             <textarea rows={5} className={inputCls} value={String(s.booking_terms ?? "")} onChange={(e) => set("booking_terms", e.target.value)} />
@@ -91,7 +110,7 @@ export default function BusinessSettingsPanel({ only }: { only?: "deposit" | "bu
       {showHours && (
         <section className="space-y-4">
           <h2 className="font-display text-2xl">Booking hours</h2>
-          <p className="text-sm text-muted-foreground">When clients can book 1-hour sessions on the website. Close single dates or times from Calendar.</p>
+          <p className="text-sm text-muted-foreground">When clients can book sessions on the website (each session's length comes from its package, plus any extra time the client adds). Close single dates or times from Calendar.</p>
           <div className="space-y-2">
             {DAYS.map((name, d) => {
               const v = hours[d] ?? hours[String(d) as unknown as number];

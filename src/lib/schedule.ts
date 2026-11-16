@@ -57,12 +57,13 @@ export const slotLabel = (start: string, minutes = SESSION_MINUTES) =>
 /** Weekday of a YYYY-MM-DD date, independent of the browser's timezone. */
 export const weekday = (date: string) => new Date(`${date}T12:00:00Z`).getUTCDay();
 
-/** Start times ("10:00", "11:00", …) of the slots offered on a date. */
-export function slotsFor(date: string): string[] {
+/** Start times ("10:00", "11:00", …) offered on a date: every hour from opening, as long as a session of
+ *  `minutes` (the package length plus any extra time) still ends by closing time. */
+export function slotsFor(date: string, minutes = SESSION_MINUTES): string[] {
   const open = hours[weekday(date)];
   if (!open) return [];
   const out: string[] = [];
-  for (let t = toMinutes(open[0]); t + SESSION_MINUTES <= toMinutes(open[1]); t += SESSION_MINUTES) out.push(fromMinutes(t));
+  for (let t = toMinutes(open[0]); t + minutes <= toMinutes(open[1]); t += SESSION_MINUTES) out.push(fromMinutes(t));
   return out;
 }
 
@@ -126,9 +127,9 @@ export const overlaps = (aStart: number, aEnd: number, bStart: number, bEnd: num
 export type SlotState = "open" | "booked" | "blocked" | "past";
 
 /** State of one slot, given everything already booked or closed. */
-export function slotState(date: string, start: string, a: Availability): SlotState {
+export function slotState(date: string, start: string, a: Availability, minutes = SESSION_MINUTES): SlotState {
   const s = toMinutes(start);
-  const e = s + SESSION_MINUTES;
+  const e = s + minutes;
   const today = localToday();
   if (date < today || (date === today && s <= localNowMinutes())) return "past";
   // minimum notice (e.g. 24 hours): too soon counts as past

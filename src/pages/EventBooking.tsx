@@ -6,7 +6,7 @@ import type { EventBookingPayload } from "@/lib/eventBookingLog";
 import { EVENT_TYPES, OTHER_EVENT_TYPE } from "@/data/eventTypes";
 
 const formatMoney = (amount: number) =>
-  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: 0 }).format(amount);
+  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: Number.isInteger(amount) ? 0 : 2, maximumFractionDigits: 2 }).format(amount);
 
 const labelCls = "block text-xs font-body font-bold tracking-widest mb-2";
 const inputCls =

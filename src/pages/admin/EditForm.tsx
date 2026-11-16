@@ -209,7 +209,7 @@ export default function EditForm({ table, record, onClose, onSaved }: EditFormPr
                 <Field fieldErrors={fieldErrors} name="selected_service" label="Service">
                   <CustomSelect value={form.selected_service || ""} onChange={v => set("selected_service", v)} options={serviceOptsList} placeholder="Select..." />
                 </Field>
-                <Field fieldErrors={fieldErrors} name="service_price" label="Service Price (NGN)">
+                <Field fieldErrors={fieldErrors} name="service_price" label="Service Price ($ CAD)">
                   <input className={inputCls + (fieldErrors.service_price ? " border-destructive" : "")} type="number" value={form.service_price || ""} onChange={e => set("service_price", e.target.value)} />
                 </Field>
               </div>
@@ -317,7 +317,7 @@ export default function EditForm({ table, record, onClose, onSaved }: EditFormPr
                 <textarea className={inputCls + " resize-y"} rows={3} value={form.achieve || ""} onChange={e => set("achieve", e.target.value)} />
               </Field>
               <div className="grid grid-cols-2 gap-4">
-                <Field fieldErrors={fieldErrors} name="amount" label="Amount (NGN)">
+                <Field fieldErrors={fieldErrors} name="amount" label="Amount ($ CAD)">
                   <input className={inputCls} type="number" value={form.amount || ""} onChange={e => set("amount", e.target.value)} />
                 </Field>
                 <Field fieldErrors={fieldErrors} name="payment_status" label="Payment Status">

@@ -22,6 +22,12 @@ import {
 import { useBusinessSettings } from "@/lib/content";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+/** 60 → "1 HOUR", 90 → "1 HR 30 MINS", 150 → "2 HRS 30 MINS", 30 → "30 MINS". */
+const lengthLabel = (m: number) => {
+  const h = Math.floor(m / 60), r = m % 60;
+  if (!r) return `${h} HOUR${h > 1 ? "S" : ""}`;
+  return h ? `${h} HR${h > 1 ? "S" : ""} ${r} MINS` : `${r} MINS`;
+};
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const empty: Availability = { booked: [], blocked: [] };
 
@@ -34,11 +40,14 @@ export default function SlotPicker({
   time,
   onChange,
   refreshKey = 0,
+  minutes = SESSION_MINUTES,
 }: {
   date: string;
   time: string;
   onChange: (date: string, time: string) => void;
   refreshKey?: number;
+  /** Session length: the package's minutes plus any extra time. Slots are offered only where the whole session fits. */
+  minutes?: number;
 }) {
   const { loaded: rulesLoaded, settings } = useBusinessSettings();
   if (rulesLoaded) setBookingRules(settings);
@@ -64,11 +73,12 @@ export default function SlotPicker({
 
   // If the chosen time was taken in the meantime, drop it so the client picks again.
   useEffect(() => {
-    if (date && time && !loading && slotState(date, time, avail) !== "open") onChange(date, "");
-  }, [avail, loading, date, time, onChange]);
+    // (also when the session gets longer and no longer fits at that time)
+    if (date && time && !loading && (slotState(date, time, avail, minutes) !== "open" || !slotsFor(date, minutes).includes(time))) onChange(date, "");
+  }, [avail, loading, date, time, onChange, minutes]);
 
   const openCount = (d: string) =>
-    dayBlocked(d, avail) ? 0 : slotsFor(d).filter((t) => slotState(d, t, avail) === "open").length;
+    dayBlocked(d, avail) ? 0 : slotsFor(d, minutes).filter((t) => slotState(d, t, avail, minutes) === "open").length;
 
   const go = (n: number) => {
     setDir(n);
@@ -76,7 +86,7 @@ export default function SlotPicker({
   };
   const canBack = month > monthKey(today);
   const canNext = month < monthKey(last);
-  const daySlots = date ? slotsFor(date) : [];
+  const daySlots = date ? slotsFor(date, minutes) : [];
   const navBtn =
     "grid h-9 w-9 place-items-center border border-border transition-colors hover:border-foreground disabled:opacity-30 disabled:hover:border-border";
 
@@ -120,7 +130,7 @@ export default function SlotPicker({
                 const free = outOfRange ? 0 : openCount(d);
                 const disabled = !inMonth || outOfRange || free === 0;
                 const selected = d === date;
-                const full = inMonth && !outOfRange && free === 0 && slotsFor(d).length > 0;
+                const full = inMonth && !outOfRange && free === 0 && slotsFor(d, minutes).length > 0;
                 return (
                   <button
                     key={d}
@@ -156,7 +166,7 @@ export default function SlotPicker({
       {/* Slots */}
       <div className="p-4 sm:p-5">
         <p className="text-xs font-body font-bold tracking-widest text-muted-foreground">
-          SHOOT TIME · {SESSION_MINUTES / 60} HOUR
+          SHOOT TIME · {lengthLabel(minutes)}
         </p>
         <AnimatePresence mode="wait">
           {!date ? (
@@ -174,7 +184,7 @@ export default function SlotPicker({
               <p className="mt-2 font-display text-lg font-bold">{longDate(date)}</p>
               <ul data-lenis-prevent className="mt-4 grid max-h-[360px] gap-2 overflow-y-auto overscroll-contain pr-1">
                 {daySlots.map((t, i) => {
-                  const state = slotState(date, t, avail);
+                  const state = slotState(date, t, avail, minutes);
                   const open = state === "open";
                   const active = t === time;
                   return (
@@ -197,7 +207,7 @@ export default function SlotPicker({
                               : "cursor-not-allowed border-border/60 text-muted-foreground/60"
                         }`}
                       >
-                        <span className={open ? "" : "line-through"}>{slotLabel(t)}</span>
+                        <span className={open ? "" : "line-through"}>{slotLabel(t, minutes)}</span>
                         <span className="text-[10px] font-bold tracking-widest">
                           {active
                             ? "SELECTED"

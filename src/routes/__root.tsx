@@ -2,7 +2,6 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
-import { DESIGN_HEAD_SCRIPT } from "@/site/design";
 import { NotFoundView } from "@/site/NotFound";
 import { BootPreloader, PRELOADER_FAILSAFE, releasePreloader } from "@/site/preloader";
 
@@ -50,8 +49,8 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         {/* Lets CSS hide entrance-animated elements only when JavaScript is running (no-JS visitors and crawlers see everything). */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
-        {/* Temporary design switch (see src/site/design.tsx): applies the chosen design before the first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: DESIGN_HEAD_SCRIPT + ";" + PRELOADER_FAILSAFE }} />
+        {/* Never leave the preloader up for more than 4 seconds, whatever happens. */}
+        <script dangerouslySetInnerHTML={{ __html: PRELOADER_FAILSAFE }} />
         <HeadContent />
       </head>
       <body>

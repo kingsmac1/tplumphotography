@@ -102,10 +102,15 @@ export type BusinessSettings = {
   business_name: string; email: string; phone: string; deposit_mode: "percent" | "fixed" | "full"; deposit_percent: number; deposit_fixed: number;
   balance_due_days_before: number; booking_terms: string; cancellation_policy: string; online_payments_enabled: boolean;
   opening_hours?: Record<string, [string, string] | null>; booking_horizon_days?: number; min_notice_hours?: number;
+  /** Sales tax on website bookings (prices shown "+ GST"). */
+  booking_tax_enabled: boolean; booking_tax_name: string; booking_tax_rate: number;
+  /** Short note under the add-ons on the Booking page (e.g. "No unedited images."). */
+  session_note: string;
 };
 export const DEFAULT_BUSINESS: BusinessSettings = {
   business_name: "Tplum Photography", email: "info@tplumphotography.com", phone: "+14034935511", deposit_mode: "percent", deposit_percent: 30, deposit_fixed: 0,
   balance_due_days_before: 14, booking_terms: "", cancellation_policy: "", online_payments_enabled: true,
+  booking_tax_enabled: true, booking_tax_name: "GST", booking_tax_rate: 5, session_note: "No unedited images.",
 };
 export const useBusinessSettings = () => {
   const { loaded, data } = useManaged<BusinessSettings>(
@@ -113,7 +118,7 @@ export const useBusinessSettings = () => {
     async () => {
       const { data, error } = await supabase.from("business_settings").select("*").eq("id", 1).maybeSingle();
       if (error || !data) return null;
-      return { ...DEFAULT_BUSINESS, ...data, deposit_percent: Number(data.deposit_percent), deposit_fixed: Number(data.deposit_fixed) } as BusinessSettings;
+      return { ...DEFAULT_BUSINESS, ...data, deposit_percent: Number(data.deposit_percent), deposit_fixed: Number(data.deposit_fixed), booking_tax_rate: Number(data.booking_tax_rate ?? DEFAULT_BUSINESS.booking_tax_rate) } as BusinessSettings;
     },
     DEFAULT_BUSINESS,
   );

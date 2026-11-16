@@ -256,7 +256,8 @@ const lines = (pairs: [string, string][]) => pairs.filter(([, v]) => v).map(([k,
 
 /** The client and the priced lines of a booking, before payments. */
 function bookingLines(table: BookingTable, b: Row): { items: InvoiceItem[]; discountLabel?: string; discount: number } {
-  const total = bookingTotal(table, b)
+  // before tax: the invoice adds the booking's tax back itself (see invoiceFromBooking)
+  const total = Math.round((bookingTotal(table, b) - num(b.tax_total)) * 100) / 100
   if (table === 'event_bookings') {
     const dates = [s(b.event_start_date), s(b.event_end_date)].filter(Boolean).map(shortDate)
     const description = lines([
@@ -290,6 +291,10 @@ function bookingLines(table: BookingTable, b: Row): { items: InvoiceItem[]; disc
 /** Fills the client, the items and the payments from a booking. Keeps the business fields of `base`. */
 export function invoiceFromBooking(base: InvoiceDoc, table: BookingTable, b: Row): InvoiceDoc {
   const { items, discount, discountLabel } = bookingLines(table, b)
+  // A booking charged sales tax (e.g. GST 5% on website bookings): the invoice charges the same, so the totals match.
+  const taxPaid = num(b.tax_total)
+  const taxable = items.reduce((sum, it) => sum + num(it.amount), 0) - discount
+  const taxRate = taxPaid > 0 && taxable > 0 ? Math.round((taxPaid / taxable) * 10000) / 100 : 0
   return {
     ...base,
     billName: s(b.full_name),
@@ -299,6 +304,7 @@ export function invoiceFromBooking(base: InvoiceDoc, table: BookingTable, b: Row
     items,
     discountLabel: discountLabel ?? base.discountLabel,
     discount: discount > 0 ? plain(discount) : '',
+    ...(taxRate > 0 ? { taxEnabled: true, taxName: s(b.tax_name) || base.taxName || 'GST', taxRate: plain(taxRate) } : {}),
     payments: paymentsFromBooking(table, b),
   }
 }

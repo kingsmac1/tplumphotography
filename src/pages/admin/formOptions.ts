@@ -62,5 +62,6 @@ export const formatMoney = (n: number | null | undefined) =>
   new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: "CAD",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: Number.isInteger(n || 0) ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(n || 0);

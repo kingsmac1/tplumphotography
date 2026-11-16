@@ -17,7 +17,7 @@ const AnimatedSection = ({ children, delay = 0 }: { children: React.ReactNode; d
 type Pkg = WeddingPackage;
 
 const formatMoney = (amount: number) =>
-  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: 0 }).format(amount);
+  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: Number.isInteger(amount) ? 0 : 2, maximumFractionDigits: 2 }).format(amount);
 
 const ASPECTS = ["aspect-[2/3]", "aspect-[4/3]", "aspect-square", "aspect-[3/5]", "aspect-[3/4]"];
 

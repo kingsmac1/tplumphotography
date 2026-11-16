@@ -7,10 +7,10 @@ import { Img } from "./ui";
 import { IconFacebook, IconInstagram } from "./icons";
 
 /**
- * "Modern" design layer (see design.tsx), after the PairMediaPro site: split header with a centred logo that hides on
+ * The site's header, menu and motion, after the PairMediaPro site: split header with a centred logo that hides on
  * scroll down, a full-screen menu, an app-style tab bar on phones, a progress-ring back-to-top button, a cursor dot with
  * magnetic buttons, Lenis smooth scrolling and photographs that open as they come into view. Content is the same CMS
- * content the classic design shows; only presentation and motion differ. Styles: modern.css (all under html.design-modern).
+ * content from the CMS. Styles: modern.css.
  */
 
 const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

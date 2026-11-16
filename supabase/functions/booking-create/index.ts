@@ -82,16 +82,20 @@ Deno.serve(handle(async (req, body) => {
       if (!svc) throw new HttpError('That package is no longer available. Please refresh the page.')
       // opening hours + minimum notice (same rules as the calendar on the page)
       const hours = (settings.opening_hours ?? {})[String(weekday(date))] as [string, string] | null
-      const duration = Number(svc.duration_minutes) || 60
-      if (!hours || toMin(time) < toMin(hours[0]) || toMin(time) + duration > toMin(hours[1])) throw new HttpError('That time is outside our booking hours. Please pick another slot.', 409, 'slot_taken')
       const daysAhead = (Date.parse(`${date}T00:00:00Z`) - Date.parse(`${todayLocal()}T00:00:00Z`)) / 86400000
       if (daysAhead * 1440 + toMin(time) - nowMinutesLocal() < Number(settings.min_notice_hours ?? 0) * 60) throw new HttpError('That time is too soon. Please pick a later slot.', 409, 'slot_taken')
       if (daysAhead > Number(settings.booking_horizon_days ?? 365)) throw new HttpError('That date is too far ahead to book online. Please contact us.')
-      quote = quoteSession(
-        { serviceId: svc.service_id, outfits: Number(body.outfits) || 1, extras: Array.isArray(body.extras) ? body.extras.slice(0, 20) : [], promoPercent },
-        (services ?? []).filter((s) => s.service_id === svc.service_id).map((s) => ({ id: s.service_id, name: s.name, price: Number(s.price), pricing_mode: s.pricing_mode })),
-        (extras ?? []).map((e) => ({ name: e.name, price: Number(e.price), max_qty: e.max_qty, follows_package: e.follows_package })),
+      // GST (or other sales tax) from Settings, added on top of the discounted price
+      const tax = settings.booking_tax_enabled && Number(settings.booking_tax_rate) > 0 ? { name: String(settings.booking_tax_name || 'GST'), rate: Number(settings.booking_tax_rate) } : null
+      const sq = quoteSession(
+        { serviceId: svc.service_id, outfits: Number(body.outfits) || 1, extras: Array.isArray(body.extras) ? body.extras.slice(0, 20) : [], promoPercent, tax },
+        (services ?? []).filter((s) => s.service_id === svc.service_id).map((s) => ({ id: s.service_id, name: s.name, price: Number(s.price), pricing_mode: s.pricing_mode, duration_minutes: Number(s.duration_minutes) || 60 })),
+        (extras ?? []).map((e) => ({ name: e.name, price: Number(e.price), max_qty: e.max_qty, follows_package: e.follows_package, extra_minutes: Number(e.extra_minutes) || 0 })),
       )
+      quote = sq
+      // the session's real length: package minutes + any "Extra 30 Minutes"; it must fit inside opening hours
+      const duration = sq.durationMinutes
+      if (!hours || toMin(time) < toMin(hours[0]) || toMin(time) + duration > toMin(hours[1])) throw new HttpError('That time is outside our booking hours for a session this long. Please pick an earlier time.', 409, 'slot_taken')
       table = 'bookings'
       itemName = `${svc.name} — ${date} ${time}`
       const extrasLine = quote.lines.slice(1).map((l) => l.label).join(' | ')
@@ -103,6 +107,7 @@ Deno.serve(handle(async (req, body) => {
         service_pricing_mode: svc.pricing_mode, outfits: quote.lines[0].qty, selected_extras: extrasLine,
         extras_detail: quote.lines.slice(1), service_total: quote.serviceTotal, extras_total: quote.extrasTotal,
         discount_total: quote.discount, promo_code: promoPercent ? promoCode.toUpperCase() : null, grand_total: quote.total,
+        tax_total: quote.tax, tax_name: quote.taxName,
         service_summary: [svc.name, promoPercent ? `Coupon ${promoCode.toUpperCase()} (${promoPercent}% off)` : ''].filter(Boolean).join(' | '),
         source: 'booking_form',
       }

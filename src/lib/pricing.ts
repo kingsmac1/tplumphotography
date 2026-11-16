@@ -11,7 +11,7 @@ export const cents = (n: unknown) => Math.round((Number(n) || 0) * 100);
 export const dollars = (c: number) => Math.round(c) / 100;
 
 export type CatalogService = { id: string; name: string; price: number; pricing_mode: string; duration_minutes?: number; setting?: string; description?: string };
-export type CatalogExtra = { id?: string; name: string; price: number; max_qty: number | null; follows_package: boolean };
+export type CatalogExtra = { id?: string; name: string; price: number; max_qty: number | null; follows_package: boolean; extra_minutes?: number };
 export type Line = { label: string; qty: number; unit: number; total: number };
 
 export type Quote = {
@@ -20,23 +20,33 @@ export type Quote = {
   extrasTotal: number;
   subtotal: number;
   discount: number;
+  /** Sales tax (e.g. GST 5%) on the discounted subtotal; 0 when tax is off. */
+  tax: number;
+  taxName: string;
+  taxRate: number;
+  /** What the client pays in all: subtotal − discount + tax. */
   total: number;
 };
+
+/** Sales tax added on top of the price ("$350 + GST"). Off (null) unless the business turns it on. */
+export type TaxRule = { name: string; rate: number } | null | undefined;
 
 /** Coupon: a percentage off the package/space price only (never off extras), as on DMI. */
 export const couponDiscount = (baseTotal: number, percent: number | null | undefined) =>
   percent && percent > 0 ? dollars(Math.round((cents(baseTotal) * Math.min(100, percent)) / 100)) : 0;
 
 /* ------------------------------ Sessions (Booking page) ------------------------------ */
-export type SessionSelection = { serviceId: string; outfits?: number; extras: { name: string; qty?: number }[]; promoPercent?: number | null };
+export type SessionSelection = { serviceId: string; outfits?: number; extras: { name: string; qty?: number }[]; promoPercent?: number | null; tax?: TaxRule };
 
-export function quoteSession(sel: SessionSelection, services: CatalogService[], extras: CatalogExtra[]): Quote {
+/** Package + extras + coupon + tax. `durationMinutes` is the package length plus any time-adding extras (e.g. "Extra 30 mins"). */
+export function quoteSession(sel: SessionSelection, services: CatalogService[], extras: CatalogExtra[]): Quote & { durationMinutes: number } {
   const svc = services.find((s) => s.id === sel.serviceId);
   if (!svc) throw new PricingError("Please choose a package.");
   const outfits = svc.pricing_mode === "per_outfit" ? clampInt(sel.outfits ?? 1, 1, 20) : 1;
   const serviceC = cents(svc.price) * outfits;
   const lines: Line[] = [{ label: svc.pricing_mode === "per_outfit" ? `${svc.name} × ${outfits} outfit${outfits > 1 ? "s" : ""}` : svc.name, qty: outfits, unit: Number(svc.price), total: dollars(serviceC) }];
   let extrasC = 0;
+  let minutes = Number(svc.duration_minutes) || 60;
   const seen = new Set<string>();
   for (const pick of sel.extras ?? []) {
     if (seen.has(pick.name)) continue;
@@ -46,9 +56,10 @@ export function quoteSession(sel: SessionSelection, services: CatalogService[], 
     const unitC = ex.follows_package ? cents(svc.price) : cents(ex.price);
     const qty = ex.max_qty ? clampInt(pick.qty ?? 1, 1, ex.max_qty) : 1;
     extrasC += unitC * qty;
+    minutes += Math.max(0, Number(ex.extra_minutes) || 0) * qty;
     lines.push({ label: ex.max_qty ? `${ex.name} ×${qty}` : ex.name, qty, unit: dollars(unitC), total: dollars(unitC * qty) });
   }
-  return finish(lines, serviceC, extrasC, sel.promoPercent);
+  return { ...finish(lines, serviceC, extrasC, sel.promoPercent, sel.tax), durationMinutes: minutes };
 }
 
 /* ------------------------------ Weddings ------------------------------ */
@@ -123,15 +134,25 @@ function clampInt(n: unknown, min: number, max: number) {
   return Math.min(max, Math.max(min, v));
 }
 
-function finish(lines: Line[], baseC: number, extrasC: number, promoPercent?: number | null): Quote {
+/** Tax on an amount, rounded to the cent. A missing or zero rate means no tax. */
+export function taxOn(amount: number, tax: TaxRule): number {
+  const rate = tax ? Math.min(100, Math.max(0, Number(tax.rate) || 0)) : 0;
+  return rate ? dollars(Math.round((cents(amount) * rate) / 100)) : 0;
+}
+
+function finish(lines: Line[], baseC: number, extrasC: number, promoPercent?: number | null, tax?: TaxRule): Quote {
   const discountC = cents(couponDiscount(dollars(baseC), promoPercent));
   const subtotalC = baseC + extrasC;
+  const taxC = cents(taxOn(dollars(subtotalC - discountC), tax));
   return {
     lines,
     serviceTotal: dollars(baseC),
     extrasTotal: dollars(extrasC),
     subtotal: dollars(subtotalC),
     discount: dollars(discountC),
-    total: dollars(subtotalC - discountC),
+    tax: dollars(taxC),
+    taxName: taxC ? String(tax?.name || "Tax") : "",
+    taxRate: taxC ? Number(tax?.rate) || 0 : 0,
+    total: dollars(subtotalC - discountC + taxC),
   };
 }
