@@ -184,11 +184,11 @@ Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later
 ## Tplum Kiddies and contracts (2026-11-16)
 - **Tplum Kiddies** is the fourth booking category (Book page: Weddings · Portrait & Family · Tplum Kiddies · Events), at `/booking/kiddies/`. Packages from the client's sheet: tplumkiddies 1 ($350, 60 min, 6 images, 1–2 outfits) and tplumkiddies 2 ($500, 90 min, 8 images, 1–3 outfits incl. family photos), all props except outfits. Same calendar as portrait sessions (the double-booking guard covers both); its own shoot types (Birthday, Cake Smash, Milestone, Newborn, Family) and child's name; portrait add-ons are not offered (add-ons now have "Offered with": portrait / kiddies / both). Bookings go to WhatsApp like the others and appear under Dashboard → Bookings → Tplum Kiddies
 - **Kiddies terms** (Settings → Tplum Kiddies terms & conditions): shown on the Kiddies booking page above the "I agree" box, printed on the terms page of every invoice made from a kiddies booking ("Use the Tplum Kiddies terms" button for any other invoice), and filled into the Kiddies contract
-- **GST on Kiddies:** the kiddies sheet doesn't say "+ GST"; the site adds GST as it does for portraits (one tax setting for all bookings). Needs confirming
-- **Kiddies card photo:** a branded "tplumkiddies" tile until a real kiddies photo is uploaded in Dashboard → Website → Book
+- **GST on Kiddies:** kept, as for portraits (client, 2026-11-16: "leave the GST on kiddies for now")
+- **Kiddies card photo:** a branded "tplumkiddies" tile until the client adds kiddies photos (later, in Dashboard → Website → Book)
 - **Contracts:** new design (letterhead with logo, tagline, website and phone; title; ruled details panel; Fulgate section headings; copper accents; side-by-side signature lines; prints cleanly). Two templates: *Wedding Photography Contract* (the client's signed contract, word for word apart from small grammar fixes, with fees, GST, 20/30/50 payment schedule and due dates filled from the booking) and *Tplum Kiddies Session Agreement*. Templates and drafts have Write / Preview tabs showing the client's exact sheet
 
-## R2 CORS policy (paste in Cloudflare → R2 → tplum-photography → Settings → CORS policy)
+## R2 CORS policy (added by the client 2026-11-16; checked: the site's origin is allowed, others get 403; a live booking uploaded an inspiration image to the bucket, test file removed)
 ```json
 [{"AllowedOrigins":["https://tplumphotography.pages.dev","https://tplumphotography.com","https://www.tplumphotography.com","http://localhost:3000","http://localhost:4173"],"AllowedMethods":["GET","PUT","HEAD"],"AllowedHeaders":["*"],"ExposeHeaders":["ETag"],"MaxAgeSeconds":3600}]
 ```
