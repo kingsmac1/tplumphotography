@@ -68,7 +68,7 @@ If the build is interrupted, read this file first and continue from the next unc
 
 ## Phase B checklist
 Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later; Stripe is not used for now (no online payments).
-- [x] Supabase project checked (name "Tplum Website", ACTIVE_HEALTHY). **Region is eu-central-1 (Frankfurt), not Canada (Central)** as the brief asked: see "Needs your decision" 6
+- [x] Supabase project: first set up in Frankfurt, then moved to Canada (Central) on the client's decision (see "Moved to Canada")
 - [x] Linked; all 10 migrations applied to the empty database (incl. portrait packages, WhatsApp bookings, function-grant hardening)
 - [x] All 26 Edge Functions deployed
 - [x] Function secrets set: `SITE_URL` (pages.dev), `CRON_SECRET` / `GALLERY_CRON_SECRET` (generated, also saved in `.secrets.local`), `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. Still missing: `R2_BUCKET`, `CF_DEPLOY_HOOK_URL`, `RESEND_API_KEY` / `FROM_EMAIL` / `OWNER_EMAIL`
@@ -174,7 +174,12 @@ Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later
 3. ~~Studio rental and events~~: resolved (2026-11-16). Tplum offers event coverage but not studio rental
 5. **Suggested add-ons:** confirm or turn off Extra Outfit ($50) and Rush Delivery ($100) in Dashboard → Prices & Packages
 4. **Instagram token** is optional. Without it, the site keeps the 8 captured posts.
-6. **Supabase region:** the project is in Frankfurt (eu-central-1). The brief asked for Canada (Central). Moving region means a new project (the database is still empty, so now is the cheapest time). Keep it, or create a Canada project and swap the keys?
+6. ~~**Supabase region:**~~ resolved: moved to Canada (Central). the project is in Frankfurt (eu-central-1). The brief asked for Canada (Central). Moving region means a new project (the database is still empty, so now is the cheapest time). Keep it, or create a Canada project and swap the keys?
+
+## Moved to Canada (2026-11-16)
+- New Supabase project **Tplum Photography, Canada (Central) ca-central-1**, ref `xyspnqblovvprhxwxaaj`. The Frankfurt project was deleted by the client. All 11 migrations applied, 26 Edge Functions deployed, function secrets set (incl. `R2_BUCKET`, `CF_DEPLOY_HOOK_URL`, `OWNER_EMAIL`), auth URLs set, `.env` and the Pages build variables point at the new project; redeployed and a live booking tested (test rows removed)
+- Admins: tplumphotos@gmail.com and info@tplumphotography.com invited (invite link → /account/ to set a password) and granted admin
+- The database password is the same as the old project's and appeared in a screenshot: reset it in Project Settings → Database when convenient and update `SUPABASE_DB_PASSWORD`
 
 ## Tplum Kiddies and contracts (2026-11-16)
 - **Tplum Kiddies** is the fourth booking category (Book page: Weddings · Portrait & Family · Tplum Kiddies · Events), at `/booking/kiddies/`. Packages from the client's sheet: tplumkiddies 1 ($350, 60 min, 6 images, 1–2 outfits) and tplumkiddies 2 ($500, 90 min, 8 images, 1–3 outfits incl. family photos), all props except outfits. Same calendar as portrait sessions (the double-booking guard covers both); its own shoot types (Birthday, Cake Smash, Milestone, Newborn, Family) and child's name; portrait add-ons are not offered (add-ons now have "Offered with": portrait / kiddies / both). Bookings go to WhatsApp like the others and appear under Dashboard → Bookings → Tplum Kiddies
