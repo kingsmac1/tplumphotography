@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light only">
+<title>Confirm your new email</title>
+</head>
+<body style="margin:0;padding:0;background:#f1ede6;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f1ede6;">Confirm the new email address for your Tplum Photography account.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f1ede6;">
+  <tr>
+    <td align="center" style="padding:36px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+        <!-- header: the white Tplum logo on black -->
+        <tr>
+          <td align="center" style="background:#0a0a0a;border-radius:18px 18px 0 0;padding:30px 24px 26px;">
+            <a href="{{ .SiteURL }}" style="text-decoration:none;">
+              <img src="{{ .SiteURL }}/brand/tplum-logo-white.png" width="132" height="74" alt="Tplum Photography" style="display:block;border:0;width:132px;height:auto;">
+            </a>
+          </td>
+        </tr>
+        <!-- body -->
+        <tr>
+          <td style="background:#ffffff;padding:40px 44px 36px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1f1d1a;">
+            <h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-weight:normal;font-size:30px;line-height:1.15;color:#0a0a0a;">Confirm your new email</h1>
+            <p style="margin:0 0 28px;font-size:15px;line-height:1.65;color:#3a3733;">You asked to change the email on your Tplum Photography account from <b>{{ .Email }}</b> to <b>{{ .NewEmail }}</b>. Confirm it with the button below.</p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="center" bgcolor="#0a0a0a" style="border-radius:999px;">
+                  <a href="{{ .SiteURL }}/account/?token_hash={{ .TokenHash }}&type=email_change" style="display:inline-block;padding:15px 30px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:999px;">Confirm new email</a>
+                </td>
+              </tr>
+            </table>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+              <tr><td style="border-top:1px solid #e9e4dc;font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+            <p style="margin:20px 0 6px;font-size:12px;line-height:1.6;color:#6f6a62;">Button not working? Copy this link into your browser:</p>
+            <p style="margin:0 0 18px;font-size:12px;line-height:1.5;word-break:break-all;"><a href="{{ .SiteURL }}/account/?token_hash={{ .TokenHash }}&type=email_change" style="color:#6f6a62;text-decoration:underline;">{{ .SiteURL }}/account/?token_hash={{ .TokenHash }}&type=email_change</a></p>
+            <p style="margin:0;font-size:12px;line-height:1.6;color:#6f6a62;">This link works once and expires in 24 hours. If you didn't ask for this, ignore this email and your email address stays the same.</p>
+          </td>
+        </tr>
+        <!-- footer -->
+        <tr>
+          <td align="center" style="background:#faf8f4;border-radius:0 0 18px 18px;padding:24px 24px 26px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+            <p style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#3a3733;">...capturing moments beautifully.</p>
+            <p style="margin:0;font-size:12px;line-height:1.7;color:#8a847b;">
+              Tplum Photography &middot; Calgary | Edmonton | Toronto<br>
+              <a href="https://tplumphotography.com" style="color:#8a847b;text-decoration:underline;">tplumphotography.com</a> &middot; <a href="tel:+14034935511" style="color:#8a847b;text-decoration:none;">+1 403 493 5511</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
