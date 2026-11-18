@@ -62,7 +62,8 @@ export function AuthPanel({ defaultEmail = '', defaultMode = 'signin', onSignedI
         if (data.session) return onSignedIn?.()
         setSent({ kind: 'confirm', to: addr })
       } else {
-        const { error } = await supabase!.auth.resetPasswordForEmail(addr)
+        // the link comes back to the account page, which then asks for the new password
+        const { error } = await supabase!.auth.resetPasswordForEmail(addr, { redirectTo: `${window.location.origin}/account/` })
         if (error) return setErr(friendly(error.message))
         setSent({ kind: 'reset', to: addr })
       }

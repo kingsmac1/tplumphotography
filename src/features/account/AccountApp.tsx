@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { EmailOtpType, Session } from '@supabase/supabase-js'
 import { configured, supabase } from '../gallery/supabase'
+import { authLinkType } from '@/lib/supabaseClient'
 import { isMissingTable } from '../gallery/api'
 import { galleryConfig, money } from '../gallery/gallery.config'
 import { clientStatus, describeActivity, fmtDay } from '../gallery/status'
@@ -39,6 +40,8 @@ function useEmailLink(): [LinkResult, (r: LinkResult) => void] {
     if (typeof window === 'undefined') return null
     const q = new URLSearchParams(window.location.search)
     if (q.get('token_hash')) return 'working'
+    // a reset or invite link from Supabase's standard email: choose a (new) password
+    if (authLinkType === 'recovery' || authLinkType === 'invite') return 'recovery'
     return /error_code=|error=access_denied/.test(window.location.hash) ? 'expired' : null
   })
   useEffect(() => {
@@ -50,7 +53,8 @@ function useEmailLink(): [LinkResult, (r: LinkResult) => void] {
     history.replaceState(null, '', window.location.pathname)
     supabase.auth.verifyOtp({ token_hash, type }).then(({ error }) => {
       if (error) return setResult('expired')
-      setResult(type === 'recovery' ? 'recovery' : type === 'email_change' ? 'email_changed' : 'confirmed')
+      // an invite also needs a password chosen, so it gets the same screen as a reset
+      setResult(type === 'recovery' || type === 'invite' ? 'recovery' : type === 'email_change' ? 'email_changed' : 'confirmed')
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return [result, setResult]
@@ -96,7 +100,12 @@ export default function AccountApp() {
             <h1 className="ca-h1">Choose a new password</h1>
             <p className="ca-lead">You’ll use it with <b>{session.user.email}</b> to sign in from now on.</p>
           </div>
-          <NewPasswordPanel onDone={() => setLink('password_saved')} />
+          <NewPasswordPanel onDone={async () => {
+            // dashboard accounts (admin and staff) go back to the dashboard; clients stay in their client area
+            const { data: staff } = await supabase!.from('staff').select('role').eq('id', session.user.id).maybeSingle()
+            if (staff) { window.location.replace(staff.role === 'staff' ? '/checkin/' : '/dashboard/'); return }
+            setLink('password_saved')
+          }} />
         </div>
       </div>
     )
