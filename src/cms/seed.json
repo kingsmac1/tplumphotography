@@ -1007,7 +1007,11 @@
     "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
     "width": 2075,
     "height": 2560,
-    "alt": ""
+    "alt": "",
+    "focal": {
+     "x": 55,
+     "y": 20
+    }
    }
   }
  },
@@ -1216,7 +1220,11 @@
     "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
     "width": 2075,
     "height": 2560,
-    "alt": ""
+    "alt": "",
+    "focal": {
+     "x": 55,
+     "y": 20
+    }
    }
   }
  },
@@ -1481,7 +1489,11 @@
     "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
     "width": 2075,
     "height": 2560,
-    "alt": ""
+    "alt": "",
+    "focal": {
+     "x": 55,
+     "y": 20
+    }
    }
   }
  }

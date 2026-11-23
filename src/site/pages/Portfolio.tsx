@@ -10,9 +10,11 @@ export function PageHero({ heading, image, className }: { heading: string; image
   );
 }
 
-export function BookBand({ book }: { book: PortfolioContent["book"] }) {
+/** "Click here to book" strip. The photo is cropped around its focus point (set in Dashboard → Website), so faces stay in. */
+export function BookBand({ book }: { book: PortfolioContent["book"] & { image: { focal?: { x: number; y: number } } } }) {
   return (
-    <a className="book-band bgv" href={book.href} target="_blank" rel="noopener" style={bgVars(book.image)} aria-label={`${book.heading}: ${book.text}`}>
+    <a className="book-band bgv" href={book.href} target="_blank" rel="noopener" aria-label={`${book.heading}: ${book.text}`}
+      style={{ ...bgVars(book.image), ...(book.image?.focal ? { backgroundPosition: `${book.image.focal.x}% ${book.image.focal.y}%` } : {}) }}>
       <Reveal as="h2" delay={150}>{book.heading}</Reveal>
       <Reveal as="p">{book.text}</Reveal>
     </a>
