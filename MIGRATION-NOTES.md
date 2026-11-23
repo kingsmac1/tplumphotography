@@ -184,6 +184,7 @@ Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later
 - **Player:** loads nothing from YouTube until a film is pressed, then a full-screen cinema view (privacy-enhanced youtube-nocookie embed, autoplay, previous/next, up-next strip, Esc / ← / →, focus returns to the film you opened)
 - Table `videos` (migration 20261123000100, public read of visible films, admin write); films are baked into the pre-built pages at build time and refreshed in the browser, so a new film shows immediately and the pages rebuild about 20 seconds after the last change
 - Dashboard fix: card-shaped buttons (the Website page list) were being turned into pills by the dashboard's rounded-button rule; they are rounded cards again
+- **Sample films (2026-11-23):** nine public YouTube films by other studios (wedding, portrait and cake-smash films), each credited in its description ("Sample film by …"), five on the home page. They are placeholders: replace them with Tplum's own films in Dashboard → Videos (delete each sample with the bin icon)
 - **Still to do from the earlier request:** check that every page has a share image (the audit was interrupted)
 
 ## Account emails from Tplum (2026-11-18)
