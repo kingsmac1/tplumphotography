@@ -118,3 +118,6 @@ html[data-design="modern"] .d-classic, html:not([data-design="modern"]) .d-moder
 .design-switch button[aria-pressed="true"] { background: #fff; color: #0a0a0a; }
 .design-switch button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 @media (max-width: 767px) { .design-switch { bottom: calc(84px + env(safe-area-inset-bottom)); left: 12px; } }
+
+/* the full-screen menu brings its own logo and Close button: hide the site header and the design switch under it */
+html.menu-open .mh, html.menu-open .m-header, html.menu-open .design-switch { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }

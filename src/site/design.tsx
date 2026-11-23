@@ -38,10 +38,13 @@ export function setDesign(d: Design) {
   window.location.replace(u.toString());
 }
 
-/** null while the page is hydrating (both versions present), then the design shown. */
+/** Set once the first page has started: later pages (opened inside the site) render only the active design. */
+let started = false;
+
+/** null while the first page is hydrating (both versions present), then the design shown. */
 function useActiveDesign(): Design | null {
-  const [d, setD] = useState<Design | null>(null);
-  useEffect(() => setD(readDesign()), []);
+  const [d, setD] = useState<Design | null>(() => (started ? readDesign() : null));
+  useEffect(() => { started = true; setD(readDesign()); }, []);
   return d;
 }
 

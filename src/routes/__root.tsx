@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { NotFoundView } from "@/site/NotFound";
@@ -35,6 +35,7 @@ export const Route = createRootRoute({
 
 /** Lifts the boot preloader once the app has hydrated (every page, including the dashboard). */
 function RootComponent() {
+  useInstantLinks();
   useEffect(() => {
     releasePreloader();
     // 404.html (Cloudflare Pages): put back the address the visitor asked for (see scripts/postbuild.mjs).
@@ -42,6 +43,32 @@ function RootComponent() {
     if (real) window.history.replaceState(window.history.state, "", real);
   }, []);
   return <Outlet />;
+}
+
+/**
+ * Pages open when a link is clicked, inside the running site (no full reload, no blank screen), like the owner's other
+ * projects. Nothing is fetched before the click (no hover preloading). Left as normal browser links: new-tab and
+ * modified clicks, downloads, other sites, mailto/tel, files (sitemap.xml…), same-page anchors, and the app areas that
+ * set themselves up from the address on load (dashboard, client area, galleries, invoices, contracts, check-in).
+ */
+const FULL_LOAD = /^\/(dashboard|account|client-gallery|invoice|contract|checkin|cms-preview)(\/|$|\?)/;
+function useInstantLinks() {
+  const router = useRouter();
+  useEffect(() => {
+    const click = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      const url = new URL(a.href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      if (FULL_LOAD.test(url.pathname) || /\.\w{2,5}$/.test(url.pathname)) return;
+      if (url.hash && url.pathname === window.location.pathname && url.search === window.location.search) return; // same-page anchor
+      e.preventDefault();
+      void router.navigate({ href: url.pathname + url.search + url.hash });
+    };
+    document.addEventListener("click", click);
+    return () => document.removeEventListener("click", click);
+  }, [router]);
 }
 
 function RootDocument({ children }: { children: ReactNode }) {

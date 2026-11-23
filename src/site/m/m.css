@@ -371,3 +371,26 @@ html.js .tp.tpm .reveal.in { animation: m2Rise 1.1s cubic-bezier(.2, .8, .2, 1) 
   html.js .tp.tpm .reveal.in { animation: none; }
   .tp.tpm .mhero__title .acro-line, .tp.tpm .mhero__eyebrow, .tp.tpm .mhero__quick { animation: none; }
 }
+
+/* ---------- phones: every card gets generous top and bottom room ---------- */
+@media (max-width: 767px) {
+  .tp.tpm .mcard { padding: 36px 24px 38px; }
+  .tp.tpm .mabout__card { padding: 40px 26px 42px; gap: 22px; }
+  .tp.tpm .mquote__text { padding: 26px 22px 28px; }
+  .tp.tpm .mcandid__head { padding: 30px 22px; }
+  .tp.tpm .mfilms__card { padding: 38px 16px 18px; }
+  .tp.tpm .mfilms__card .mhead { padding: 0 8px; }
+  .tp.tpm .mreviews__card { padding: 38px 16px 26px; }
+  .tp.tpm .mreviews__card .mhead { padding: 0 8px; }
+  .tp.tpm .reviews .card { padding: 26px 22px 28px; }
+  .tp.tpm .mcta__text { padding: 30px 14px 22px; gap: 28px; }
+  .tp.tpm .mbook__text { padding: 36px 26px 40px; }
+  .tp.tpm .mstep { padding: 28px 24px 30px; }
+  .tp.tpm .mstep__n { padding-bottom: 18px; }
+  .tp.tpm .mfaq button { padding: 22px 20px; }
+  .tp.tpm .mfaq__a > div { padding: 0 20px 24px; }
+  .tp.tpm .mhelp { padding: 40px 26px 42px; }
+  .tp.tpm .mopt__body { bottom: 22px; left: 20px; right: 20px; }
+  .tp.tpm .mvideos__empty { padding: 36px 24px; }
+  .tp.tpm .mfoot__in { padding: 40px 24px 28px; }
+}

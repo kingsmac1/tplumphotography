@@ -137,10 +137,12 @@ export function ModernMenu({ site, open, onClose }: { site: SiteContent; open: b
     lenis?.stop();
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // the menu has its own logo and Close button: the site header (and the design switch) hide while it is open
+    document.documentElement.classList.add("menu-open");
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
     closeRef.current?.focus();
-    return () => { lenis?.start(); document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
+    return () => { lenis?.start(); document.body.style.overflow = prev; document.documentElement.classList.remove("menu-open"); document.removeEventListener("keydown", onKey); };
   }, [open, onClose, current]);
   if (!open) return null;
   const book = site.header?.bookButton;

@@ -185,6 +185,9 @@ Started 2026-11-16 with the Supabase, Cloudflare and R2 keys. Resend comes later
 - Table `videos` (migration 20261123000100, public read of visible films, admin write); films are baked into the pre-built pages at build time and refreshed in the browser, so a new film shows immediately and the pages rebuild about 20 seconds after the last change
 - Dashboard fix: card-shaped buttons (the Website page list) were being turned into pills by the dashboard's rounded-button rule; they are rounded cards again
 - **Sample films (2026-11-23):** nine public YouTube films by other studios (wedding, portrait and cake-smash films), each credited in its description ("Sample film by …"), five on the home page. They are placeholders: replace them with Tplum's own films in Dashboard → Videos (delete each sample with the bin icon)
+- **Instant pages (2026-11-23):** links inside the site open without a full reload (src/routes/__root.tsx `useInstantLinks`); nothing is preloaded before the click. Normal browser loads are kept for new-tab clicks, other sites, files, same-page anchors and the app areas (dashboard, client area, galleries, invoices, contracts, check-in)
+- The full-screen menu hides the site header and the design switch while it is open (it has its own logo and Close button)
+- Phones: every Modern card has explicit top and bottom padding (36–42px); Classic review cards a little more too
 - **Still to do from the earlier request:** check that every page has a share image (the audit was interrupted)
 
 ## Account emails from Tplum (2026-11-18)
