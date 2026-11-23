@@ -1,8 +1,10 @@
-import type { ReactNode } from "react";
-import { getPageContent, useLiveContent, type FeedPost } from "@/cms/content";
+import { getPageContent, useLiveContent, type FeedPost, type Video } from "@/cms/content";
 import type { CmsImage, PageContentMap, PageKey, SiteContent } from "@/cms/types";
 import { BG_PHONE_WIDTH, pickSrc } from "./ui";
 import { SiteLayout } from "./Layout";
+import { MLayout } from "./m/MLayout";
+import { Designs } from "./design";
+import { PAGE_REGISTRY } from "./pageRegistry";
 import { businessJsonLd, pageHead } from "./seo";
 
 /** Preload only the hero photo this screen size shows (the sliders' first images sit in <picture>, so React adds no preload of its own). */
@@ -23,8 +25,12 @@ function bannerPreloads(c: { hero?: { image?: CmsImage } }) {
   ];
 }
 
-/** Shared loader/head/component wiring for every CMS-driven public page. */
-export function cmsPage<K extends PageKey>(key: K, path: string, Body: (p: { c: PageContentMap[K]; site: SiteContent }) => ReactNode, opts: { igVariant?: "default" | "about"; igClass?: string } = {}) {
+/**
+ * Shared loader/head/component wiring for every CMS-driven public page. The page is rendered in both designs
+ * (classic and modern, see design.tsx and pageRegistry.tsx); the visitor sees one.
+ * The third argument is no longer used (kept so older route files still compile).
+ */
+export function cmsPage<K extends PageKey>(key: K, path: string, _body?: unknown, opts: { igVariant?: "default" | "about"; igClass?: string } = {}) {
   return {
     loader: () => getPageContent({ data: key }),
     head: ({ loaderData }: { loaderData?: Awaited<ReturnType<typeof getPageContent>> }) => {
@@ -39,11 +45,25 @@ export function cmsPage<K extends PageKey>(key: K, path: string, Body: (p: { c: 
     },
     component: function Page({ data: built }: { data: Awaited<ReturnType<typeof getPageContent>> }) {
       const data = useLiveContent(key, built);
-      return (
-        <SiteLayout site={data.site} posts={data.posts as FeedPost[]} igVariant={opts.igVariant} igClass={opts.igClass ?? (key === "home" ? "" : "inner")}>
-          <Body c={data.page as PageContentMap[K]} site={data.site} />
-        </SiteLayout>
-      );
+      return <PageInBothDesigns pageKey={key} page={data.page} site={data.site} posts={data.posts as FeedPost[]} videos={data.videos ?? []} igVariant={opts.igVariant} igClass={opts.igClass} />;
     },
   };
+}
+
+/** One CMS page in both designs (also used by the dashboard's live preview). */
+export function PageInBothDesigns({ pageKey, page, site, posts, videos, igVariant, igClass }: {
+  pageKey: PageKey; page: unknown; site: SiteContent; posts: FeedPost[]; videos: Video[]; igVariant?: "default" | "about"; igClass?: string;
+}) {
+  const entry = PAGE_REGISTRY[pageKey];
+  if (entry.bare) return <>{entry.classic(page as never, site, videos)}</>;
+  return (
+    <Designs
+      classic={
+        <SiteLayout site={site} posts={posts} igVariant={igVariant ?? entry.igVariant} igClass={igClass ?? entry.igClass ?? (pageKey === "home" ? "" : "inner")}>
+          {entry.classic(page as never, site, videos)}
+        </SiteLayout>
+      }
+      modern={<MLayout site={site} posts={posts}>{entry.modern(page as never, site, videos)}</MLayout>}
+    />
+  );
 }

@@ -1,6 +1,8 @@
 import type { HomeContent } from "@/cms/types";
 import { Button, Img, Reveal, Rich, bgUrl } from "../ui";
 import { HeroSlider, Masonry, ParallaxBg, Reviews } from "../widgets";
+import type { Video } from "@/cms/content";
+import { ClassicFilmsSection } from "../video/ClassicFilms";
 
 /** "Telling Pure Lasting / Unscripted Memories": the first letter of every word is black (as on the original). */
 function InitialsTitle({ text }: { text: string }) {
@@ -16,7 +18,7 @@ function InitialsTitle({ text }: { text: string }) {
   );
 }
 
-export default function Home({ c }: { c: HomeContent }) {
+export default function Home({ c, videos = [] }: { c: HomeContent; videos?: Video[] }) {
   return (
     <>
       <h1 className="sr-only">Tplum Photography</h1>
@@ -74,6 +76,8 @@ export default function Home({ c }: { c: HomeContent }) {
         <div className="gallery"><Masonry images={c.recentWork.images} label={c.recentWork.heading} /></div>
         <Reveal className="more"><Button href={c.recentWork.button.href} label={c.recentWork.button.label} /></Reveal>
       </section>
+
+      <ClassicFilmsSection c={c.films} videos={videos} />
 
       <section className="testimonials">
         <div className="box">

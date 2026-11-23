@@ -23,8 +23,9 @@ export type PageDef = {
 };
 
 export const PAGES: PageDef[] = [
-  { id: "home", doc: "home", label: "Home", path: "/", preview: "home", blurb: "Hero slider, intro, about, quote, galleries, testimonials, call to action" },
+  { id: "home", doc: "home", label: "Home", path: "/", preview: "home", blurb: "Hero slider, intro, about, quote, galleries, video section, testimonials, call to action" },
   { id: "portfolio", doc: "portfolio", label: "Portfolio", path: "/portfolio/", preview: "portfolio", blurb: "Banner, gallery and booking strip" },
+  { id: "videos", doc: "videos", label: "Video Portfolio", path: "/videos/", preview: "videos", blurb: "Banner, introduction and booking strip (the films themselves are in Dashboard → Videos)" },
   { id: "about", doc: "about", label: "About", path: "/about/", preview: "about", blurb: "Banner and profile" },
   { id: "contact", doc: "contact", label: "Contact", path: "/contact/", preview: "contact", blurb: "Banner, notes and the contact form's wording and options" },
   { id: "the-tplum-signature", doc: "the-tplum-signature", label: "The Tplum Signature", path: "/the-tplum-signature/", preview: "the-tplum-signature", blurb: "Banner, introduction and the process steps" },

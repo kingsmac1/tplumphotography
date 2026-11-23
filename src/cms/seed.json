@@ -49,6 +49,10 @@
      "href": "/portfolio/"
     },
     {
+     "label": "Videos",
+     "href": "/videos/"
+    },
+    {
      "label": "About",
      "href": "/about/"
     },
@@ -530,6 +534,14 @@
    "button": {
     "label": "VIEW FULL GALLERY",
     "href": "/portfolio/"
+   }
+  },
+  "films": {
+   "heading": "Video Portfolio",
+   "text": "<p>Moments in motion: wedding films, highlights and stories from our sessions.</p>",
+   "button": {
+    "label": "View all films",
+    "href": "/videos/"
    }
   },
   "testimonials": {
@@ -1425,6 +1437,51 @@
    "button": {
     "label": "Get in Touch",
     "href": "/contact/"
+   }
+  }
+ },
+ "videos": {
+  "seo": {
+   "title": "Video Portfolio → Tplum Photography",
+   "description": "Wedding films, highlights and stories by Tplum Photography, Calgary | Edmonton | Toronto wedding & portrait photographer. Available to travel.",
+   "ogTitle": "Video Portfolio → Tplum Photography",
+   "ogDescription": "Wedding films, highlights and stories by Tplum Photography.",
+   "ogType": "article",
+   "twitterTitle": "Video Portfolio → Tplum Photography",
+   "twitterDescription": "Wedding films, highlights and stories by Tplum Photography.",
+   "shareImage": {
+    "src": "/media/cropped-tplum-logo-dark-1000.webp",
+    "srcset": "/media/cropped-tplum-logo-dark-480.webp 480w, /media/cropped-tplum-logo-dark-960.webp 960w, /media/cropped-tplum-logo-dark-1000.webp 1000w",
+    "width": 1000,
+    "height": 552,
+    "alt": ""
+   }
+  },
+  "hero": {
+   "heading": "Video Portfolio",
+   "image": {
+    "src": "/media/dsc-8576-copy-jpg-scaled-2104.webp",
+    "srcset": "/media/dsc-8576-copy-jpg-scaled-480.webp 480w, /media/dsc-8576-copy-jpg-scaled-960.webp 960w, /media/dsc-8576-copy-jpg-scaled-1600.webp 1600w, /media/dsc-8576-copy-jpg-scaled-2104.webp 2104w",
+    "width": 2104,
+    "height": 2560,
+    "alt": ""
+   }
+  },
+  "intro": {
+   "heading": "Moments in motion",
+   "body": "<p>Wedding films, highlights and stories from our sessions. Press play on any film to watch it here.</p>"
+  },
+  "emptyText": "<p>Our films are on their way. Until then, see the latest moments on Instagram.</p>",
+  "book": {
+   "heading": "CLICK HERE TO BOOK",
+   "text": "Destination weddings | Available to travel",
+   "href": "/book/",
+   "image": {
+    "src": "/media/20-copy-jpg-1-scaled-2075.webp",
+    "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
+    "width": 2075,
+    "height": 2560,
+    "alt": ""
    }
   }
  }

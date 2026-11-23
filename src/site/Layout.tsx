@@ -5,6 +5,7 @@ import { backendReady, callFunction } from "@/lib/functions";
 import { Img, Reveal } from "./ui";
 import { Cursor, ModernHeader, ModernMenu, RingToTop, TabBar, useModernMotion } from "./modern";
 import { releasePreloader } from "./preloader";
+import { DesignSwitch } from "./design";
 import { IconFacebook, IconInstagram } from "./icons";
 
 export type IgPost = { image: Partial<CmsImage> & { src: string }; caption?: string; url: string };
@@ -79,7 +80,7 @@ export function InstagramBand({ site, posts, variant, className = "" }: { site: 
   );
 }
 
-function Footer({ site }: { site: SiteContent }) {
+export function Footer({ site }: { site: SiteContent }) {
   const f = site.footer;
   return (
     <footer className="site-footer">
@@ -95,7 +96,7 @@ function Footer({ site }: { site: SiteContent }) {
 
 /** Header, full-screen menu, phone tab bar, back-to-top and cursor (the site design, after PairMediaPro), plus smooth
  *  scrolling and photo reveals. Content comes from the CMS; see modern.tsx and modern.css. */
-function SiteChrome({ site, app }: { site: SiteContent; app: boolean }) {
+export function SiteChrome({ site, app }: { site: SiteContent; app: boolean }) {
   const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
   useModernMotion(true, pathname);
@@ -108,6 +109,7 @@ function SiteChrome({ site, app }: { site: SiteContent; app: boolean }) {
       <TabBar site={site} onMenu={() => setMenu(true)} />
       <RingToTop />
       <Cursor />
+      <DesignSwitch />
     </>
   );
 }

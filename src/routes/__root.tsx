@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { NotFoundView } from "@/site/NotFound";
 import { BootPreloader, PRELOADER_FAILSAFE, releasePreloader } from "@/site/preloader";
+import { defaultDesign, designHeadScript } from "@/site/design";
 
 const FONTS =
   "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&family=Lato:wght@300;400;700&family=Montserrat:wght@400;600&family=Raleway:wght@500&family=Roboto:wght@400;600&family=Inter:wght@400;500&display=swap";
@@ -45,12 +46,14 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-US" suppressHydrationWarning>
+    <html lang="en-US" data-design={defaultDesign()} suppressHydrationWarning>
       <head>
         {/* Lets CSS hide entrance-animated elements only when JavaScript is running (no-JS visitors and crawlers see everything). */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         {/* Never leave the preloader up for more than 4 seconds, whatever happens. */}
         <script dangerouslySetInnerHTML={{ __html: PRELOADER_FAILSAFE }} />
+        {/* Which design this visitor sees (classic or modern), before anything paints. See src/site/design.tsx. */}
+        <script dangerouslySetInnerHTML={{ __html: designHeadScript() }} />
         <HeadContent />
       </head>
       <body>

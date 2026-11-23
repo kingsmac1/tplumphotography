@@ -21,7 +21,7 @@ let lenis: Lenis | null = null;
 export const scrollToTop = () => (lenis ? lenis.scrollTo(0, { duration: 1.2 }) : window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" }));
 
 /** Photographs that open from the bottom as they scroll into view (text reveals use the existing Reveal component). */
-const FRAMES = ".about-card .photo, .profile .photo, .candid .row > *, .masonry .item, .book-card .photo, .ig-tiles a";
+const FRAMES = ".about-card .photo, .profile .photo, .candid .row > *, .masonry .item, .book-card .photo, .ig-tiles a, .m2-frame";
 
 export function useModernMotion(enabled: boolean, key: string) {
   // smooth scroll

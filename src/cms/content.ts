@@ -16,13 +16,23 @@ const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefin
 const ORIGIN = "https://tplumphotography.com";
 
 export type FeedPost = { image: { src: string; srcset?: string; width?: number; height?: number; alt: string }; caption?: string; url: string };
-type Published = { docs: Partial<Record<DocKey, unknown>>; instagram: FeedPost[] };
+/** A film from Dashboard → Videos (played from YouTube). */
+export type Video = { id: string; youtube_id: string; title: string; description: string; category: string; on_home: boolean; sort_order: number };
+export type DesignSettings = { site_design: "classic" | "modern"; allow_design_switch: boolean };
+type Published = { docs: Partial<Record<DocKey, unknown>>; instagram: FeedPost[]; videos?: Video[]; design?: DesignSettings };
 const BUILT = published as unknown as Published;
 
-function assemble<K extends PageKey>(key: K, docs: Partial<Record<DocKey, unknown>>, instagram: FeedPost[]) {
+/** Films as they were when the site was built (the CMS preview uses these). */
+export const BUILT_VIDEOS: Video[] = BUILT.videos ?? [];
+
+/** The owner's design settings as they were when the site was built (the <head> script applies them before paint). */
+export const BUILT_DESIGN: DesignSettings = { site_design: BUILT.design?.site_design === "modern" ? "modern" : "classic", allow_design_switch: BUILT.design?.allow_design_switch !== false };
+
+function assemble<K extends PageKey>(key: K, docs: Partial<Record<DocKey, unknown>>, instagram: FeedPost[], videos: Video[] = []) {
   const site = mergeContent(SEED.site, docs.site);
   return {
     site,
+    videos,
     page: mergeContent(SEED[key], docs[key]) as PageContentMap[K],
     // Live Instagram posts once the feed is connected; until then the posts captured from the WordPress site.
     posts: (instagram.length >= 4 ? instagram : site.instagramSection.posts) as FeedPost[],
@@ -33,7 +43,7 @@ function assemble<K extends PageKey>(key: K, docs: Partial<Record<DocKey, unknow
 }
 
 /** Same call shape as before (route loaders call it). Pure and synchronous underneath: no server needed. */
-export const getPageContent = async ({ data: key }: { data: PageKey }) => assemble(key, BUILT.docs, BUILT.instagram);
+export const getPageContent = async ({ data: key }: { data: PageKey }) => assemble(key, BUILT.docs, BUILT.instagram, BUILT.videos ?? []);
 
 /** Header/menu/footer content only (booking, client-area and other app pages). */
 export const getSiteContent = async () => ({ site: mergeContent(SEED.site, BUILT.docs.site) });
@@ -53,12 +63,13 @@ function fetchLive(): Promise<Published | null> {
   live = Promise.all([
     fetch(`${SUPABASE_URL}/rest/v1/cms_published?select=key,content`, { headers: h }).then((r) => (r.ok ? r.json() : [])),
     fetch(`${SUPABASE_URL}/rest/v1/instagram_posts?select=permalink,caption,image_url,width,height&hidden=eq.false&order=posted_at.desc&limit=8`, { headers: h }).then((r) => (r.ok ? r.json() : [])),
+    fetch(`${SUPABASE_URL}/rest/v1/videos?select=id,youtube_id,title,description,category,on_home,sort_order&active=eq.true&order=sort_order.asc,created_at.desc`, { headers: h }).then((r) => (r.ok ? r.json() : null)),
   ])
-    .then(([rows, ig]: [{ key: DocKey; content: unknown }[], { permalink: string; caption: string | null; image_url: string; width: number | null; height: number | null }[]]) => {
+    .then(([rows, ig, videos]: [{ key: DocKey; content: unknown }[], { permalink: string; caption: string | null; image_url: string; width: number | null; height: number | null }[], Video[] | null]) => {
       const docs: Partial<Record<DocKey, unknown>> = {};
       for (const r of rows) if (r.content && typeof r.content === "object" && Object.keys(r.content as object).length) docs[r.key] = r.content;
       const instagram = ig.map((r) => ({ image: { src: r.image_url, width: r.width ?? 1080, height: r.height ?? 1350, alt: "" }, caption: r.caption ?? "", url: r.permalink }));
-      return { docs, instagram };
+      return { docs, instagram, videos: videos ?? BUILT.videos ?? [] };
     })
     .catch(() => null);
   return live;
@@ -71,7 +82,7 @@ export function useLiveContent<T extends { site: unknown }>(key: PageKey | null,
     let off = false;
     fetchLive().then((p) => {
       if (off || !p) return;
-      const next = key ? { ...initial, ...assemble(key, p.docs, p.instagram) } : { ...initial, site: mergeContent(SEED.site, p.docs.site) };
+      const next = key ? { ...initial, ...assemble(key, p.docs, p.instagram, p.videos ?? []) } : { ...initial, site: mergeContent(SEED.site, p.docs.site) };
       if (JSON.stringify(next) !== JSON.stringify(initial)) setData(next as T);
     });
     return () => { off = true; };

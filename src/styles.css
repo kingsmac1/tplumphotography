@@ -96,6 +96,8 @@ body { background: #fff; }
 .dash-main div:has(> table) { border-radius: 20px; }
 .dash-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), select, textarea) { border-radius: 12px; }
 .dash-main button:is(.border, .bg-primary, .bg-foreground, .bg-black) { border-radius: 999px; }
+/* buttons laid out as cards (Website page list, option tiles) stay cards */
+.dash-main button.border:is(.text-left, .p-4, .p-5, .p-6) { border-radius: 20px; }
 .dash-main .inline-flex.border > button { border-radius: 0; }
 .dash-main .inline-flex.border:has(> button) { border-radius: 999px; overflow: hidden; }
 .dash .fixed.inset-0 > div:is(.bg-background, .bg-white, .bg-card) { border-radius: 24px; }
@@ -103,3 +105,16 @@ body { background: #fff; }
 
 /* "Sample: edit me" badge for placeholder prices (dashboard only) */
 .sample-badge { display: inline-block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; background: #fff3c4; color: #6b5200; border: 1px solid #f0d77a; padding: 1px 6px; vertical-align: middle; }
+
+/* ---- Two designs (src/site/design.tsx): both are in the pre-rendered HTML; <html data-design> shows one ---- */
+.d-classic, .d-modern { display: contents; }
+html[data-design="modern"] .d-classic, html:not([data-design="modern"]) .d-modern { display: none !important; }
+
+.design-switch { position: fixed; left: 16px; bottom: 16px; z-index: 900; display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px;
+  background: rgba(10, 10, 10, .86); color: #fff; font: 600 11px/1 "Lato", system-ui, sans-serif; letter-spacing: .02em; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .5); }
+.design-switch__label { padding: 0 8px 0 10px; opacity: .6; }
+.design-switch button { border: 0; background: transparent; color: inherit; font: inherit; padding: 8px 12px; border-radius: 999px; cursor: pointer; }
+.design-switch button[aria-pressed="true"] { background: #fff; color: #0a0a0a; }
+.design-switch button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (max-width: 767px) { .design-switch { bottom: calc(84px + env(safe-area-inset-bottom)); left: 12px; } }

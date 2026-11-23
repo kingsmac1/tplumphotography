@@ -1,4 +1,9 @@
 {
  "docs": {},
- "instagram": []
+ "instagram": [],
+ "videos": [],
+ "design": {
+  "site_design": "classic",
+  "allow_design_switch": true
+ }
 }

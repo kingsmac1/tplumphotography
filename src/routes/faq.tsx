@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { cmsPage } from "@/site/PageRoute";
-import Faq from "@/site/pages/Faq";
 
-const page = cmsPage("faq", "/faq/", ({ c, site }) => <Faq c={c} site={site} />);
+const page = cmsPage("faq", "/faq/");
 
 export const Route = createFileRoute("/faq")({
   loader: page.loader,

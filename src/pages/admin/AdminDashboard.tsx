@@ -20,6 +20,7 @@ import { GalleryAdminProvider } from "@/features/gallery/admin/kit/data";
 // Website CMS (page-by-page editor) and contracts — loaded only when opened
 const WebsiteSection = lazy(() => import("@/features/cms/WebsiteSection"));
 const ContractsSection = lazy(() => import("@/features/contracts/ContractsSection"));
+const VideosSection = lazy(() => import("@/features/videos/VideosSection"));
 // Client galleries (proofs, selections, finals) — loaded only when the section is opened
 const GalleriesSection = lazy(() => import("@/features/gallery/admin/GalleriesSection").then((m) => ({ default: m.GalleriesSection })));
 const GalleryManager = lazy(() => import("@/features/gallery/admin/GalleryManager").then((m) => ({ default: m.GalleryManager })));
@@ -33,9 +34,9 @@ const DeliveriesSection = lazy(() => import("@/features/delivery/DeliveriesSecti
 import { DeliveryMenuCount } from "@/features/delivery/MenuCount";
 import brandLogo from "@/assets/tplum-logo-dark.png";
 import brandLogoWhite from "@/assets/tplum-logo-white.png";
-import { ArrowUpRight, Search, LogOut, LayoutDashboard, CalendarDays, UserCheck, Tag, BadgeDollarSign, Wallet, Ellipsis, X, Mail, CalendarRange, GalleryHorizontalEnd, Users, FileText, Timer, Contact, FileSignature, Globe, Camera, Settings, Inbox } from "lucide-react";
+import { ArrowUpRight, Search, LogOut, LayoutDashboard, CalendarDays, UserCheck, Tag, BadgeDollarSign, Wallet, Ellipsis, X, Mail, CalendarRange, GalleryHorizontalEnd, Users, FileText, Timer, Contact, FileSignature, Globe, Camera, Settings, Inbox, Clapperboard } from "lucide-react";
 
-type SectionId = "overview" | "bookings" | "inquiries" | "deliveries" | "galleries" | "calendar" | "clients" | "finance" | "invoices" | "contracts" | "attendance" | "team" | "website" | "instagram" | "pricing" | "promos" | "emails" | "settings";
+type SectionId = "overview" | "bookings" | "inquiries" | "deliveries" | "galleries" | "calendar" | "clients" | "finance" | "invoices" | "contracts" | "attendance" | "team" | "website" | "videos" | "instagram" | "pricing" | "promos" | "emails" | "settings";
 const sections: { id: SectionId; label: string; short: string; icon: typeof LayoutDashboard; group?: string }[] = [
   { id: "overview", label: "Overview", short: "Home", icon: LayoutDashboard },
   { id: "bookings", label: "Bookings", short: "Bookings", icon: CalendarDays, group: "BUSINESS" },
@@ -50,6 +51,7 @@ const sections: { id: SectionId; label: string; short: string; icon: typeof Layo
   { id: "attendance", label: "Staff Check-in", short: "Check-in", icon: UserCheck, group: "TEAM" },
   { id: "team", label: "Team & Accounts", short: "Team", icon: Users },
   { id: "website", label: "Website", short: "Website", icon: Globe, group: "WEBSITE" },
+  { id: "videos", label: "Videos", short: "Videos", icon: Clapperboard },
   { id: "instagram", label: "Instagram Feed", short: "Instagram", icon: Camera },
   { id: "pricing", label: "Prices & Packages", short: "Prices", icon: BadgeDollarSign },
   { id: "promos", label: "Promo Codes", short: "Promos", icon: Tag },
@@ -331,6 +333,7 @@ const AdminDashboardInner = () => {
           {active === "clients" && <ClientsSection />}
           {active === "contracts" && <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}><ContractsSection /></Suspense>}
           {active === "website" && <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}><WebsiteSection /></Suspense>}
+          {active === "videos" && <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}><VideosSection /></Suspense>}
           {active === "instagram" && <InstagramPanel />}
           {active === "settings" && <SettingsSection />}
           {active === "galleries" && (

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { mergeContent, SEED, type PageKey, type SiteContent } from "@/cms/types";
-import type { FeedPost } from "@/cms/content";
+import { BUILT_VIDEOS, type FeedPost } from "@/cms/content";
 import { PREVIEW_KEY, readPreview, type PreviewPayload } from "@/features/cms/previewChannel";
-import { SiteLayout } from "@/site/Layout";
+import { PageInBothDesigns } from "@/site/PageRoute";
 import { PAGE_REGISTRY } from "@/site/pageRegistry";
 
 /**
@@ -24,18 +24,13 @@ function Preview() {
   const key: PageKey = p?.page && p.page in PAGE_REGISTRY ? p.page : "home";
   const site = mergeContent(SEED.site, p?.site) as SiteContent;
   const content = mergeContent(SEED[key], p?.content);
-  const entry = PAGE_REGISTRY[key];
-  const body = entry.body(content as never, site);
   return (
     <>
-      <div style={{ position: "fixed", zIndex: 99999, left: 8, bottom: 8, background: "#000", color: "#fff", font: "600 11px/1 Lato, sans-serif", letterSpacing: ".08em", padding: "7px 10px", pointerEvents: "none", opacity: 0.85 }}>
+      <div style={{ position: "fixed", zIndex: 99999, left: 8, top: 8, background: "#000", color: "#fff", font: "600 11px/1 Lato, sans-serif", letterSpacing: ".08em", padding: "7px 10px", pointerEvents: "none", opacity: 0.85 }}>
         PREVIEW · NOT PUBLISHED
       </div>
-      {entry.bare ? body : (
-        <SiteLayout site={site} posts={site.instagramSection.posts as FeedPost[]} igVariant={entry.igVariant} igClass={entry.igClass ?? "inner"}>
-          {body}
-        </SiteLayout>
-      )}
+      {/* the preview shows the design this browser is set to (the corner switch changes it) */}
+      <PageInBothDesigns pageKey={key} page={content} site={site} posts={site.instagramSection.posts as FeedPost[]} videos={BUILT_VIDEOS} />
     </>
   );
 }

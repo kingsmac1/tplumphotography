@@ -5,6 +5,7 @@ import { demoMode, discardDraft, listRevisions, loadDoc, publish, rebuildSite, r
 import { Field, GroupField } from "./fields";
 import { PAGES, sectionsFor, type PageDef } from "./schema";
 import { sendPreview } from "./previewChannel";
+import DesignPanel from "./DesignPanel";
 
 /**
  * Dashboard → Website. Every page of the public site, its sections in the same order as on the page, and every
@@ -68,9 +69,10 @@ function PageList({ onOpen }: { onOpen: (id: string) => void }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-4xl md:text-5xl">Website</h1>
-          <p className="text-sm text-muted-foreground mt-2 max-w-xl">Edit the words and photos on every page. The design stays as it is: changes are previewed first and go live when you press Publish.</p>
+          <p className="text-sm text-muted-foreground mt-2 max-w-xl">Choose the website's design, and edit the words and photos on every page. Changes are previewed first and go live when you press Publish.</p>
         </div>
       </div>
+      <DesignPanel />
       {err && <p className="text-sm text-destructive">Couldn't load the pages: {err}</p>}
       {groups.map(([title, list]) => (
         <section key={title}>

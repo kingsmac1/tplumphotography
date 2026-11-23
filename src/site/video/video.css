@@ -1,0 +1,59 @@
+/* Video portfolio pieces shared by both designs: thumbnail, play mark and the cinema player. */
+.vthumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.vplay { display: grid; place-items: center; border-radius: 999px; color: #0a0a0a; background: rgba(255, 255, 255, .92);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .55); transition: transform .45s cubic-bezier(.2, .8, .2, 1), background .3s; }
+.vplay svg { margin-left: 8%; }
+.vplay--sm { width: 46px; height: 46px; }
+.vplay--md { width: 64px; height: 64px; }
+.vplay--lg { width: 88px; height: 88px; }
+@supports (backdrop-filter: blur(1px)) {
+  .vplay { background: rgba(255, 255, 255, .78); backdrop-filter: blur(10px) saturate(1.4); -webkit-backdrop-filter: blur(10px) saturate(1.4); }
+}
+
+/* ---------- cinema ---------- */
+.vcinema { position: fixed; inset: 0; z-index: 2147483100; display: grid; grid-template-rows: auto 1fr auto; gap: 16px;
+  padding: max(16px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+  background: rgba(8, 8, 8, .9); color: #fff; font-family: "Lato", system-ui, sans-serif;
+  animation: vc-in .35s ease both; overscroll-behavior: contain; }
+@supports (backdrop-filter: blur(1px)) { .vcinema { background: rgba(8, 8, 8, .78); backdrop-filter: blur(22px) saturate(1.2); -webkit-backdrop-filter: blur(22px) saturate(1.2); } }
+@keyframes vc-in { from { opacity: 0; } to { opacity: 1; } }
+
+.vcinema__top { display: flex; align-items: center; justify-content: space-between; max-width: 1240px; width: 100%; margin: 0 auto; }
+.vcinema__count { font-size: 13px; letter-spacing: .04em; color: rgba(255, 255, 255, .6); font-variant-numeric: tabular-nums; }
+.vcinema__close, .vcinema__nav { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; border: 0; cursor: pointer;
+  color: #fff; background: rgba(255, 255, 255, .1); transition: background .25s, transform .25s; }
+.vcinema__close:hover, .vcinema__nav:hover { background: rgba(255, 255, 255, .22); }
+.vcinema__close:focus-visible, .vcinema__nav:focus-visible, .vcinema__strip button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.vcinema__stage { display: flex; align-items: center; justify-content: center; gap: 18px; min-height: 0; }
+.vcinema__frame { position: relative; width: min(1180px, 100%, calc((100vh - 290px) * 16 / 9)); aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden;
+  background: #000; box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .9); animation: vc-frame .55s cubic-bezier(.2, .8, .2, 1) both; }
+.vcinema__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@keyframes vc-frame { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+
+.vcinema__info { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; max-width: 1240px; width: 100%; margin: 0 auto; min-width: 0; }
+.vcinema__meta { min-width: 0; max-width: 640px; }
+.vcinema__chip { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .85); }
+.vcinema__title { margin: 10px 0 0; font-family: "Fulgate", Georgia, serif; font-weight: 400; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.1; letter-spacing: -.01em; }
+.vcinema__desc { margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, .65); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.vcinema__strip { list-style: none; margin: 0; padding: 4px; display: flex; gap: 8px; overflow-x: auto; max-width: 50%; scrollbar-width: none; }
+.vcinema__strip::-webkit-scrollbar { display: none; }
+.vcinema__strip button { display: block; width: 92px; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 10px; overflow: hidden; cursor: pointer; opacity: .45; transition: opacity .25s, transform .25s; background: #222; }
+.vcinema__strip button:hover { opacity: .8; }
+.vcinema__strip button[aria-current] { opacity: 1; box-shadow: 0 0 0 2px #fff; }
+.vcinema__strip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+@media (max-width: 767px) {
+  .vcinema { padding-left: 12px; padding-right: 12px; gap: 12px; }
+  .vcinema__stage { flex-direction: column; gap: 0; }
+  .vcinema__frame { width: 100%; border-radius: 14px; }
+  .vcinema__nav { position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); }
+  .vcinema__nav--prev { left: 12px; } .vcinema__nav--next { right: 12px; }
+  .vcinema__info { flex-direction: column; align-items: stretch; padding-bottom: 60px; }
+  .vcinema__strip { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .vcinema, .vcinema__frame { animation: none; } }
+/* the site's base rule (.tp img { height: auto }) must not shrink a thumbnail inside its 16:9 frame */
+.tp img.vthumb { height: 100%; max-width: none; }

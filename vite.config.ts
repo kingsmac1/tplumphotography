@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite'
 // pre-rendered page serves each kind. Older path-style links redirect (public/_redirects, functions/client-gallery).
 const pages = [
   // public pages
-  '/', '/portfolio/', '/about/', '/contact/', '/the-tplum-signature/', '/faq/', '/book/', '/coming-soon/', '/404/',
+  '/', '/portfolio/', '/videos/', '/about/', '/contact/', '/the-tplum-signature/', '/faq/', '/book/', '/coming-soon/', '/404/',
   // booking flows
   '/booking/', '/booking/wedding/', '/booking/kiddies/', '/booking/confirmed/', '/events/',
   // app screens (browser-only content)
