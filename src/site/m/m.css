@@ -133,12 +133,13 @@ html.js .tp.tpm .reveal.in { animation: m2Rise 1.1s cubic-bezier(.2, .8, .2, 1) 
 
 /* ---------- quote ---------- */
 .tp.tpm .mquote { margin-top: var(--m-gap); }
-.tp.tpm .mquote__card { position: relative; min-height: clamp(460px, 58vw, 760px); border-radius: var(--m-r-xl); overflow: hidden; background: #222 var(--bg-l) center / cover no-repeat; display: flex; align-items: flex-end; padding: var(--m-gut); }
-.tp.tpm .mquote__text { position: relative; max-width: 560px; padding: clamp(24px, 3vw, 40px); border-radius: var(--m-r-lg); background: rgba(255, 255, 255, .84); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); }
-.tp.tpm .mquote__mark { display: block; font-family: var(--fulgate); font-size: 96px; line-height: .55; height: 40px; color: var(--m-ink); }
-.tp.tpm .mquote__text p { margin: 0; font-family: var(--fulgate); font-size: clamp(20px, 2vw, 27px); line-height: 1.28; color: var(--m-ink); }
-.tp.tpm .mquote__text p:last-child:not(:first-child) { margin-top: 18px; font: 700 12px/1 var(--lato); letter-spacing: .1em; color: var(--m-muted); }
-@media (max-width: 767px) { .tp.tpm .mquote__card { background-image: var(--bg-s, var(--bg-l)); min-height: 620px; } }
+/* quote card: top-left of the photo, well in from the edges, smaller type */
+.tp.tpm .mquote__card { position: relative; min-height: clamp(460px, 58vw, 760px); border-radius: var(--m-r-xl); overflow: hidden; background: #222 var(--bg-l) center / cover no-repeat; display: flex; align-items: flex-start; justify-content: flex-start; padding: clamp(28px, 4vw, 56px); }
+.tp.tpm .mquote__text { position: relative; max-width: 420px; padding: clamp(20px, 2.2vw, 28px); border-radius: var(--m-r-lg); background: rgba(255, 255, 255, .84); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); }
+.tp.tpm .mquote__mark { display: block; font-family: var(--fulgate); font-size: 64px; line-height: .55; height: 28px; color: var(--m-ink); }
+.tp.tpm .mquote__text p { margin: 0; font-family: var(--fulgate); font-size: clamp(16px, 1.35vw, 19px); line-height: 1.35; color: var(--m-ink); }
+.tp.tpm .mquote__text p:last-child:not(:first-child) { margin-top: 14px; font: 700 11px/1 var(--lato); letter-spacing: .1em; color: var(--m-muted); }
+@media (max-width: 767px) { .tp.tpm .mquote__card { background-image: var(--bg-s, var(--bg-l)); min-height: 620px; padding: 22px; } .tp.tpm .mquote__text { max-width: none; } }
 
 /* ---------- candid (bento) ---------- */
 .tp.tpm .mcandid { margin-top: var(--m-gap); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, clamp(210px, 23vw, 330px)); gap: var(--m-gut); }
