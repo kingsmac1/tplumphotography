@@ -42,47 +42,64 @@
    "items": [
     {
      "label": "Home",
-     "href": "/"
-    },
-    {
-     "label": "Wedding",
-     "href": "/booking/wedding/"
-    },
-    {
-     "label": "Photography & Videography",
-     "href": "/booking/"
-    },
-    {
-     "label": "Tplum Kiddies",
-     "href": "/booking/kiddies/"
-    },
-    {
-     "label": "Wedding Stories",
-     "href": "/wedding-stories/"
-    },
-    {
-     "label": "Portfolio",
-     "href": "/portfolio/"
-    },
-    {
-     "label": "Videos",
-     "href": "/videos/"
+     "href": "/",
+     "children": []
     },
     {
      "label": "About",
-     "href": "/about/"
+     "href": "/about/",
+     "children": []
+    },
+    {
+     "label": "Services",
+     "href": "/book/",
+     "children": [
+      {
+       "label": "Wedding",
+       "href": "/booking/wedding/"
+      },
+      {
+       "label": "Photography & Videography",
+       "href": "/booking/"
+      },
+      {
+       "label": "Tplum Kiddies",
+       "href": "/booking/kiddies/"
+      }
+     ]
+    },
+    {
+     "label": "Portfolio",
+     "href": "/portfolio/",
+     "children": [
+      {
+       "label": "Wedding Stories",
+       "href": "/wedding-stories/"
+      },
+      {
+       "label": "Videos",
+       "href": "/videos/"
+      },
+      {
+       "label": "Our Recent Work",
+       "href": "/portfolio/"
+      }
+     ]
     },
     {
      "label": "The Tplum Signature",
-     "href": "/the-tplum-signature/"
+     "href": "/the-tplum-signature/",
+     "children": []
     },
     {
      "label": "FAQ",
-     "href": "/faq/"
+     "href": "/faq/",
+     "children": []
     },
     {
      "label": "Contact",
-     "href": "/contact/"
+     "href": "/contact/",
+     "children": []
     }
    ]
   },

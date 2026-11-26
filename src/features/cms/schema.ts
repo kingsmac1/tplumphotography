@@ -42,6 +42,7 @@ export const PAGES: PageDef[] = [
 const LABELS: Record<string, string> = {
   seo: "Search & sharing (SEO)",
   albums: "Couples",
+  children: "Sub-menu (shown under it in the menu)",
   stories: "Wedding stories (couple galleries)",
   cover: "Cover photo",
   photos: "Photos of their day",

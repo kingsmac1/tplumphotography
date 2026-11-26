@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useLocation } from "@tanstack/react-router";
 import Lenis from "lenis";
 import { ArrowUp, Camera, Home as HomeIcon, LayoutGrid, Mail, Menu as MenuIcon } from "lucide-react";
@@ -116,14 +117,30 @@ export function ModernHeader({ site, onMenu, menuOpen, solid }: { site: SiteCont
 const previewFor = (href: string): Partial<CmsImage> | undefined => {
   const p = norm(href).replace(/^\/|\/$/g, "");
   const s = SEED as unknown as Record<string, { hero?: { image?: CmsImage; slidesDesktop?: CmsImage[] } }>;
-  return p ? s[p]?.hero?.image : s.home?.hero?.slidesDesktop?.[0];
+  const alias: Record<string, string> = { "booking/wedding": "wedding-stories", booking: "portfolio", "booking/kiddies": "book" };
+  const key = alias[p] ?? p;
+  return (key ? s[key]?.hero?.image : undefined) ?? s.home?.hero?.slidesDesktop?.[0];
 };
 
-/** Full-screen menu: very large numbered links, a photograph for the link you point at, and ways to get in touch. */
+type MenuLink = { label: string; href: string; children?: { label: string; href: string }[] };
+
+/** Every link in the menu, sub-menus included (for the photo previews and anywhere a flat list is needed). */
+export const flatMenu = (items: MenuLink[]) => items.flatMap((i) => [i, ...(i.children ?? [])]);
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Full-screen menu: very large numbered links, each section's sub-menu shown under it straight away as a row of pill
+ * links (Services → Wedding, Photography & Videography, Tplum Kiddies; Portfolio → Wedding Stories, Videos, Our Recent
+ * Work), a photograph for the link you point at, and ways to get in touch. Entrance: a short stagger (framer-motion).
+ * It scrolls on its own (data-lenis-prevent: the page's smooth scrolling is paused while it is open).
+ */
 export function ModernMenu({ site, open, onClose }: { site: SiteContent; open: boolean; onClose: () => void }) {
   const { pathname } = useLocation();
-  const items = site.menu.items;
-  const current = items.find((i) => norm(i.href) === norm(pathname))?.href ?? items[0]?.href ?? "/";
+  const items = site.menu.items as MenuLink[];
+  const all = flatMenu(items);
+  const reduce = useReducedMotion();
+  const current = all.find((i) => norm(i.href) === norm(pathname))?.href ?? items[0]?.href ?? "/";
   const [hover, setHover] = useState(current);
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -141,10 +158,10 @@ export function ModernMenu({ site, open, onClose }: { site: SiteContent; open: b
   }, [open, onClose, current]);
   if (!open) return null;
   const book = site.header?.bookButton;
-  const contactItem = items.find((i) => norm(i.href) === "/contact/");
+  const contactItem = all.find((i) => norm(i.href) === "/contact/");
   const phone = site.contact.phone;
   return (
-    <div className="m-menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <div className="m-menu" role="dialog" aria-modal="true" aria-label="Menu" data-lenis-prevent>
       <div className="m-menu__top">
         <a href="/" onClick={onClose} aria-label={`${site.brand.siteName} home`} className="m-menu__logo"><Img image={site.brand.menuLogo ?? site.brand.logoLight} sizes="160px" alt={site.brand.siteName} /></a>
         <button ref={closeRef} type="button" className="m-menu__close" onClick={onClose}>
@@ -153,27 +170,46 @@ export function ModernMenu({ site, open, onClose }: { site: SiteContent; open: b
       </div>
       <div className="m-menu__body">
         <nav aria-label="Main">
-          <ul>
-            {items.map((n, i) => (
-              <li key={n.href + n.label} className="m-menu__item" style={{ animationDelay: `${120 + i * 55}ms` }}>
-                <a
-                  href={n.href}
-                  onClick={onClose}
-                  onPointerEnter={() => setHover(n.href)}
-                  onFocus={() => setHover(n.href)}
-                  aria-current={norm(n.href) === norm(pathname) ? "page" : undefined}
-                  className={`m-menu__link${hover === n.href ? " is-hover" : ""}`}
-                >
-                  <sup aria-hidden="true">{String(i + 1).padStart(2, "0")}</sup>
-                  <span>{n.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          <motion.ul initial="hidden" animate="shown" variants={{ shown: { transition: { staggerChildren: reduce ? 0 : 0.055, delayChildren: reduce ? 0 : 0.12 } } }}>
+            {items.map((n, i) => {
+              const kids = n.children?.filter((c) => c.label && c.href) ?? [];
+              return (
+                <motion.li key={n.href + n.label} className={`m-menu__group${kids.length ? " has-sub" : ""}`}
+                  variants={{ hidden: { opacity: 0, y: reduce ? 0 : 28 }, shown: { opacity: 1, y: 0, transition: { duration: reduce ? 0 : 0.7, ease: EASE } } }}>
+                  <a
+                    href={n.href}
+                    onClick={onClose}
+                    onPointerEnter={() => setHover(n.href)}
+                    onFocus={() => setHover(n.href)}
+                    aria-current={norm(n.href) === norm(pathname) ? "page" : undefined}
+                    className={`m-menu__link${hover === n.href ? " is-hover" : ""}`}
+                  >
+                    <sup aria-hidden="true">{String(i + 1).padStart(2, "0")}</sup>
+                    <span>{n.label}</span>
+                  </a>
+                  {kids.length > 0 && (
+                    <motion.ul className="m-menu__sub" aria-label={`${n.label}: pages`} initial="hidden" animate="shown"
+                      variants={{ shown: { transition: { staggerChildren: reduce ? 0 : 0.06, delayChildren: reduce ? 0 : 0.35 + i * 0.05 } } }}>
+                      {kids.map((c) => (
+                        <motion.li key={c.href + c.label} variants={{ hidden: { opacity: 0, x: reduce ? 0 : -10 }, shown: { opacity: 1, x: 0, transition: { duration: reduce ? 0 : 0.5, ease: EASE } } }}>
+                          <a href={c.href} onClick={onClose} onPointerEnter={() => setHover(c.href)} onFocus={() => setHover(c.href)}
+                            aria-current={norm(c.href) === norm(pathname) ? "page" : undefined}
+                            className={`m-menu__pill${hover === c.href ? " is-hover" : ""}`}>
+                            {c.label}
+                            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </a>
+                        </motion.li>
+                      ))}
+                    </motion.ul>
+                  )}
+                </motion.li>
+              );
+            })}
+          </motion.ul>
         </nav>
         <aside className="m-menu__aside" aria-label="Book or get in touch">
           <div className="m-menu__item m-menu__preview" style={{ animationDelay: "200ms" }} aria-hidden="true">
-            {items.map((n) => {
+            {[...new Map(all.map((n) => [n.href, n])).values()].map((n) => {
               const img = previewFor(n.href);
               return img?.src ? <div key={n.href} style={{ opacity: hover === n.href ? 1 : 0 }}><Img image={img} sizes="34vw" /></div> : null;
             })}
@@ -184,7 +220,7 @@ export function ModernMenu({ site, open, onClose }: { site: SiteContent; open: b
           </div>
           <div className="m-menu__item m-menu__contact" style={{ animationDelay: "400ms" }}>
             <a href={`mailto:${site.contact.email}`}>{site.contact.email.toLowerCase()}</a>
-            <a href={`tel:${phone.replace(/[^+\d]/g, "")}`}>{phone}</a>
+            <a href={`tel:${phone.replace(/[^+\d]/g, "")}`}>{/^\+?1\d{10}$/.test(phone.replace(/[^+\d]/g, "")) ? phone.replace(/[^\d]/g, "").replace(/^1(\d{3})(\d{3})(\d{4})$/, "+1 $1 $2 $3") : phone}</a>
             <Socials site={site} />
           </div>
         </aside>

@@ -198,7 +198,8 @@ function StringsField({ path, k, value, onChange }: FP) {
 
 function ItemsField({ path, k, seed, value, onChange, ctx }: FP) {
   const list = Array.isArray(value) ? (value as unknown[]) : [];
-  const sample = (Array.isArray(seed) ? seed[0] : undefined) ?? list[0] ?? {};
+  // sub-menu items (menu.items[].children) start as a label + link even when the first menu item has none
+  const sample = (Array.isArray(seed) ? seed[0] : undefined) ?? list[0] ?? (k === "children" ? { label: "", href: "" } : {});
   const ids = useIds(list.length);
   const [open, setOpen] = useState<string | null>(null);
   const set = (next: unknown[], nextIds: string[]) => { ids.current = nextIds; onChange(next); };

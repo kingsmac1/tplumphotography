@@ -191,3 +191,21 @@ html.lenis, html.lenis body { height: auto; }
 /* the header carries no menu links (they are in the full-screen menu): Menu button left, logo centre, Book now right */
 :root .m-menu-btn { display: inline-flex; justify-self: start; }
 @media (max-width: 1024px) { :root .m-split--right { display: none; } }
+
+/* sub-menus: shown under their section from the start, as a row of pill links */
+:root .m-menu__group { padding: .1em 0; }
+:root .m-menu__group.has-sub { padding-bottom: .55em; }
+:root .m-menu__sub { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; padding-left: calc(18px + 2ch) !important; }
+:root .m-menu__pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px 9px 16px; border-radius: 999px; border: 1px solid rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.78); font: 400 14px/1 var(--lato); letter-spacing: .01em; text-decoration: none; white-space: nowrap; transition: background .3s, color .3s, border-color .3s; }
+:root .m-menu__pill svg { opacity: .6; transition: transform .35s cubic-bezier(0.16, 1, 0.3, 1), opacity .3s; }
+:root .m-menu__pill:hover, :root .m-menu__pill:focus-visible, :root .m-menu__pill.is-hover, :root .m-menu__pill[aria-current="page"] { background: #fff; border-color: #fff; color: #000; }
+:root .m-menu__pill:hover svg, :root .m-menu__pill.is-hover svg { opacity: 1; transform: translate(2px, -2px); }
+:root .m-menu__pill:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+:root .m-menu__body { align-items: start; }
+:root .m-menu__aside { position: sticky; top: 24px; }
+@media (max-width: 900px) {
+  :root .m-menu__sub { padding-left: 0 !important; margin-top: 8px; }
+  :root .m-menu__pill { font-size: 13px; padding: 8px 12px 8px 14px; }
+  :root .m-menu__aside { position: static; }
+}

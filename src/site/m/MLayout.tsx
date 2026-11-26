@@ -3,7 +3,7 @@ import { useLocation } from "@tanstack/react-router";
 import { ArrowUpRight, Menu as MenuIcon } from "lucide-react";
 import type { CmsImage, SiteContent } from "@/cms/types";
 import { Img, Reveal, bgUrl, BG_PHONE_WIDTH } from "../ui";
-import { ModernMenu, RingToTop, TabBar, useModernMotion } from "../modern";
+import { ModernMenu, RingToTop, TabBar, flatMenu, useModernMotion } from "../modern";
 import { releasePreloader } from "../preloader";
 import { IconFacebook, IconInstagram } from "../icons";
 import { DesignSwitch } from "../design";
@@ -107,7 +107,7 @@ export function MInstagram({ site, posts }: { site: SiteContent; posts: IgPost[]
 
 export function MFooter({ site }: { site: SiteContent }) {
   const f = site.footer;
-  const links = site.menu.items;
+  const links = flatMenu(site.menu.items as Parameters<typeof flatMenu>[0]).filter((l, i, a) => a.findIndex((x) => x.href === l.href) === i);
   const phone = site.contact.phone;
   return (
     <footer className="mfoot">
