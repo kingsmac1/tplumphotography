@@ -9,7 +9,10 @@ import { createBooking, type BookingPayload } from "@/lib/bookingLog";
 import { closeTab, messageLines, prepareWhatsAppTab, rememberWhatsApp, sendToWhatsApp, whatsappUrl } from "@/lib/whatsapp";
 import { longDate } from "@/lib/schedule";
 import type { SiteContent } from "@/cms/types";
-import { SEED } from "@/cms/types";
+import { SEED, type StoriesContent } from "@/cms/types";
+import type { Video } from "@/cms/content";
+import { storyHref } from "@/site/stories";
+import { Player, PlayMark, VideoThumb, usePlayer } from "@/site/video/Player";
 
 /** Simple fade-in wrapper (DMI's AnimatedSection). */
 const AnimatedSection = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number; distance?: number }) => (
@@ -21,20 +24,20 @@ type Pkg = WeddingPackage;
 const formatMoney = (amount: number) =>
   new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", minimumFractionDigits: Number.isInteger(amount) ? 0 : 2, maximumFractionDigits: 2 }).format(amount);
 
-const ASPECTS = ["aspect-[2/3]", "aspect-[4/3]", "aspect-square", "aspect-[3/5]", "aspect-[3/4]"];
 
-const Weddings = ({ site }: { site?: SiteContent }) => {
+const Weddings = ({ site, stories = SEED["wedding-stories"], videos = [] }: { site?: SiteContent; stories?: StoriesContent; videos?: Video[] }) => {
   const instagramUrl = site?.contact.instagramUrl ?? SEED.site.contact.instagramUrl;
   const { settings: business } = useBusinessSettings();
   const { loaded: pricingLoaded, packages: allPackages, extras: allExtras } = useWeddingPricing();
   const packages = pricingLoaded ? allPackages : [];
   const extrasList = pricingLoaded ? allExtras : [];
-  // Gallery: the portfolio photos (managed in Dashboard -> Website -> Portfolio).
-  const weddingImages = useMemo(() => SEED.portfolio.gallery.images.slice(0, 12).map((i) => i.src), []);
+  // Gallery: the couples' albums (Dashboard -> Website -> Wedding Stories), then the wedding films (Dashboard -> Videos).
+  const couples = useMemo(() => stories.albums.filter((a) => a.name && (a.cover?.src || a.photos[0]?.src)), [stories]);
+  const films = useMemo(() => { const w = videos.filter((v) => /wedding/i.test(v.category)); return w.length ? w : videos; }, [videos]);
+  const player = usePlayer(films.length);
   const heroImage = SEED.portfolio.hero.image.src;
 
   const [selectedPkg, setSelectedPkg] = useState<Pkg | null>(null);
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const weddingDateInputRef = useRef<HTMLInputElement | null>(null);
 
   const [form, setForm] = useState({
@@ -53,9 +56,9 @@ const Weddings = ({ site }: { site?: SiteContent }) => {
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    document.body.style.overflow = selectedPkg || lightboxIndex !== null ? "hidden" : "";
+    document.body.style.overflow = selectedPkg ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [selectedPkg, lightboxIndex]);
+  }, [selectedPkg]);
 
   const packageTotal = () => {
     if (!selectedPkg) return 0;
@@ -279,35 +282,65 @@ const Weddings = ({ site }: { site?: SiteContent }) => {
         </div>
       </section>
 
-      {/* GALLERY (masonry) */}
-      <section className="py-20 px-6 md:px-16 lg:px-20 border-t border-border">
-        <AnimatedSection>
-          <div className="flex justify-between items-end mb-12">
-            <h2 className="font-display text-4xl md:text-6xl font-bold">WEDDING<br />GALLERY</h2>
-            <span className="text-xs text-muted-foreground font-body tracking-widest hidden md:block">RECENT WORK</span>
+      {/* GALLERY 1: WEDDING STORIES (one card per couple, each opens their photos) */}
+      {couples.length > 0 && (
+        <section className="py-20 px-6 md:px-16 lg:px-20 border-t border-border">
+          <AnimatedSection>
+            <div className="flex justify-between items-end gap-6 mb-12 max-w-6xl mx-auto">
+              <h2 className="font-display text-4xl md:text-6xl font-bold">WEDDING<br />STORIES</h2>
+              <a href="/wedding-stories/" className="text-xs font-body tracking-widest underline underline-offset-4 hover:no-underline">VIEW ALL STORIES</a>
+            </div>
+          </AnimatedSection>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+            {couples.map((a, i) => {
+              const cover = a.cover?.src ? a.cover : a.photos[0];
+              return (
+                <AnimatedSection key={a.name} delay={i * 0.05}>
+                  <a href={storyHref(a)} className="group block">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                      <img src={cover.src} srcSet={cover.srcset || undefined} sizes="(max-width: 1024px) 46vw, 280px" alt={a.name} loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                      <span className="absolute top-3 right-3 bg-background/90 text-foreground text-[10px] font-body font-bold tracking-widest px-2 py-1">
+                        {a.photos.length} PHOTO{a.photos.length === 1 ? "" : "S"}
+                      </span>
+                    </div>
+                    <p className="font-display text-xl md:text-2xl font-bold mt-4 leading-tight">{a.name}</p>
+                    <p className="text-xs font-body text-muted-foreground tracking-widest mt-1 uppercase">{a.subtitle ? `${a.subtitle} · ` : ""}View story <ArrowUpRight className="inline w-3 h-3" /></p>
+                  </a>
+                </AnimatedSection>
+              );
+            })}
           </div>
-        </AnimatedSection>
+        </section>
+      )}
 
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
-          {weddingImages.map((src, i) => (
-            <AnimatedSection key={src} delay={i * 0.04} distance={40}>
-              <motion.div
-                className="break-inside-avoid overflow-hidden group cursor-pointer"
-                onClick={() => setLightboxIndex(i)}
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", damping: 60, stiffness: 400 }}
-              >
-                <img
-                  src={src}
-                  alt={`Tplum Photography wedding ${i + 1}`}
-                  className={`w-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out ${ASPECTS[i % ASPECTS.length]}`}
-                  loading="lazy"
-                />
-              </motion.div>
-            </AnimatedSection>
-          ))}
-        </div>
-      </section>
+      {/* GALLERY 2: WEDDING FILMS (played in the site's cinema player) */}
+      {films.length > 0 && (
+        <section className="py-20 px-6 md:px-16 lg:px-20 border-t border-border">
+          <AnimatedSection>
+            <div className="flex justify-between items-end gap-6 mb-12 max-w-6xl mx-auto">
+              <h2 className="font-display text-4xl md:text-6xl font-bold">WEDDING<br />FILMS</h2>
+              <a href="/videos/" className="text-xs font-body tracking-widest underline underline-offset-4 hover:no-underline">ALL FILMS</a>
+            </div>
+          </AnimatedSection>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {films.slice(0, 6).map((v, i) => (
+              <AnimatedSection key={v.id} delay={i * 0.05}>
+                <button type="button" onClick={() => player.open(i)} className="group block w-full text-left" aria-label={`Play ${v.title || "film"}`}>
+                  <div className="relative aspect-video overflow-hidden bg-foreground grid place-items-center">
+                    <VideoThumb id={v.youtube_id} alt="" className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" aria-hidden="true" />
+                    <span className="relative"><PlayMark /></span>
+                  </div>
+                  <p className="font-display text-xl font-bold mt-4 leading-tight">{v.title || "Untitled film"}</p>
+                  {v.category && <p className="text-xs font-body text-muted-foreground tracking-widest mt-1 uppercase">{v.category}</p>}
+                </button>
+              </AnimatedSection>
+            ))}
+          </div>
+          <Player videos={films.slice(0, 6)} index={player.index} onClose={player.close} onIndex={player.setIndex} />
+        </section>
+      )}
 
       {/* TERMS */}
       <section className="py-20 px-6 md:px-16 lg:px-20 border-t border-border bg-muted/20">
@@ -465,21 +498,6 @@ ${business.cancellation_policy}` : ""}
         )}
       </AnimatePresence>
 
-      {/* LIGHTBOX */}
-      <AnimatePresence>
-        {lightboxIndex !== null && weddingImages[lightboxIndex] && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] bg-primary/95 flex items-center justify-center"
-            onClick={() => setLightboxIndex(null)}
-          >
-            <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(null); }} className="absolute top-6 right-6 text-primary-foreground z-[120]" aria-label="Close"><X size={28} /></button>
-            <button onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + weddingImages.length) % weddingImages.length); }} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-primary-foreground z-[120]" aria-label="Previous"><ChevronLeft size={36} /></button>
-            <button onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % weddingImages.length); }} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-primary-foreground z-[120]" aria-label="Next"><ChevronRight size={36} /></button>
-            <img src={weddingImages[lightboxIndex]} alt="" className="max-h-[85vh] max-w-[90vw] object-contain" onClick={(e) => e.stopPropagation()} />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
