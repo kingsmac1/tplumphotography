@@ -33,6 +33,8 @@ import { Route as ContractIndexRouteImport } from './routes/contract/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardLoginRouteImport } from './routes/dashboard/login'
 import { Route as InvoiceIndexRouteImport } from './routes/invoice/index'
+import { Route as WeddingStoriesIndexRouteImport } from './routes/wedding-stories/index'
+import { Route as WeddingStoriesSlugRouteImport } from './routes/wedding-stories/$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -154,6 +156,16 @@ const InvoiceIndexRoute = InvoiceIndexRouteImport.update({
   path: '/invoice/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WeddingStoriesIndexRoute = WeddingStoriesIndexRouteImport.update({
+  id: '/wedding-stories/',
+  path: '/wedding-stories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeddingStoriesSlugRoute = WeddingStoriesSlugRouteImport.update({
+  id: '/wedding-stories/$slug',
+  path: '/wedding-stories/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -175,11 +187,13 @@ export interface FileRoutesByFullPath {
   '/booking/kiddies': typeof BookingKiddiesRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/dashboard/login': typeof DashboardLoginRoute
+  '/wedding-stories/$slug': typeof WeddingStoriesSlugRoute
   '/booking/': typeof BookingIndexRoute
   '/client-gallery/': typeof ClientGalleryIndexRoute
   '/contract/': typeof ContractIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/invoice/': typeof InvoiceIndexRoute
+  '/wedding-stories/': typeof WeddingStoriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -200,11 +214,13 @@ export interface FileRoutesByTo {
   '/booking/kiddies': typeof BookingKiddiesRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/dashboard/login': typeof DashboardLoginRoute
+  '/wedding-stories/$slug': typeof WeddingStoriesSlugRoute
   '/booking': typeof BookingIndexRoute
   '/client-gallery': typeof ClientGalleryIndexRoute
   '/contract': typeof ContractIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/invoice': typeof InvoiceIndexRoute
+  '/wedding-stories': typeof WeddingStoriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -227,11 +243,13 @@ export interface FileRoutesById {
   '/booking/kiddies': typeof BookingKiddiesRoute
   '/booking/wedding': typeof BookingWeddingRoute
   '/dashboard/login': typeof DashboardLoginRoute
+  '/wedding-stories/$slug': typeof WeddingStoriesSlugRoute
   '/booking/': typeof BookingIndexRoute
   '/client-gallery/': typeof ClientGalleryIndexRoute
   '/contract/': typeof ContractIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/invoice/': typeof InvoiceIndexRoute
+  '/wedding-stories/': typeof WeddingStoriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -255,11 +273,13 @@ export interface FileRouteTypes {
     | '/booking/kiddies'
     | '/booking/wedding'
     | '/dashboard/login'
+    | '/wedding-stories/$slug'
     | '/booking/'
     | '/client-gallery/'
     | '/contract/'
     | '/dashboard/'
     | '/invoice/'
+    | '/wedding-stories/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -280,11 +300,13 @@ export interface FileRouteTypes {
     | '/booking/kiddies'
     | '/booking/wedding'
     | '/dashboard/login'
+    | '/wedding-stories/$slug'
     | '/booking'
     | '/client-gallery'
     | '/contract'
     | '/dashboard'
     | '/invoice'
+    | '/wedding-stories'
   id:
     | '__root__'
     | '/'
@@ -306,11 +328,13 @@ export interface FileRouteTypes {
     | '/booking/kiddies'
     | '/booking/wedding'
     | '/dashboard/login'
+    | '/wedding-stories/$slug'
     | '/booking/'
     | '/client-gallery/'
     | '/contract/'
     | '/dashboard/'
     | '/invoice/'
+    | '/wedding-stories/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -332,10 +356,12 @@ export interface RootRouteChildren {
   BookingConfirmedRoute: typeof BookingConfirmedRoute
   BookingKiddiesRoute: typeof BookingKiddiesRoute
   BookingWeddingRoute: typeof BookingWeddingRoute
+  WeddingStoriesSlugRoute: typeof WeddingStoriesSlugRoute
   BookingIndexRoute: typeof BookingIndexRoute
   ClientGalleryIndexRoute: typeof ClientGalleryIndexRoute
   ContractIndexRoute: typeof ContractIndexRoute
   InvoiceIndexRoute: typeof InvoiceIndexRoute
+  WeddingStoriesIndexRoute: typeof WeddingStoriesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -508,6 +534,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvoiceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wedding-stories/': {
+      id: '/wedding-stories/'
+      path: '/wedding-stories'
+      fullPath: '/wedding-stories/'
+      preLoaderRoute: typeof WeddingStoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wedding-stories/$slug': {
+      id: '/wedding-stories/$slug'
+      path: '/wedding-stories/$slug'
+      fullPath: '/wedding-stories/$slug'
+      preLoaderRoute: typeof WeddingStoriesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -544,10 +584,12 @@ const rootRouteChildren: RootRouteChildren = {
   BookingConfirmedRoute: BookingConfirmedRoute,
   BookingKiddiesRoute: BookingKiddiesRoute,
   BookingWeddingRoute: BookingWeddingRoute,
+  WeddingStoriesSlugRoute: WeddingStoriesSlugRoute,
   BookingIndexRoute: BookingIndexRoute,
   ClientGalleryIndexRoute: ClientGalleryIndexRoute,
   ContractIndexRoute: ContractIndexRoute,
   InvoiceIndexRoute: InvoiceIndexRoute,
+  WeddingStoriesIndexRoute: WeddingStoriesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

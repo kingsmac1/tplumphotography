@@ -187,3 +187,7 @@ html.lenis, html.lenis body { height: auto; }
   :root .tp .hero.mobile { height: calc(100svh - var(--m-tab-h) - env(safe-area-inset-bottom)); }
   :root .tp .hero.mobile .slides { height: calc(100svh - var(--m-tab-h) - env(safe-area-inset-bottom) + 10px); }
 }
+
+/* the header carries no menu links (they are in the full-screen menu): Menu button left, logo centre, Book now right */
+:root .m-menu-btn { display: inline-flex; justify-self: start; }
+@media (max-width: 1024px) { :root .m-split--right { display: none; } }

@@ -14,9 +14,15 @@ export type FaqContent = typeof seed.faq;
 export type ComingSoonContent = (typeof seed)["coming-soon"];
 export type BookContent = typeof seed.book;
 export type VideosContent = typeof seed.videos;
+export type StoriesContent = (typeof seed)["wedding-stories"];
+export type Album = StoriesContent["albums"][number];
+
+/** "Juwon & Femi" → "juwon-and-femi" (the album's address under /wedding-stories/). */
+export const albumSlug = (name: string) =>
+  name.toLowerCase().replace(/&/g, " and ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "couple";
 export type SeoContent = HomeContent["seo"];
 
-export type PageKey = "home" | "portfolio" | "about" | "contact" | "the-tplum-signature" | "faq" | "coming-soon" | "book" | "videos";
+export type PageKey = "home" | "portfolio" | "about" | "contact" | "the-tplum-signature" | "faq" | "coming-soon" | "book" | "videos" | "wedding-stories";
 export type DocKey = PageKey | "site";
 
 export type PageContentMap = {
@@ -30,6 +36,7 @@ export type PageContentMap = {
   "coming-soon": ComingSoonContent;
   book: BookContent;
   videos: VideosContent;
+  "wedding-stories": StoriesContent;
 };
 
 export const SEED = seed as unknown as PageContentMap;

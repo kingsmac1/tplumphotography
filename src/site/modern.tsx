@@ -90,24 +90,19 @@ export function ModernHeader({ site, onMenu, menuOpen, solid }: { site: SiteCont
     return () => window.removeEventListener("scroll", on);
   }, []);
   const book = site.header?.bookButton;
-  const links = site.menu.items.filter((i) => i.href !== "/" && i.href !== book?.href);
-  const half = Math.ceil(links.length / 2);
-  const item = (i: { label: string; href: string }) => (
-    <li key={i.href}><a href={i.href} data-active={norm(pathname) === norm(i.href) || undefined}>{i.label}</a></li>
-  );
+  void pathname;
+  // the menu lives in the full-screen overlay ("Menu" button), not in the header
   return (
     <header className={`m-header${scrolled || solid ? " is-scrolled" : ""}${hidden && !menuOpen ? " is-hidden" : ""}`}>
       <div className="m-header__in">
-        <nav className="m-split m-split--left" aria-label="Main"><ul>{links.slice(0, half).map(item)}</ul></nav>
         <button type="button" className="m-menu-btn" onClick={onMenu} aria-haspopup="dialog" aria-expanded={menuOpen}>
           <i aria-hidden="true"><b /><b /></i>Menu
         </button>
         <a href="/" className="m-brand" aria-label={`${site.brand.siteName} home`}>
           <Img image={site.brand.logoLight} sizes="160px" loading="eager" alt={site.brand.siteName} />
         </a>
-        <nav className="m-split m-split--right" aria-label="More">
+        <nav className="m-split m-split--right" aria-label="Book">
           <ul>
-            {links.slice(half).map(item)}
             {book?.label && <li><a href={book.href} className="m-book magnetic"><span className="m-dot" aria-hidden="true" />{book.label}</a></li>}
           </ul>
         </nav>

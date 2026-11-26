@@ -11,3 +11,20 @@ if (fs.existsSync(from)) {
 else console.warn('postbuild: dist/client/404/index.html missing, no custom 404 page')
 const pages = fs.readdirSync('dist/client', { recursive: true }).filter((f) => String(f).endsWith('index.html')).length
 console.log(`postbuild: ${pages} pre-rendered pages ready in dist/client`)
+
+// Every page in the pre-render list must exist. The pre-renderer can give up on a page and still finish, which would
+// leave that page missing on the live site; failing here keeps the last good deployment live instead.
+const config = fs.readFileSync('vite.config.ts', 'utf8')
+const listed = [...config.slice(config.indexOf('const pages = ['), config.indexOf('].map((path)')).matchAll(/'(\/[^']*)'/g)].map((m) => m[1])
+const stories = (() => {
+  const read = (f) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')) } catch { return {} } }
+  const albums = read('src/cms/published.json')?.docs?.['wedding-stories']?.albums ?? read('src/cms/seed.json')?.['wedding-stories']?.albums ?? []
+  const slug = (n) => n.toLowerCase().replace(/&/g, ' and ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'couple'
+  return albums.filter((a) => a?.name).map((a) => `/wedding-stories/${slug(a.name)}/`)
+})()
+const missing = [...listed, ...stories].filter((p) => !fs.existsSync(`dist/client${p}index.html`))
+if (missing.length) {
+  console.error(`postbuild: these pages were not pre-rendered: ${missing.join(', ')}`)
+  process.exit(1)
+}
+console.log(`postbuild: all ${listed.length + stories.length} expected pages are there`)

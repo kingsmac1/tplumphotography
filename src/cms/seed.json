@@ -45,6 +45,22 @@
      "href": "/"
     },
     {
+     "label": "Wedding",
+     "href": "/booking/wedding/"
+    },
+    {
+     "label": "Photography & Videography",
+     "href": "/booking/"
+    },
+    {
+     "label": "Tplum Kiddies",
+     "href": "/booking/kiddies/"
+    },
+    {
+     "label": "Wedding Stories",
+     "href": "/wedding-stories/"
+    },
+    {
      "label": "Portfolio",
      "href": "/portfolio/"
     },
@@ -57,20 +73,16 @@
      "href": "/about/"
     },
     {
-     "label": "Contact",
-     "href": "/contact/"
-    },
-    {
-     "label": "Book Now",
-     "href": "/book/"
-    },
-    {
      "label": "The Tplum Signature",
      "href": "/the-tplum-signature/"
     },
     {
      "label": "FAQ",
      "href": "/faq/"
+    },
+    {
+     "label": "Contact",
+     "href": "/contact/"
     }
    ]
   },
@@ -408,6 +420,69 @@
     }
    ]
   },
+  "stories": {
+   "heading": "Wedding Stories",
+   "text": "<p>Real couples, real days. Choose a couple to see their story.</p>",
+   "button": {
+    "label": "View all stories",
+    "href": "/wedding-stories/"
+   }
+  },
+  "films": {
+   "heading": "Video Portfolio",
+   "text": "<p>Moments in motion: wedding films, highlights and stories from our sessions.</p>",
+   "button": {
+    "label": "View all films",
+    "href": "/videos/"
+   }
+  },
+  "testimonials": {
+   "heading": "From our Clients",
+   "items": [
+    {
+     "name": "Bruhma Brown",
+     "title": "@bruhbrown",
+     "text": "Tplum gave me one of the best photographs i have. They do what they do well and I will go there again and again.",
+     "rating": 5,
+     "source": "instagram",
+     "image": {
+      "src": "/media/360x300-2-360.webp",
+      "srcset": "/media/360x300-2-360.webp 360w",
+      "width": 360,
+      "height": 300,
+      "alt": "Bruhma Brown"
+     }
+    },
+    {
+     "name": "Omunyinya Busola",
+     "title": "@omunyinya_busola",
+     "text": "I like how i was treated during my session with Tplum.",
+     "rating": 4,
+     "source": "instagram",
+     "image": {
+      "src": "/media/imgi-45-263835414-436105704648469-9076622717571941283-n-1440.webp",
+      "srcset": "/media/imgi-45-263835414-436105704648469-9076622717571941283-n-480.webp 480w, /media/imgi-45-263835414-436105704648469-9076622717571941283-n-960.webp 960w, /media/imgi-45-263835414-436105704648469-9076622717571941283-n-1440.webp 1440w",
+      "width": 1440,
+      "height": 1440,
+      "alt": "Omunyinya Busola"
+     }
+    },
+    {
+     "name": "Patrick Pan",
+     "title": "Director, PAN Digitals",
+     "text": "Tplum is nothing short of excellence. My time with them was amazing. I like attentive to details they are.",
+     "rating": 5,
+     "source": "google-plus",
+     "image": {
+      "src": "/media/145x145-1-145.webp",
+      "srcset": "/media/145x145-1-145.webp 145w",
+      "width": 145,
+      "height": 145,
+      "alt": "Patrick Pan"
+     }
+    }
+   ]
+  },
   "recentWork": {
    "heading": "Our Recent Work",
    "images": [
@@ -535,61 +610,6 @@
     "label": "VIEW FULL GALLERY",
     "href": "/portfolio/"
    }
-  },
-  "films": {
-   "heading": "Video Portfolio",
-   "text": "<p>Moments in motion: wedding films, highlights and stories from our sessions.</p>",
-   "button": {
-    "label": "View all films",
-    "href": "/videos/"
-   }
-  },
-  "testimonials": {
-   "heading": "From our Clients",
-   "items": [
-    {
-     "name": "Bruhma Brown",
-     "title": "@bruhbrown",
-     "text": "Tplum gave me one of the best photographs i have. They do what they do well and I will go there again and again.",
-     "rating": 5,
-     "source": "instagram",
-     "image": {
-      "src": "/media/360x300-2-360.webp",
-      "srcset": "/media/360x300-2-360.webp 360w",
-      "width": 360,
-      "height": 300,
-      "alt": "Bruhma Brown"
-     }
-    },
-    {
-     "name": "Omunyinya Busola",
-     "title": "@omunyinya_busola",
-     "text": "I like how i was treated during my session with Tplum.",
-     "rating": 4,
-     "source": "instagram",
-     "image": {
-      "src": "/media/imgi-45-263835414-436105704648469-9076622717571941283-n-1440.webp",
-      "srcset": "/media/imgi-45-263835414-436105704648469-9076622717571941283-n-480.webp 480w, /media/imgi-45-263835414-436105704648469-9076622717571941283-n-960.webp 960w, /media/imgi-45-263835414-436105704648469-9076622717571941283-n-1440.webp 1440w",
-      "width": 1440,
-      "height": 1440,
-      "alt": "Omunyinya Busola"
-     }
-    },
-    {
-     "name": "Patrick Pan",
-     "title": "Director, PAN Digitals",
-     "text": "Tplum is nothing short of excellence. My time with them was amazing. I like attentive to details they are.",
-     "rating": 5,
-     "source": "google-plus",
-     "image": {
-      "src": "/media/145x145-1-145.webp",
-      "srcset": "/media/145x145-1-145.webp 145w",
-      "width": 145,
-      "height": 145,
-      "alt": "Patrick Pan"
-     }
-    }
-   ]
   },
   "cta": {
    "heading": "Let’s turn your once in a lifetime moments into forever memories.",
@@ -1480,6 +1500,150 @@
    "body": "<p>Wedding films, highlights and stories from our sessions. Press play on any film to watch it here.</p>"
   },
   "emptyText": "<p>Our films are on their way. Until then, see the latest moments on Instagram.</p>",
+  "book": {
+   "heading": "CLICK HERE TO BOOK",
+   "text": "Destination weddings | Available to travel",
+   "href": "/book/",
+   "image": {
+    "src": "/media/20-copy-jpg-1-scaled-2075.webp",
+    "srcset": "/media/20-copy-jpg-1-scaled-480.webp 480w, /media/20-copy-jpg-1-scaled-960.webp 960w, /media/20-copy-jpg-1-scaled-1600.webp 1600w, /media/20-copy-jpg-1-scaled-2075.webp 2075w",
+    "width": 2075,
+    "height": 2560,
+    "alt": "",
+    "focal": {
+     "x": 55,
+     "y": 20
+    }
+   }
+  }
+ },
+ "wedding-stories": {
+  "seo": {
+   "title": "Wedding Stories → Tplum Photography",
+   "description": "Wedding and engagement stories by Tplum Photography, Calgary | Edmonton | Toronto wedding photographer. See each couple's day.",
+   "ogTitle": "Wedding Stories → Tplum Photography",
+   "ogDescription": "Wedding and engagement stories by Tplum Photography.",
+   "ogType": "article",
+   "twitterTitle": "Wedding Stories → Tplum Photography",
+   "twitterDescription": "Wedding and engagement stories by Tplum Photography.",
+   "shareImage": {
+    "src": "/media/cropped-tplum-logo-dark-1000.webp",
+    "srcset": "/media/cropped-tplum-logo-dark-480.webp 480w, /media/cropped-tplum-logo-dark-960.webp 960w, /media/cropped-tplum-logo-dark-1000.webp 1000w",
+    "width": 1000,
+    "height": 552,
+    "alt": ""
+   }
+  },
+  "hero": {
+   "heading": "Wedding Stories",
+   "image": {
+    "src": "/media/image-w1-jpg-scaled-1735.webp",
+    "srcset": "/media/image-w1-jpg-scaled-480.webp 480w, /media/image-w1-jpg-scaled-960.webp 960w, /media/image-w1-jpg-scaled-1600.webp 1600w, /media/image-w1-jpg-scaled-1735.webp 1735w",
+    "width": 1735,
+    "height": 2560,
+    "alt": "Tplum Photography"
+   }
+  },
+  "intro": {
+   "heading": "Our couples",
+   "body": "<p>Every couple has their own story. Choose one to see their day.</p>"
+  },
+  "albums": [
+   {
+    "name": "Juwon & Femi",
+    "subtitle": "Engagement",
+    "cover": {
+     "src": "/media/ig-836468986-18636893593013435-753366864051-2400.webp",
+     "srcset": "/media/ig-836468986-18636893593013435-753366864051-480.webp 480w, /media/ig-836468986-18636893593013435-753366864051-960.webp 960w, /media/ig-836468986-18636893593013435-753366864051-1600.webp 1600w, /media/ig-836468986-18636893593013435-753366864051-2400.webp 2400w",
+     "width": 3568,
+     "height": 4095,
+     "alt": "Juwon and Femi, engagement session"
+    },
+    "photos": [
+     {
+      "src": "/media/ig-836468986-18636893593013435-753366864051-2400.webp",
+      "srcset": "/media/ig-836468986-18636893593013435-753366864051-480.webp 480w, /media/ig-836468986-18636893593013435-753366864051-960.webp 960w, /media/ig-836468986-18636893593013435-753366864051-1600.webp 1600w, /media/ig-836468986-18636893593013435-753366864051-2400.webp 2400w",
+      "width": 3568,
+      "height": 4095,
+      "alt": "Juwon and Femi"
+     },
+     {
+      "src": "/media/ig-830892879-18634766830013435-598359111843-2400.webp",
+      "srcset": "/media/ig-830892879-18634766830013435-598359111843-480.webp 480w, /media/ig-830892879-18634766830013435-598359111843-960.webp 960w, /media/ig-830892879-18634766830013435-598359111843-1600.webp 1600w, /media/ig-830892879-18634766830013435-598359111843-2400.webp 2400w",
+      "width": 3114,
+      "height": 4096,
+      "alt": "Juwon and Femi"
+     },
+     {
+      "src": "/media/ig-827548730-18633709285013435-330551551119-2400.webp",
+      "srcset": "/media/ig-827548730-18633709285013435-330551551119-480.webp 480w, /media/ig-827548730-18633709285013435-330551551119-960.webp 960w, /media/ig-827548730-18633709285013435-330551551119-1600.webp 1600w, /media/ig-827548730-18633709285013435-330551551119-2400.webp 2400w",
+      "width": 3283,
+      "height": 4096,
+      "alt": "Juwon and Femi"
+     }
+    ]
+   },
+   {
+    "name": "Kosa & Wes",
+    "subtitle": "Engagement",
+    "cover": {
+     "src": "/media/ig-879102219-18646460485013435-128859648833-2400.webp",
+     "srcset": "/media/ig-879102219-18646460485013435-128859648833-480.webp 480w, /media/ig-879102219-18646460485013435-128859648833-960.webp 960w, /media/ig-879102219-18646460485013435-128859648833-1600.webp 1600w, /media/ig-879102219-18646460485013435-128859648833-2400.webp 2400w",
+     "width": 3451,
+     "height": 4096,
+     "alt": "Kosa and Wes, engagement session"
+    },
+    "photos": [
+     {
+      "src": "/media/ig-879102219-18646460485013435-128859648833-2400.webp",
+      "srcset": "/media/ig-879102219-18646460485013435-128859648833-480.webp 480w, /media/ig-879102219-18646460485013435-128859648833-960.webp 960w, /media/ig-879102219-18646460485013435-128859648833-1600.webp 1600w, /media/ig-879102219-18646460485013435-128859648833-2400.webp 2400w",
+      "width": 3451,
+      "height": 4096,
+      "alt": "Kosa and Wes"
+     }
+    ]
+   },
+   {
+    "name": "Raisa & Apollinaire",
+    "subtitle": "Wedding",
+    "cover": {
+     "src": "/media/ig-863141781-18642537502013435-274924821879-2400.webp",
+     "srcset": "/media/ig-863141781-18642537502013435-274924821879-480.webp 480w, /media/ig-863141781-18642537502013435-274924821879-960.webp 960w, /media/ig-863141781-18642537502013435-274924821879-1600.webp 1600w, /media/ig-863141781-18642537502013435-274924821879-2400.webp 2400w",
+     "width": 3242,
+     "height": 4096,
+     "alt": "Raisa and Apollinaire"
+    },
+    "photos": [
+     {
+      "src": "/media/ig-863141781-18642537502013435-274924821879-2400.webp",
+      "srcset": "/media/ig-863141781-18642537502013435-274924821879-480.webp 480w, /media/ig-863141781-18642537502013435-274924821879-960.webp 960w, /media/ig-863141781-18642537502013435-274924821879-1600.webp 1600w, /media/ig-863141781-18642537502013435-274924821879-2400.webp 2400w",
+      "width": 3242,
+      "height": 4096,
+      "alt": "Raisa and Apollinaire"
+     }
+    ]
+   },
+   {
+    "name": "Brenda & Kuj",
+    "subtitle": "Wedding",
+    "cover": {
+     "src": "/media/ig-792912229-18624544648013435-130625319092-2400.webp",
+     "srcset": "/media/ig-792912229-18624544648013435-130625319092-480.webp 480w, /media/ig-792912229-18624544648013435-130625319092-960.webp 960w, /media/ig-792912229-18624544648013435-130625319092-1600.webp 1600w, /media/ig-792912229-18624544648013435-130625319092-2400.webp 2400w",
+     "width": 3145,
+     "height": 4096,
+     "alt": "Brenda and Kuj"
+    },
+    "photos": [
+     {
+      "src": "/media/ig-792912229-18624544648013435-130625319092-2400.webp",
+      "srcset": "/media/ig-792912229-18624544648013435-130625319092-480.webp 480w, /media/ig-792912229-18624544648013435-130625319092-960.webp 960w, /media/ig-792912229-18624544648013435-130625319092-1600.webp 1600w, /media/ig-792912229-18624544648013435-130625319092-2400.webp 2400w",
+      "width": 3145,
+      "height": 4096,
+      "alt": "Brenda and Kuj"
+     }
+    ]
+   }
+  ],
   "book": {
    "heading": "CLICK HERE TO BOOK",
    "text": "Destination weddings | Available to travel",

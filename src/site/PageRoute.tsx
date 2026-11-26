@@ -1,5 +1,5 @@
 import { getPageContent, useLiveContent, type FeedPost, type Video } from "@/cms/content";
-import type { CmsImage, PageContentMap, PageKey, SiteContent } from "@/cms/types";
+import { SEED, type CmsImage, type PageContentMap, type PageKey, type SiteContent, type StoriesContent } from "@/cms/types";
 import { BG_PHONE_WIDTH, pickSrc } from "./ui";
 import { SiteLayout } from "./Layout";
 import { MLayout } from "./m/MLayout";
@@ -45,25 +45,25 @@ export function cmsPage<K extends PageKey>(key: K, path: string, _body?: unknown
     },
     component: function Page({ data: built }: { data: Awaited<ReturnType<typeof getPageContent>> }) {
       const data = useLiveContent(key, built);
-      return <PageInBothDesigns pageKey={key} page={data.page} site={data.site} posts={data.posts as FeedPost[]} videos={data.videos ?? []} igVariant={opts.igVariant} igClass={opts.igClass} />;
+      return <PageInBothDesigns pageKey={key} page={data.page} site={data.site} posts={data.posts as FeedPost[]} videos={data.videos ?? []} stories={data.stories} igVariant={opts.igVariant} igClass={opts.igClass} />;
     },
   };
 }
 
 /** One CMS page in both designs (also used by the dashboard's live preview). */
-export function PageInBothDesigns({ pageKey, page, site, posts, videos, igVariant, igClass }: {
-  pageKey: PageKey; page: unknown; site: SiteContent; posts: FeedPost[]; videos: Video[]; igVariant?: "default" | "about"; igClass?: string;
+export function PageInBothDesigns({ pageKey, page, site, posts, videos, stories = SEED["wedding-stories"], igVariant, igClass }: {
+  pageKey: PageKey; page: unknown; site: SiteContent; posts: FeedPost[]; videos: Video[]; stories?: StoriesContent; igVariant?: "default" | "about"; igClass?: string;
 }) {
   const entry = PAGE_REGISTRY[pageKey];
-  if (entry.bare) return <>{entry.classic(page as never, site, videos)}</>;
+  if (entry.bare) return <>{entry.classic(page as never, site, videos, stories)}</>;
   return (
     <Designs
       classic={
         <SiteLayout site={site} posts={posts} igVariant={igVariant ?? entry.igVariant} igClass={igClass ?? entry.igClass ?? (pageKey === "home" ? "" : "inner")}>
-          {entry.classic(page as never, site, videos)}
+          {entry.classic(page as never, site, videos, stories)}
         </SiteLayout>
       }
-      modern={<MLayout site={site} posts={posts}>{entry.modern(page as never, site, videos)}</MLayout>}
+      modern={<MLayout site={site} posts={posts}>{entry.modern(page as never, site, videos, stories)}</MLayout>}
     />
   );
 }

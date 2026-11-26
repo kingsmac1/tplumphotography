@@ -23,8 +23,9 @@ export type PageDef = {
 };
 
 export const PAGES: PageDef[] = [
-  { id: "home", doc: "home", label: "Home", path: "/", preview: "home", blurb: "Hero slider, intro, about, quote, galleries, video section, testimonials, call to action" },
+  { id: "home", doc: "home", label: "Home", path: "/", preview: "home", blurb: "Hero slider, intro, about, quote, candid moments, wedding stories, video section, testimonials, recent work, call to action" },
   { id: "portfolio", doc: "portfolio", label: "Portfolio", path: "/portfolio/", preview: "portfolio", blurb: "Banner, gallery and booking strip" },
+  { id: "wedding-stories", doc: "wedding-stories", label: "Wedding Stories", path: "/wedding-stories/", preview: "wedding-stories", blurb: "The couples' galleries: names, cover photo and every photo of their day (each couple gets its own page), plus the banner and booking strip" },
   { id: "videos", doc: "videos", label: "Video Portfolio", path: "/videos/", preview: "videos", blurb: "Banner, introduction and booking strip (the films themselves are in Dashboard → Videos)" },
   { id: "about", doc: "about", label: "About", path: "/about/", preview: "about", blurb: "Banner and profile" },
   { id: "contact", doc: "contact", label: "Contact", path: "/contact/", preview: "contact", blurb: "Banner, notes and the contact form's wording and options" },
@@ -40,6 +41,11 @@ export const PAGES: PageDef[] = [
 /** Section and field names the photographer sees. Anything not listed gets a readable version of its key. */
 const LABELS: Record<string, string> = {
   seo: "Search & sharing (SEO)",
+  albums: "Couples",
+  stories: "Wedding stories (couple galleries)",
+  cover: "Cover photo",
+  photos: "Photos of their day",
+  subtitle: "Under the names (e.g. Wedding, Engagement, a place)",
   title: "Title",
   description: "Description",
   ogTitle: "Share title (Facebook, WhatsApp…)",
@@ -130,6 +136,8 @@ export const HELP: Record<string, string> = {
   "contact.phone": "International format, e.g. +14035551234. Shown formatted on the site.",
   "hero.slidesDesktop": "Drag to reorder. Portrait images look best.",
   "hero.slidesMobile": "Drag to reorder. Shown on phones instead of the desktop slides.",
+  "albums": "One card per couple on the home page and the Wedding Stories page; each opens a page with all their photos. The page address follows the names (Juwon & Femi → /wedding-stories/juwon-and-femi/).",
+  "albums.photos": "Drag to reorder. Add as many photos of their day as you like.",
   "instagramSection.posts": "Once Instagram is connected (Dashboard → Instagram), the live posts replace these.",
 };
 

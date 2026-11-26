@@ -3,6 +3,8 @@ import { Button, Img, Reveal, Rich, bgUrl } from "../ui";
 import { HeroSlider, Masonry, ParallaxBg, Reviews } from "../widgets";
 import type { Video } from "@/cms/content";
 import { ClassicFilmsSection } from "../video/ClassicFilms";
+import { ClassicStoriesSection } from "../stories";
+import type { StoriesContent } from "@/cms/types";
 
 /** "Telling Pure Lasting / Unscripted Memories": the first letter of every word is black (as on the original). */
 function InitialsTitle({ text }: { text: string }) {
@@ -18,7 +20,7 @@ function InitialsTitle({ text }: { text: string }) {
   );
 }
 
-export default function Home({ c, videos = [] }: { c: HomeContent; videos?: Video[] }) {
+export default function Home({ c, videos = [], stories }: { c: HomeContent; videos?: Video[]; stories?: StoriesContent }) {
   return (
     <>
       <h1 className="sr-only">Tplum Photography</h1>
@@ -71,11 +73,7 @@ export default function Home({ c, videos = [] }: { c: HomeContent; videos?: Vide
         </div>
       </section>
 
-      <section className="recent">
-        <div className="head"><Reveal as="h2" className="h-fulgate">{c.recentWork.heading}</Reveal></div>
-        <div className="gallery"><Masonry images={c.recentWork.images} label={c.recentWork.heading} /></div>
-        <Reveal className="more"><Button href={c.recentWork.button.href} label={c.recentWork.button.label} /></Reveal>
-      </section>
+      {stories && <ClassicStoriesSection c={c.stories} stories={stories} />}
 
       <ClassicFilmsSection c={c.films} videos={videos} />
 
@@ -84,6 +82,12 @@ export default function Home({ c, videos = [] }: { c: HomeContent; videos?: Vide
           <Reveal as="h2" className="h-fulgate">{c.testimonials.heading}</Reveal>
           <Reviews items={c.testimonials.items} />
         </div>
+      </section>
+
+      <section className="recent">
+        <div className="head"><Reveal as="h2" className="h-fulgate">{c.recentWork.heading}</Reveal></div>
+        <div className="gallery"><Masonry images={c.recentWork.images} label={c.recentWork.heading} /></div>
+        <Reveal className="more"><Button href={c.recentWork.button.href} label={c.recentWork.button.label} /></Reveal>
       </section>
 
       <section className="cta-band">

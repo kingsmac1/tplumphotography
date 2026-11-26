@@ -33,6 +33,8 @@ function assemble<K extends PageKey>(key: K, docs: Partial<Record<DocKey, unknow
   return {
     site,
     videos,
+    // the couples' albums (home page section, Wedding Stories pages)
+    stories: mergeContent(SEED["wedding-stories"], docs["wedding-stories"]),
     page: mergeContent(SEED[key], docs[key]) as PageContentMap[K],
     // Live Instagram posts once the feed is connected; until then the posts captured from the WordPress site.
     posts: (instagram.length >= 4 ? instagram : site.instagramSection.posts) as FeedPost[],

@@ -48,7 +48,8 @@ function MHeader({ site, onMenu, menuOpen, solid }: { site: SiteContent; onMenu:
     return () => window.removeEventListener("scroll", on);
   }, []);
   const book = site.header?.bookButton;
-  const links = site.menu.items.filter((i) => i.href !== "/" && i.href !== book?.href);
+  void pathname;
+  // the menu lives in the full-screen overlay (hamburger), not in the bar
   return (
     <header className={`mh${scrolled || solid ? " is-solid" : ""}`}>
       <div className="mh__bar">
@@ -56,9 +57,6 @@ function MHeader({ site, onMenu, menuOpen, solid }: { site: SiteContent; onMenu:
           <img className="mh__logo mh__logo--light" src="/brand/tplum-logo-white.png" alt="" width={110} height={62} />
           <img className="mh__logo mh__logo--dark" src="/brand/tplum-logo-dark.png" alt="" width={110} height={62} />
         </a>
-        <nav className="mh__nav" aria-label="Main">
-          <ul>{links.map((i) => <li key={i.href}><a href={i.href} aria-current={norm(pathname) === norm(i.href) ? "page" : undefined}>{i.label}</a></li>)}</ul>
-        </nav>
         <div className="mh__end">
           {book?.label && <a href={book.href} className="mh__book">{sentence(book.label)}<i aria-hidden="true"><ArrowUpRight size={15} strokeWidth={2} /></i></a>}
           <button type="button" className="mh__menu" onClick={onMenu} aria-haspopup="dialog" aria-expanded={menuOpen} aria-label="Open the menu"><MenuIcon size={18} /></button>

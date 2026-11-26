@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 import { ArrowUpRight, Mail, Phone, Plus } from "lucide-react";
 import type { Video } from "@/cms/content";
-import { SEED, type AboutContent, type BookContent, type ContactContent, type FaqContent, type HomeContent, type PortfolioContent, type SignatureContent, type SiteContent, type VideosContent } from "@/cms/types";
+import { SEED, type AboutContent, type BookContent, type ContactContent, type FaqContent, type HomeContent, type PortfolioContent, type SignatureContent, type SiteContent, type StoriesContent, type VideosContent } from "@/cms/types";
 import { Img, Reveal, Rich, bgUrl, BG_PHONE_WIDTH } from "../ui";
 import { HeroSlider, Masonry, Reviews } from "../widgets";
 import ContactForm from "../ContactForm";
 import { Player, PlayMark, VideoThumb, usePlayer } from "../video/Player";
 import { homeFilms, useCategories } from "../video/ClassicFilms";
+import { MStoriesSection } from "../stories";
 import { MBookCard, MPageHero, Pill, prettyPhone, sentence, sentenceCase } from "./MLayout";
 
 /* ============================== shared pieces ============================== */
@@ -69,8 +70,9 @@ function MFilms({ c, videos }: { c: HomeContent["films"]; videos: Video[] }) {
   );
 }
 
-export function MHome({ c, videos }: { c: HomeContent; videos: Video[] }) {
-  const options = SEED.book.options;
+export function MHome({ c, videos, stories }: { c: HomeContent; videos: Video[]; stories?: StoriesContent }) {
+  // the home page leads with weddings: the hero bar offers weddings and photography & videography sessions
+  const options = [{ title: "Wedding", href: "/booking/wedding/" }, { title: "Photography & Videography", href: "/booking/" }];
   const [lead, ...rest] = c.candid.images;
   return (
     <>
@@ -84,7 +86,7 @@ export function MHome({ c, videos }: { c: HomeContent; videos: Video[] }) {
             <h1 className="mhero__title"><Acrostic text={c.intro.title} /></h1>
           </div>
           <nav className="mhero__quick" aria-label="Book a session">
-            <ul>{options.map((o) => <li key={o.button.href}><a href={o.button.href}>{o.title}</a></li>)}</ul>
+            <ul>{options.map((o) => <li key={o.href}><a href={o.href}>{o.title}</a></li>)}</ul>
             <a href="/book/" className="mhero__book">Book now<i aria-hidden="true"><ArrowUpRight size={16} strokeWidth={2} /></i></a>
           </nav>
         </div>
@@ -116,10 +118,7 @@ export function MHome({ c, videos }: { c: HomeContent; videos: Video[] }) {
         {rest.map((img, i) => <div key={i} className={`mcandid__img mcandid__img--${i + 1} m2-frame`}><Img image={img} sizes="(max-width: 767px) 46vw, 300px" /></div>)}
       </section>
 
-      <section className="mwrap mrecent">
-        <SectionHead title={c.recentWork.heading}><Pill href={c.recentWork.button.href} label={c.recentWork.button.label} dark /></SectionHead>
-        <div className="mgallery"><Masonry images={c.recentWork.images} label={c.recentWork.heading} /></div>
-      </section>
+      {stories && <MStoriesSection c={c.stories} stories={stories} />}
 
       <MFilms c={c.films} videos={videos} />
 
@@ -128,6 +127,11 @@ export function MHome({ c, videos }: { c: HomeContent; videos: Video[] }) {
           <SectionHead title={c.testimonials.heading} />
           <Reviews items={c.testimonials.items} />
         </div>
+      </section>
+
+      <section className="mwrap mrecent">
+        <SectionHead title={c.recentWork.heading}><Pill href={c.recentWork.button.href} label={c.recentWork.button.label} dark /></SectionHead>
+        <div className="mgallery"><Masonry images={c.recentWork.images} label={c.recentWork.heading} /></div>
       </section>
 
       <section className="mwrap mcta">
