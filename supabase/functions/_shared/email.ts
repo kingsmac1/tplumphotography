@@ -1,7 +1,7 @@
 /**
  * Resend delivery for every Tplum email (bookings, payments, invoices, contracts, galleries, forms).
  * Needs the Supabase secrets RESEND_API_KEY, FROM_EMAIL and OWNER_EMAIL (never hard-coded).
- * Every email to a client is also copied to the business (see sendToClientAndOwner).
+ * Client emails go to the client only; the business gets its own notification where one is written (ownerMessage).
  */
 import { LOGO_BASE64, LOGO_CID } from './logo.ts'
 
@@ -55,7 +55,7 @@ export async function sendEmail(o: { to: string | string[]; replyTo?: string; me
   }
 }
 
-/** Sends the client their copy and the business its own copy (every form, booking, payment, invoice, contract and gallery email goes to both). */
+/** Sends the client their email and, when `ownerMessage` is given, the business its own notification. No copy of the client email goes to the business. */
 export async function sendToClientAndOwner(o: { client?: string | null; clientMessage: RenderedEmail; ownerMessage?: RenderedEmail; attachments?: Attachment[]; replyTo?: string }) {
   const cfg = mailConfig()
   const results: { to: string; sent: boolean; error?: string }[] = []
@@ -63,8 +63,8 @@ export async function sendToClientAndOwner(o: { client?: string | null; clientMe
     const r = await sendEmail({ to: o.client, replyTo: cfg.owners[0], message: o.clientMessage, attachments: o.attachments })
     results.push({ to: o.client, ...r })
   }
-  if (cfg.owners.length) {
-    const msg = o.ownerMessage ?? { ...o.clientMessage, subject: `[Copy] ${o.clientMessage.subject}` }
+  if (cfg.owners.length && o.ownerMessage) {
+    const msg = o.ownerMessage
     const r = await sendEmail({ to: cfg.owners, replyTo: o.replyTo ?? o.client ?? undefined, message: msg, attachments: o.attachments })
     results.push({ to: cfg.owners.join(', '), ...r })
   }

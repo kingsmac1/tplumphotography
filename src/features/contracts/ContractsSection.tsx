@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Copy, FileSignature, Loader2, Plus, Printer, Search, Send, Trash2 } from "lucide-react";
+import { ArrowLeft, Ban, Copy, Download, FileSignature, Loader2, Plus, Printer, Search, Send, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { formatMoney } from "@/pages/admin/formOptions";
 import { depositFor } from "@/lib/pricing";
@@ -150,6 +150,39 @@ function ContractList() {
   }, []);
   useEffect(() => { void load(); }, [load]);
   const list = useMemo(() => rows.filter((r) => (!status || r.status === status) && (!q || `${r.number} ${r.client_name} ${r.client_email} ${r.title}`.toLowerCase().includes(q.toLowerCase()))), [rows, q, status]);
+  // several contracts at once: tick them, then delete, void or export
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
+  const chosen = list.filter((r) => picked.has(r.id));
+  const allPicked = list.length > 0 && chosen.length === list.length;
+  const toggle = (id: string) => setPicked((p) => { const n = new Set(p); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const deletable = chosen.filter((r) => !r.signed_at); // a contract the client signed is kept as a record
+  const voidable = chosen.filter((r) => r.status !== "void" && r.status !== "countersigned" && r.status !== "draft");
+  const plural = (n: number) => `${n} contract${n === 1 ? "" : "s"}`;
+  const bulk = async (kind: "delete" | "void") => {
+    const target = kind === "delete" ? deletable : voidable;
+    const kept = chosen.length - target.length;
+    const why = kind === "delete" ? "signed by the client, so kept" : "drafts, voided or fully signed contracts can't be voided";
+    const ask = kind === "delete" ? `Delete ${plural(target.length)}? This can't be undone.` : `Void ${plural(target.length)}? Their client links stop working. This can't be undone.`;
+    if (!window.confirm(`${ask}${kept ? `\n\n${kept} selected will be skipped (${why}).` : ""}`)) return;
+    setBusy(true); setMsg(null);
+    const ids = target.map((r) => r.id);
+    const { error } = kind === "delete" ? await supabase.from("contracts").delete().in("id", ids) : await supabase.from("contracts").update({ status: "void" }).in("id", ids);
+    setBusy(false);
+    if (error) return setMsg({ ok: false, t: error.message });
+    setPicked(new Set());
+    setMsg({ ok: true, t: `${kind === "delete" ? "Deleted" : "Voided"} ${plural(target.length)}.${kept ? ` ${kept} skipped (${why}).` : ""}` });
+    void load();
+  };
+  const exportCsv = () => {
+    const cell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const lines = [["Number", "Title", "Client", "Email", "Status", "Sent", "Signed by client", "Signed by studio"].map(cell).join(",")]
+      .concat(chosen.map((r) => [r.number, r.title, r.client_name, r.client_email, STATUS_LABEL[r.status] ?? r.status, fmt(r.sent_at), fmt(r.signed_at), fmt(r.studio_signed_at)].map(cell).join(",")));
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
+    a.download = `contracts-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  };
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -168,12 +201,24 @@ function ContractList() {
             </select>
             <a className={primary} href="#contracts/new"><Plus size={15} /> New contract</a>
           </div>
+          {chosen.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 border border-border bg-muted/30 px-3 py-2 text-sm">
+              <span className="font-bold mr-1">{chosen.length} selected</span>
+              <button className={btn} disabled={busy || !deletable.length} title={deletable.length ? "" : "Contracts the client has signed can't be deleted"} onClick={() => void bulk("delete")}><Trash2 size={14} /> Delete{deletable.length !== chosen.length ? ` (${deletable.length})` : ""}</button>
+              <button className={btn} disabled={busy || !voidable.length} title={voidable.length ? "" : "Only sent, opened or client-signed contracts can be voided"} onClick={() => void bulk("void")}><Ban size={14} /> Void{voidable.length !== chosen.length ? ` (${voidable.length})` : ""}</button>
+              <button className={btn} onClick={exportCsv}><Download size={14} /> Export CSV</button>
+              <button className="text-xs underline underline-offset-4 text-muted-foreground px-2" onClick={() => setPicked(new Set())}>Clear</button>
+              {busy && <Loader2 size={15} className="animate-spin" />}
+            </div>
+          )}
+          {msg && <p className={`text-sm ${msg.ok ? "text-green-700" : "text-destructive"}`} role="status">{msg.t}</p>}
           <div className="border border-border overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-xs tracking-widest text-muted-foreground border-b border-border"><th className="p-3">CONTRACT</th><th className="p-3">CLIENT</th><th className="p-3">STATUS</th><th className="p-3">SENT</th><th className="p-3">SIGNED</th></tr></thead>
+              <thead><tr className="text-left text-xs tracking-widest text-muted-foreground border-b border-border"><th className="p-3 w-10"><input type="checkbox" className="h-4 w-4 accent-foreground align-middle" checked={allPicked} ref={(el) => { if (el) el.indeterminate = chosen.length > 0 && !allPicked; }} onChange={() => setPicked(allPicked ? new Set() : new Set(list.map((r) => r.id)))} aria-label="Select all contracts shown" /></th><th className="p-3">CONTRACT</th><th className="p-3">CLIENT</th><th className="p-3">STATUS</th><th className="p-3">SENT</th><th className="p-3">SIGNED</th></tr></thead>
               <tbody>
                 {list.map((r) => (
-                  <tr key={r.id} className="border-b border-border hover:bg-muted/40 cursor-pointer" onClick={() => { window.location.hash = `#contracts/${r.id}`; }}>
+                  <tr key={r.id} className={`border-b border-border hover:bg-muted/40 cursor-pointer ${picked.has(r.id) ? "bg-muted/40" : ""}`} onClick={() => { window.location.hash = `#contracts/${r.id}`; }}>
+                    <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" className="h-4 w-4 accent-foreground align-middle" checked={picked.has(r.id)} onChange={() => toggle(r.id)} aria-label={`Select ${r.number}`} /></td>
                     <td className="p-3"><b>{r.number}</b><div className="text-xs text-muted-foreground">{r.title}</div></td>
                     <td className="p-3">{r.client_name}<div className="text-xs text-muted-foreground">{r.client_email}</div></td>
                     <td className="p-3"><span className={`text-[11px] font-bold tracking-wider border px-2 py-0.5 ${STATUS_TONE[r.status]}`}>{(STATUS_LABEL[r.status] ?? r.status).toUpperCase()}</span></td>

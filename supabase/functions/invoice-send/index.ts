@@ -47,7 +47,6 @@ Deno.serve(handle(async (req, body) => {
   const attachments = [{ filename, content: pdf, content_type: 'application/pdf' }]
   const sent = await sendEmail({ to, replyTo: cfg.owners[0], message: email, attachments })
   // the business gets a copy of every invoice email
-  if (sent.sent && cfg.owners.length) await sendEmail({ to: cfg.owners, replyTo: to, message: { ...email, subject: `[Copy] ${email.subject}` }, attachments })
   const now = new Date().toISOString()
   // the email has gone (or failed); recording it must never be reported as a failed send
   await Promise.allSettled([

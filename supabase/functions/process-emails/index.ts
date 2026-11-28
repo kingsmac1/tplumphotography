@@ -394,14 +394,9 @@ type SendParams = Parameters<typeof sendTemplateOnce>[0];
 // Emails that are due this run. Collected first, then checked against email_log in one lookup,
 // so a run reads only the log rows it needs instead of the whole log.
 let queue: SendParams[] = [];
-let ownersForCopies: string[] = [];
-/** Queues an email. Client emails also get a "[Copy]" to the business, so the studio sees everything that went out. */
+/** Queues an email. Client emails go to the client only (no "[Copy]" to the business); owner_* templates are the studio's own notifications. */
 function send(_budget: Budget, params: SendParams) {
   queue.push(params);
-  const toOwner = Array.isArray(params.to) ? params.to.some((t) => ownersForCopies.includes(t.toLowerCase())) : ownersForCopies.includes(String(params.to).toLowerCase());
-  if (!toOwner && ownersForCopies.length && !params.templateKey.startsWith("owner_")) {
-    queue.push({ ...params, to: ownersForCopies, dedupeKey: `${params.dedupeKey}:copy`, subjectPrefix: "[Copy] ", replyTo: Array.isArray(params.to) ? undefined : String(params.to) });
-  }
   return Promise.resolve();
 }
 
@@ -444,7 +439,6 @@ Deno.serve(async (req) => {
   const today = localToday(); // YYYY-MM-DD in Calgary/Edmonton
   const thisYear = Number(today.slice(0, 4));
   const owners = await ownerEmails(db);
-  ownersForCopies = owners;
 
   templateCache = new Map();
   queue = [];

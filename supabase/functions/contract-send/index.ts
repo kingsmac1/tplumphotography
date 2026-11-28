@@ -30,7 +30,6 @@ Deno.serve(handle(async (req, body) => {
       intro: `Hi ${first}, your ${c.title.toLowerCase()} with Tplum Photography is ready. Please read it carefully and sign online. Your date is secured once the contract is signed and your retainer is paid.`,
       rows: [['Contract', c.number]], button: { href: link, label: 'Review & sign' }, footnote: 'This link is private. Please don’t forward this email.',
     }),
-    ownerMessage: simpleEmail({ subject: `[Copy] Contract sent to ${c.client_name}: ${c.title}`, eyebrow: 'Contract sent', title: c.title, intro: `The contract was sent to ${c.client_name} (${c.client_email}).`, rows: [['Contract', c.number]], button: { href: link, label: 'Open the client link' } }),
   })
   if (!results[0]?.sent) throw new HttpError(results[0]?.error ?? 'The email could not be sent.', 502)
   await db.from('contracts').update({ status: c.status === 'draft' ? 'sent' : c.status, sent_at: new Date().toISOString() }).eq('id', c.id)
