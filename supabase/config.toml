@@ -82,3 +82,5 @@ verify_jwt = false
 verify_jwt = false
 [functions.publish-site]
 verify_jwt = false
+[functions.contract-countersign]
+verify_jwt = false

@@ -16,6 +16,8 @@ Deno.serve(handle(async (req, body) => {
   if (!c) throw new HttpError('This contract no longer exists.', 404)
   if (c.status === 'void') throw new HttpError('This contract was voided. Create a new one instead.')
   if (c.status === 'signed' || c.status === 'countersigned') throw new HttpError('This contract is already signed.')
+  // both parties sign: Tplum Photography signs first, so the client sees the studio's signature on the contract
+  if (!c.studio_signed_at) throw new HttpError('Sign the contract for Tplum Photography first (Studio signature), then send it to the client.')
   if (!EMAIL_RE.test(String(c.client_email ?? ''))) throw new HttpError("Add the client's email address first.")
   if (!String(c.body ?? '').trim()) throw new HttpError('The contract is empty.')
   const cfg = mailConfig()

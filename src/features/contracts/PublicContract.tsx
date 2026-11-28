@@ -58,18 +58,21 @@ export default function PublicContract({ token }: { token: string }) {
     <div className="ct-page px-4 py-10 md:py-16" style={{ background: "#f1ede6" }}>
       <div className="max-w-[820px] mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <p className="text-sm" style={{ color: "#5b564e" }}>
-          {signed ? `Signed by ${c.signer_name} on ${when(c.signed_at!)} (Mountain Time).` : `Prepared for ${c.client_name}. Read it through, then sign at the bottom.`}
+          {c.status === "countersigned"
+            ? `Signed by both parties. You signed on ${when(c.signed_at!)} (Mountain Time).`
+            : signed
+              ? `Thank you, ${c.signer_name}. You signed on ${when(c.signed_at!)} (Mountain Time). Tplum Photography will sign it too, and you will receive the fully signed copy by email.`
+              : `Prepared for ${c.client_name}.${c.studio_signed_at ? " Tplum Photography has signed it." : ""} Read it through, then sign at the bottom.`}
         </p>
         {signed && <button type="button" onClick={() => window.print()} className="border border-black px-5 py-2.5 text-xs tracking-widest hover:bg-black hover:text-white transition">PRINT OR SAVE AS PDF</button>}
       </div>
 
       <ContractPaper title={c.title} number={c.number} body={c.body}>
-        {signed && (
-          <SignatureBlocks
-            client={{ name: c.signer_name, date: c.signed_at ? day(c.signed_at) : null, image: c.signature_data }}
-            studio={{ name: c.studio_signer_name, date: c.studio_signed_at ? day(c.studio_signed_at) : null, image: c.studio_signature_data }}
-          />
-        )}
+        {/* both parties sign: the studio's signature shows before the client signs */}
+        <SignatureBlocks
+          client={{ name: c.signer_name, date: c.signed_at ? day(c.signed_at) : null, image: c.signature_data }}
+          studio={{ name: c.studio_signer_name, date: c.studio_signed_at ? day(c.studio_signed_at) : null, image: c.studio_signature_data }}
+        />
       </ContractPaper>
 
       {!signed && (

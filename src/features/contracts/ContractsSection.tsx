@@ -21,6 +21,8 @@ type Contract = {
   studio_signed_at: string | null; studio_signer_name: string | null; studio_signature_data: string | null;
 };
 
+/** Both parties sign: 'signed' = the client signed and the studio still has to; 'countersigned' = signed by both. */
+const STATUS_LABEL: Record<string, string> = { draft: "Draft", sent: "Sent", viewed: "Opened", signed: "Awaiting studio signature", countersigned: "Signed by both", void: "Void" };
 const STATUS_TONE: Record<string, string> = { draft: "border-border text-muted-foreground", sent: "border-blue-600 text-blue-700", viewed: "border-amber-600 text-amber-700", signed: "border-green-600 text-green-700", countersigned: "border-green-700 text-green-800", void: "border-border text-muted-foreground line-through" };
 const btn = "inline-flex items-center gap-2 px-4 py-2 text-sm border border-border hover:border-foreground disabled:opacity-40";
 const primary = "inline-flex items-center gap-2 px-4 py-2 text-sm bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40";
@@ -162,7 +164,7 @@ function ContractList() {
           <div className="flex flex-wrap gap-3">
             <label className="relative flex-1 min-w-[220px]"><Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" /><input className={`${input} pl-9`} placeholder="Search number, client, email…" value={q} onChange={(e) => setQ(e.target.value)} /></label>
             <select className="border border-border bg-background px-3 py-2.5 text-sm" value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter by status">
-              <option value="">All statuses</option>{Object.keys(STATUS_TONE).map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
+              <option value="">All statuses</option>{Object.keys(STATUS_TONE).map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
             </select>
             <a className={primary} href="#contracts/new"><Plus size={15} /> New contract</a>
           </div>
@@ -174,7 +176,7 @@ function ContractList() {
                   <tr key={r.id} className="border-b border-border hover:bg-muted/40 cursor-pointer" onClick={() => { window.location.hash = `#contracts/${r.id}`; }}>
                     <td className="p-3"><b>{r.number}</b><div className="text-xs text-muted-foreground">{r.title}</div></td>
                     <td className="p-3">{r.client_name}<div className="text-xs text-muted-foreground">{r.client_email}</div></td>
-                    <td className="p-3"><span className={`text-[11px] font-bold tracking-wider border px-2 py-0.5 ${STATUS_TONE[r.status]}`}>{r.status.toUpperCase()}</span></td>
+                    <td className="p-3"><span className={`text-[11px] font-bold tracking-wider border px-2 py-0.5 ${STATUS_TONE[r.status]}`}>{(STATUS_LABEL[r.status] ?? r.status).toUpperCase()}</span></td>
                     <td className="p-3">{fmt(r.sent_at)}</td>
                     <td className="p-3">{fmt(r.signed_at)}</td>
                   </tr>
@@ -289,11 +291,23 @@ function ContractView({ id }: { id: string }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [sig, setSig] = useState(""); const [sigName, setSigName] = useState("");
+  const [saved, setSaved] = useState<{ signer_name: string | null; signature_image: string | null } | null>(null);
+  const [useSaved, setUseSaved] = useState(true); const [saveDefault, setSaveDefault] = useState(false);
+  useEffect(() => { void supabase.from("contract_settings").select("signer_name, signature_image").eq("id", 1).maybeSingle().then(({ data }) => { setSaved(data); if (data?.signer_name) setSigName(data.signer_name); }); }, []);
   const load = useCallback(async () => { const { data } = await supabase.from("contracts").select("*").eq("id", id).maybeSingle(); setC(data as Contract); setBody((data as Contract)?.body ?? ""); }, [id]);
   useEffect(() => { void load(); }, [load]);
   if (!c) return <p className="text-sm text-muted-foreground">Loading…</p>;
   const link = `${window.location.origin}/contract/?t=${c.public_token}`;
-  const editable = c.status === "draft";
+  const editable = c.status === "draft" && !c.studio_signed_at;
+  const canStudioSign = !c.studio_signed_at && (c.status === "draft" || c.status === "signed");
+  const hasSaved = !!saved?.signature_image;
+  const callCountersign = async (payload: Record<string, unknown>) => {
+    setBusy(true); setMsg(null);
+    const { data, error } = await supabase.functions.invoke("contract-countersign", { body: { contract_id: c.id, ...payload } });
+    setBusy(false);
+    let detail = error?.message; if (error) { try { detail = (await (error as { context?: Response }).context?.json())?.error || detail; } catch { /* keep */ } }
+    return { data, error: error ? detail ?? "Something went wrong." : null };
+  };
   const saveBody = async () => { const { error } = await supabase.from("contracts").update({ body }).eq("id", c.id); setMsg(error ? { ok: false, t: error.message } : { ok: true, t: "Saved." }); void load(); };
   const send = async () => {
     if (editable && body !== c.body) await supabase.from("contracts").update({ body }).eq("id", c.id);
@@ -305,9 +319,21 @@ function ContractView({ id }: { id: string }) {
     void load();
   };
   const countersign = async () => {
-    if (!sig || sigName.trim().length < 2) return setMsg({ ok: false, t: "Type your name and draw your signature." });
-    const { error } = await supabase.from("contracts").update({ status: "countersigned", studio_signed_at: new Date().toISOString(), studio_signer_name: sigName.trim(), studio_signature_data: sig }).eq("id", c.id);
-    setMsg(error ? { ok: false, t: error.message } : { ok: true, t: "Countersigned." }); void load();
+    if (editable && body !== c.body) { const { error } = await supabase.from("contracts").update({ body }).eq("id", c.id); if (error) return setMsg({ ok: false, t: error.message }); }
+    const signature = hasSaved && useSaved ? saved!.signature_image! : sig;
+    if (!signature || sigName.trim().length < 2) return setMsg({ ok: false, t: "Type your name and draw your signature." });
+    const { data, error } = await callCountersign({ name: sigName.trim(), signature, save_default: !(hasSaved && useSaved) && saveDefault });
+    if (error) setMsg({ ok: false, t: error });
+    else {
+      setMsg({ ok: true, t: data?.complete ? "Signed for Tplum Photography. The contract is now signed by both, and the client has been emailed the signed copy." : "Signed for Tplum Photography. You can now send it to the client." });
+      if (!(hasSaved && useSaved) && saveDefault) setSaved({ signer_name: sigName.trim(), signature_image: signature });
+    }
+    void load();
+  };
+  const removeStudioSig = async () => {
+    if (!window.confirm("Remove the studio signature? You can then edit the text and sign again.")) return;
+    const { error } = await callCountersign({ action: "remove" });
+    setMsg(error ? { ok: false, t: error } : { ok: true, t: "Studio signature removed. You can edit the contract again." }); void load();
   };
   const voidIt = async () => { if (!window.confirm("Void this contract? The client link stops working. This can't be undone.")) return; await supabase.from("contracts").update({ status: "void" }).eq("id", c.id); void load(); };
   return (
@@ -315,13 +341,14 @@ function ContractView({ id }: { id: string }) {
       <a href="#contracts" className="inline-flex items-center gap-2 text-sm"><ArrowLeft size={14} /> Contracts</a>
       <div className="flex flex-wrap justify-between items-start gap-3">
         <div><h1 className="font-display text-4xl">{c.title}</h1><p className="text-sm text-muted-foreground">{c.number} · {c.client_name} · {c.client_email}</p></div>
-        <span className={`text-xs font-bold tracking-wider border px-2 py-1 ${STATUS_TONE[c.status]}`}>{c.status.toUpperCase()}</span>
+        <span className={`text-xs font-bold tracking-wider border px-2 py-1 ${STATUS_TONE[c.status]}`}>{(STATUS_LABEL[c.status] ?? c.status).toUpperCase()}</span>
       </div>
       <div className="flex flex-wrap gap-2">
-        {c.status !== "void" && c.status !== "signed" && c.status !== "countersigned" && <button className={primary} disabled={busy} onClick={() => void send()}>{busy ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />} {c.sent_at ? "Resend to client" : "Send to client"}</button>}
+        {c.studio_signed_at && c.status !== "void" && c.status !== "signed" && c.status !== "countersigned" && <button className={primary} disabled={busy} onClick={() => void send()}>{busy ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />} {c.sent_at ? "Resend to client" : "Send to client"}</button>}
         {c.status !== "draft" && c.status !== "void" && <button className={btn} onClick={() => { void navigator.clipboard.writeText(link); setMsg({ ok: true, t: "Client link copied." }); }}><Copy size={15} /> Copy client link</button>}
         {c.status !== "draft" && <button className={btn} onClick={() => window.open(link, "_blank")}><Printer size={15} /> View / print</button>}
         {c.booking_id && <a className={btn} href={`#invoices/booking/${c.booking_table}/${c.booking_id}`}>Create invoice</a>}
+        {c.status === "draft" && c.studio_signed_at && <button className={btn} disabled={busy} onClick={() => void removeStudioSig()}>Remove studio signature</button>}
         {c.status !== "void" && <button className={btn} onClick={() => void voidIt()}>Void</button>}
       </div>
       {msg && <p className={`text-sm ${msg.ok ? "text-green-700" : "text-destructive"}`} role="status">{msg.t}</p>}
@@ -329,7 +356,7 @@ function ContractView({ id }: { id: string }) {
         <div><dt className="text-xs text-muted-foreground">SENT</dt><dd>{fmt(c.sent_at)}</dd></div>
         <div><dt className="text-xs text-muted-foreground">OPENED</dt><dd>{fmt(c.viewed_at)}</dd></div>
         <div><dt className="text-xs text-muted-foreground">SIGNED</dt><dd>{fmt(c.signed_at)}</dd></div>
-        <div><dt className="text-xs text-muted-foreground">COUNTERSIGNED</dt><dd>{fmt(c.studio_signed_at)}</dd></div>
+        <div><dt className="text-xs text-muted-foreground">STUDIO SIGNED</dt><dd>{fmt(c.studio_signed_at)}</dd></div>
       </dl>
       {editable ? (
         <div className="space-y-2">
@@ -354,16 +381,25 @@ function ContractView({ id }: { id: string }) {
           <p className="text-xs text-muted-foreground break-all">Device: {c.signer_user_agent} · Text fingerprint (SHA-256): {c.body_hash}</p>
         </div>
       )}
-      {c.status === "signed" && (
+      {canStudioSign && (
         <div className="border border-border p-4 space-y-3 max-w-xl">
-          <p className="font-bold">Countersign for the studio</p>
-          <input className={input} placeholder="Your full name" value={sigName} onChange={(e) => setSigName(e.target.value)} />
-          <SignaturePad onChange={setSig} />
-          <button className={primary} onClick={() => void countersign()}>Countersign</button>
+          <p className="font-bold">Studio signature</p>
+          <p className="text-sm text-muted-foreground">{c.status === "signed" ? "The client has signed. Sign for Tplum Photography to complete the contract; the client is then emailed the fully signed copy." : "Contracts are signed by both parties. Sign for Tplum Photography first, then send it to the client. Once you sign, the text is locked."}</p>
+          <input className={input} placeholder="Your full name" value={sigName} onChange={(e) => setSigName(e.target.value)} aria-label="Name of the person signing for Tplum Photography" />
+          {hasSaved && (
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={useSaved} onChange={(e) => setUseSaved(e.target.checked)} /> Use my saved signature</label>
+          )}
+          {hasSaved && useSaved
+            ? <div className="border border-border p-3 bg-white"><img src={saved!.signature_image!} alt="Saved studio signature" style={{ maxHeight: 90 }} /></div>
+            : <>
+                <SignaturePad onChange={setSig} />
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={saveDefault} onChange={(e) => setSaveDefault(e.target.checked)} /> Save this signature for future contracts</label>
+              </>}
+          <button className={primary} disabled={busy} onClick={() => void countersign()}>{busy ? <Loader2 size={15} className="animate-spin" /> : <FileSignature size={15} />} Sign for Tplum Photography</button>
         </div>
       )}
       {c.studio_signature_data && <div className="border border-border p-4 text-sm"><p className="font-bold">Studio signature</p><img src={c.studio_signature_data} alt="Studio signature" style={{ maxHeight: 90 }} /><p>{c.studio_signer_name} · {fmt(c.studio_signed_at)}</p></div>}
-      <p className="text-xs text-muted-foreground">Signed contracts are locked: the text and signatures can't be changed. To change terms, void it and send a new one.</p>
+      <p className="text-xs text-muted-foreground">Contracts are signed by both Tplum Photography and the client. Once the studio signs, the text is locked (remove the studio signature to edit a draft). Signed contracts can't be changed: to change terms, void it and send a new one.</p>
     </div>
   );
 }
